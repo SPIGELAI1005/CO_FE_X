@@ -80,7 +80,7 @@ function Hero() {
       </h1>
       <div className="my-6 flex justify-center cofex-float-sm">
         <span className="rounded-full bg-[color:var(--cofex-black)] text-white px-5 py-2 text-sm font-medium shadow-lg">
-          Coming September 28, 2025
+          Coming September 28, 2026
         </span>
       </div>
       <h2
@@ -91,7 +91,7 @@ function Hero() {
           animationDelay: "-2s",
         }}
       >
-        (€)arn Coffees
+        (€)arn Experiences
       </h2>
 
       {/* Mockup */}
