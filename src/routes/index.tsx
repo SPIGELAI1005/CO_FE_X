@@ -46,7 +46,7 @@ function Nav() {
     <header className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-[color:var(--border)]">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
         <Link to="/" className="font-bold tracking-[0.3em] text-base">
-          CO:FE(X)
+          CO:FE(X) // Coffee Explorer Network // Explore. Share. Earn.
         </Link>
         <div className="flex items-center gap-6 text-sm">
           <a href="#about" className="hidden sm:inline hover:opacity-70">About</a>
