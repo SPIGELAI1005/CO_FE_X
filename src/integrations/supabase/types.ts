@@ -182,6 +182,47 @@ export type Database = {
           },
         ]
       }
+      catalog_redemptions: {
+        Row: {
+          catalog_id: string
+          created_at: string
+          id: string
+          points_spent: number
+          redemption_code: string
+          used_at: string | null
+          used_by: string | null
+          user_id: string
+        }
+        Insert: {
+          catalog_id: string
+          created_at?: string
+          id?: string
+          points_spent: number
+          redemption_code?: string
+          used_at?: string | null
+          used_by?: string | null
+          user_id: string
+        }
+        Update: {
+          catalog_id?: string
+          created_at?: string
+          id?: string
+          points_spent?: number
+          redemption_code?: string
+          used_at?: string | null
+          used_by?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalog_redemptions_catalog_id_fkey"
+            columns: ["catalog_id"]
+            isOneToOne: false
+            referencedRelation: "reward_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       check_ins: {
         Row: {
           campaign_id: string | null
@@ -389,6 +430,42 @@ export type Database = {
         }
         Relationships: []
       }
+      points_ledger: {
+        Row: {
+          balance_after: number
+          created_at: string
+          delta: number
+          id: string
+          metadata: Json | null
+          ref_id: string | null
+          ref_table: string | null
+          source: string
+          user_id: string
+        }
+        Insert: {
+          balance_after: number
+          created_at?: string
+          delta: number
+          id?: string
+          metadata?: Json | null
+          ref_id?: string | null
+          ref_table?: string | null
+          source: string
+          user_id: string
+        }
+        Update: {
+          balance_after?: number
+          created_at?: string
+          delta?: number
+          id?: string
+          metadata?: Json | null
+          ref_id?: string | null
+          ref_table?: string | null
+          source?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -399,6 +476,8 @@ export type Database = {
           handle: string | null
           id: string
           instagram_handle: string | null
+          referral_code: string | null
+          referred_by: string | null
           total_check_ins: number
           total_points: number
           updated_at: string
@@ -413,6 +492,8 @@ export type Database = {
           handle?: string | null
           id: string
           instagram_handle?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
           total_check_ins?: number
           total_points?: number
           updated_at?: string
@@ -427,6 +508,8 @@ export type Database = {
           handle?: string | null
           id?: string
           instagram_handle?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
           total_check_ins?: number
           total_points?: number
           updated_at?: string
@@ -519,6 +602,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      reward_catalog: {
+        Row: {
+          active: boolean
+          cost_points: number
+          created_at: string
+          description: string | null
+          emoji: string | null
+          id: string
+          name: string
+          sort_order: number | null
+          tier: string | null
+        }
+        Insert: {
+          active?: boolean
+          cost_points: number
+          created_at?: string
+          description?: string | null
+          emoji?: string | null
+          id?: string
+          name: string
+          sort_order?: number | null
+          tier?: string | null
+        }
+        Update: {
+          active?: boolean
+          cost_points?: number
+          created_at?: string
+          description?: string | null
+          emoji?: string | null
+          id?: string
+          name?: string
+          sort_order?: number | null
+          tier?: string | null
+        }
+        Relationships: []
       }
       reward_redemptions: {
         Row: {
@@ -645,6 +764,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      award_points: {
+        Args: {
+          _delta: number
+          _metadata?: Json
+          _ref_id?: string
+          _ref_table?: string
+          _source: string
+          _user: string
+        }
+        Returns: number
+      }
+      claim_referral: { Args: { _code: string }; Returns: Json }
       get_leaderboard: {
         Args: { _limit?: number; _metric?: string }
         Returns: {
@@ -672,6 +803,11 @@ export type Database = {
         | { Args: { _shop_id: string }; Returns: Json }
         | { Args: { _campaign_id?: string; _shop_id: string }; Returns: Json }
       redeem_campaign: { Args: { _campaign_id: string }; Returns: Json }
+      redeem_catalog_item: { Args: { _item_id: string }; Returns: Json }
+      review_social_submission: {
+        Args: { _decision: string; _notes?: string; _submission_id: string }
+        Returns: Json
+      }
       verify_redemption_code: {
         Args: { _code: string; _ip?: string }
         Returns: Json
