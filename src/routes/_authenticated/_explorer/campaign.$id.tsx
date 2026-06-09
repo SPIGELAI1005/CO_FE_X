@@ -172,6 +172,10 @@ function CampaignDetail() {
             </div>
           </div>
         )}
+
+        {joined && !redemption && (
+          <SocialProofSubmit campaignId={c.id} hashtag={c.hashtag} />
+        )}
       </div>
     </div>
   );
