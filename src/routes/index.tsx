@@ -46,7 +46,7 @@ function Nav() {
     <header className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-[color:var(--border)]">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
         <Link to="/" className="font-bold tracking-[0.3em] text-base">
-          CO:FE(X)
+          CO:FE(X) // Coffee Explorer Network // Explore. Share. Earn.
         </Link>
         <div className="flex items-center gap-6 text-sm">
           <a href="#about" className="hidden sm:inline hover:opacity-70">About</a>
@@ -71,7 +71,7 @@ function Hero() {
       className="relative mx-auto max-w-6xl px-5 pt-16 pb-12 text-center isolate"
     >
       <h1
-        className="font-black tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
+        className="font-bold tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
         style={{
           backgroundImage:
             "linear-gradient(90deg, var(--cofex-cyan), #5cd3ff, var(--cofex-cyan))",
@@ -85,7 +85,7 @@ function Hero() {
         </span>
       </div>
       <h2
-        className="font-black tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
+        className="font-bold tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
         style={{
           backgroundImage:
             "linear-gradient(90deg, var(--cofex-coffee), #b88259, var(--cofex-coffee))",
@@ -319,7 +319,7 @@ function Testimonial() {
 function Download() {
   return (
     <section id="download" className="mx-auto max-w-4xl px-5 py-24 text-center">
-      <h2 className="text-5xl sm:text-7xl font-black tracking-tight">Download CO:FE(X)</h2>
+      <h2 className="text-5xl sm:text-7xl font-bold tracking-tight">Download CO:FE(X)</h2>
       <p className="mt-4 text-base">Available starting September 28, 2025, on…</p>
 
       <div className="mt-8 flex justify-center gap-4">
