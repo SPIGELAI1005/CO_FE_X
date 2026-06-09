@@ -1,19 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Coffee, MapPin, Trophy, Sparkles, ArrowRight } from "lucide-react";
+import { Download, ArrowRight, ArrowLeft, Apple, Play } from "lucide-react";
+import heroImage from "@/assets/hero-explorer.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "CO:FE(X) — Explore. Share. Earn." },
+      { title: "CO:FE(X) — (X)plore Cafés · (€)arn Coffees" },
       {
         name: "description",
         content:
-          "CO:FE(X) is the world's first Coffee Exploration Network. Discover independent coffee shops, collect badges, and earn free coffee.",
+          "Snap a pic, post it, and score a free coffee. CO:FE(X) is the Coffee Explorer Network — discover cozy cafés and earn rewards. Coming September 28, 2025.",
       },
-      { property: "og:title", content: "CO:FE(X) — Coffee Explorer Network" },
+      { property: "og:title", content: "CO:FE(X) — (X)plore Cafés · (€)arn Coffees" },
       {
         property: "og:description",
-        content: "Discover independent coffee shops. Collect badges. Earn rewards.",
+        content: "Snap. Post. Earn a free coffee. The Coffee Explorer Network.",
       },
     ],
   }),
@@ -22,215 +23,284 @@ export const Route = createFileRoute("/")({
 
 function Landing() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Nav */}
-      <header className="sticky top-0 z-40 backdrop-blur-xl bg-background/70 border-b border-border">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-          <Link to="/" className="font-semibold tracking-[0.2em] text-sm">
-            CO<span style={{ color: "var(--gold)" }}>:</span>FE<span style={{ color: "var(--gold)" }}>(X)</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <Link
-              to="/"
-              className="hidden sm:inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition"
-            >
-              Sign in
-            </Link>
-            <Link
-              to="/"
-              className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
-              style={{ background: "var(--gradient-gold)", boxShadow: "var(--shadow-gold)" }}
-            >
-              Get the app <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </nav>
-      </header>
-
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div
-          aria-hidden
-          className="absolute inset-0 -z-10 opacity-60"
-          style={{
-            background:
-              "radial-gradient(60% 60% at 50% 0%, color-mix(in oklab, var(--gold) 20%, transparent) 0%, transparent 70%)",
-          }}
-        />
-        <div className="mx-auto max-w-3xl px-5 pt-20 pb-16 text-center sm:pt-28">
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs text-muted-foreground">
-            <Sparkles className="h-3.5 w-3.5" style={{ color: "var(--gold)" }} />
-            Now in early access
-          </span>
-          <h1 className="mt-6 text-5xl sm:text-7xl font-semibold tracking-tight leading-[1.05]">
-            Explore. <span style={{ color: "var(--gold)" }}>Share.</span> Earn.
-          </h1>
-          <p className="mt-6 text-lg text-muted-foreground max-w-xl mx-auto">
-            The world's first Coffee Exploration Network. Discover independent shops,
-            collect badges as you check in, and unlock free coffee.
-          </p>
-          <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link
-              to="/"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-base font-medium text-primary-foreground transition hover:translate-y-[-1px]"
-              style={{ background: "var(--gradient-gold)", boxShadow: "var(--shadow-gold)" }}
-            >
-              Start exploring <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              to="/"
-              className="w-full sm:w-auto inline-flex items-center justify-center rounded-full border border-border bg-card/60 px-6 py-3 text-base text-foreground transition hover:bg-card"
-            >
-              For coffee shops
-            </Link>
-          </div>
-        </div>
-
-        {/* Hero card stack */}
-        <div className="mx-auto max-w-md px-5 pb-24">
-          <div className="relative h-[360px]">
-            <Card
-              className="absolute inset-x-6 top-8 rotate-[-4deg]"
-              tint="oklch(0.3 0.05 45)"
-              title="Bar Centrale"
-              meta="Milano · 0.4 km"
-              badge="+25 XP"
-            />
-            <Card
-              className="absolute inset-x-3 top-16 rotate-[2deg]"
-              tint="oklch(0.4 0.06 50)"
-              title="Sant'Eustachio"
-              meta="Roma · Checked in"
-              badge="Badge unlocked"
-            />
-            <Card
-              className="absolute inset-x-0 top-24"
-              tint="var(--coffee)"
-              title="Caffè del Borgo"
-              meta="Bologna · 12 explorers here"
-              badge="Free espresso"
-              gold
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="mx-auto max-w-6xl px-5 py-20 grid gap-5 sm:grid-cols-3">
-        <Feature
-          icon={<MapPin className="h-5 w-5" />}
-          title="Discover"
-          body="Find independent coffee shops near you with a map made for explorers."
-        />
-        <Feature
-          icon={<Coffee className="h-5 w-5" />}
-          title="Check in"
-          body="Earn XP every time you visit a new spot. Level up your taste."
-        />
-        <Feature
-          icon={<Trophy className="h-5 w-5" />}
-          title="Earn rewards"
-          body="Collect badges and unlock free coffee at partner shops."
-        />
-      </section>
-
-      {/* CTA */}
-      <section className="mx-auto max-w-3xl px-5 pb-24">
-        <div
-          className="rounded-3xl border border-border p-10 text-center"
-          style={{ background: "var(--gradient-espresso)", boxShadow: "var(--shadow-elegant)" }}
-        >
-          <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight">
-            Your next favorite coffee
-            <br />
-            is one check-in away.
-          </h2>
-          <Link
-            to="/"
-            className="mt-7 inline-flex items-center gap-2 rounded-full px-6 py-3 text-base font-medium text-primary-foreground transition hover:translate-y-[-1px]"
-            style={{ background: "var(--gradient-gold)", boxShadow: "var(--shadow-gold)" }}
-          >
-            Join CO:FE(X) <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </section>
-
-      <footer className="border-t border-border">
-        <div className="mx-auto max-w-6xl px-5 py-8 flex items-center justify-between text-xs text-muted-foreground">
-          <span>© {new Date().getFullYear()} CO:FE(X)</span>
-          <span className="tracking-[0.2em]">EXPLORE · SHARE · EARN</span>
-        </div>
-      </footer>
+    <div className="min-h-screen bg-white text-[color:var(--cofex-black)]" style={{ fontFamily: "'Nunito Sans', system-ui, sans-serif" }}>
+      <Nav />
+      <Hero />
+      <ShareLove />
+      <Features />
+      <Testimonial />
+      <Download />
+      <Footer />
     </div>
   );
 }
 
-function Card({
-  className = "",
-  tint,
-  title,
-  meta,
-  badge,
-  gold = false,
-}: {
-  className?: string;
-  tint: string;
-  title: string;
-  meta: string;
-  badge: string;
-  gold?: boolean;
-}) {
+/* ───────────── Nav ───────────── */
+function Nav() {
   return (
-    <div
-      className={`rounded-2xl border border-border p-5 backdrop-blur-md ${className}`}
-      style={{
-        background: `linear-gradient(160deg, ${tint}, oklch(0.2 0.02 50))`,
-        boxShadow: "var(--shadow-elegant)",
-      }}
-    >
-      <div className="flex items-center justify-between">
-        <div
-          className="flex h-10 w-10 items-center justify-center rounded-full"
-          style={{ background: "color-mix(in oklab, var(--gold) 20%, transparent)" }}
-        >
-          <Coffee className="h-5 w-5" style={{ color: "var(--gold)" }} />
+    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-[color:var(--border)]">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
+        <Link to="/" className="font-bold tracking-[0.3em] text-base">
+          CO:FE(X)
+        </Link>
+        <div className="flex items-center gap-6 text-sm">
+          <a href="#about" className="hidden sm:inline hover:opacity-70">About</a>
+          <a href="#reviews" className="hidden sm:inline hover:opacity-70">Reviews</a>
+          <a
+            href="#download"
+            className="inline-flex items-center gap-2 rounded-full border border-[color:var(--cofex-black)] px-4 py-2 hover:bg-[color:var(--cofex-black)] hover:text-white transition"
+          >
+            Check on 28.09. <Download className="h-4 w-4" />
+          </a>
         </div>
-        <span
-          className="rounded-full px-2.5 py-1 text-[11px] font-medium"
-          style={
-            gold
-              ? { background: "var(--gradient-gold)", color: "var(--espresso)" }
-              : { background: "oklch(1 0 0 / 8%)", color: "var(--cream)" }
-          }
-        >
-          {badge}
+      </nav>
+    </header>
+  );
+}
+
+/* ───────────── Hero ───────────── */
+function Hero() {
+  return (
+    <section className="mx-auto max-w-6xl px-5 pt-16 pb-12 text-center">
+      <h1
+        className="font-black tracking-tight leading-[0.95] text-[14vw] sm:text-[110px]"
+        style={{ color: "var(--cofex-cyan)" }}
+      >
+        (X)plore Cafés
+      </h1>
+      <div className="my-6 flex justify-center">
+        <span className="rounded-full bg-[color:var(--cofex-black)] text-white px-5 py-2 text-sm font-medium">
+          Coming September 28, 2025
         </span>
       </div>
-      <h3 className="mt-6 text-lg font-medium">{title}</h3>
-      <p className="text-xs text-muted-foreground mt-1">{meta}</p>
-    </div>
+      <h2
+        className="font-black tracking-tight leading-[0.95] text-[14vw] sm:text-[110px]"
+        style={{ color: "var(--cofex-coffee)" }}
+      >
+        (€)arn Coffees
+      </h2>
+
+      {/* Mockup */}
+      <div className="relative mt-16 flex justify-center">
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10 blur-3xl opacity-60"
+          style={{
+            background:
+              "conic-gradient(from 180deg at 50% 50%, #d4f1f9, #fde3df, #f1e3f9, #dff19a, #d4f1f9)",
+          }}
+        />
+        <div className="relative w-full max-w-[420px]">
+          {/* floating pill */}
+          <div className="absolute -left-2 sm:-left-10 top-24 z-10 rounded-full bg-white shadow-lg px-5 py-3 text-base font-semibold whitespace-nowrap">
+            1 <span style={{ color: "var(--cofex-cyan)" }}>Post</span> = 1{" "}
+            <span style={{ color: "var(--cofex-coffee)" }}>Coffee</span>
+          </div>
+          {/* phone frame */}
+          <div className="rounded-[40px] bg-[color:var(--cofex-black)] p-3 shadow-2xl">
+            <div className="rounded-[30px] overflow-hidden bg-white">
+              <img src={heroImage} alt="CO:FE(X) Explorer holding phone with free coffee reward" className="w-full h-[520px] object-cover" />
+              <div className="p-6 text-left">
+                <h3 className="text-2xl font-extrabold leading-tight">
+                  Hi Olga,<br />Your Next<br />Coffee Is On Us!
+                </h3>
+                <button className="mt-5 rounded-full border border-[color:var(--cofex-black)] px-5 py-2 text-sm font-semibold hover:bg-[color:var(--cofex-black)] hover:text-white transition">
+                  Get Started
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
-function Feature({
-  icon,
-  title,
-  body,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  body: string;
-}) {
+/* ───────────── Share Love ───────────── */
+function ShareLove() {
   return (
-    <div className="rounded-2xl border border-border bg-card/50 p-6">
-      <div
-        className="flex h-10 w-10 items-center justify-center rounded-xl"
-        style={{ background: "color-mix(in oklab, var(--gold) 18%, transparent)", color: "var(--gold)" }}
+    <section id="about" className="mx-auto max-w-6xl px-5 py-24">
+      <span
+        className="inline-block rounded-full px-5 py-2 text-sm font-semibold"
+        style={{ background: "var(--cofex-pastel-blue)" }}
       >
-        {icon}
+        Share your <span style={{ color: "var(--cofex-red)" }}>Love</span> for{" "}
+        <span style={{ color: "var(--cofex-coffee)" }}>Coffee</span>. Get rewarded!
+      </span>
+
+      <div className="mt-10 space-y-3 font-black leading-[1.1] tracking-tight text-4xl sm:text-6xl">
+        <p><span style={{ color: "var(--cofex-red)" }}>Love</span> coffee?</p>
+        <p><span style={{ color: "var(--cofex-red)" }}>Love</span> sharing?</p>
+        <p><span style={{ color: "var(--cofex-magenta)" }}>Perfect</span> match!</p>
+        <p><span style={{ color: "var(--cofex-yellow)" }}>Snap</span> a pic, post it, and score a free coffee on us.</p>
+        <p><span style={{ color: "var(--cofex-cyan)" }}>Explore</span> cozy cafés, spread the love and…</p>
+        <p><span style={{ color: "var(--cofex-coffee)" }}>Keep</span> your cup full, one post at a time.</p>
       </div>
-      <h3 className="mt-4 text-lg font-medium">{title}</h3>
-      <p className="mt-2 text-sm text-muted-foreground">{body}</p>
-    </div>
+    </section>
+  );
+}
+
+/* ───────────── Features ───────────── */
+const features = [
+  {
+    title: "Snap & Earn in Seconds",
+    bg: "var(--cofex-pastel-gray)",
+    user: "Snap and share to get instant rewards, no waiting around for likes or views to pile up.",
+    cafe: "A steady stream of authentic and organic social media promotion.",
+  },
+  {
+    title: "Café Discovery Map",
+    bg: "var(--cofex-pastel-blue)",
+    user: "Explore new cafés nearby or trending spots.",
+    cafe: "Get discovered by new customers who wouldn't have come otherwise.",
+  },
+  {
+    title: "Exclusive Perks & Loyalty Boosts",
+    bg: "var(--cofex-pastel-pink)",
+    user: "Special freebies and bonus rewards for regular sharing.",
+    cafe: "Tools to build repeat visits and turn customers into promoters.",
+  },
+  {
+    title: "Real-Time Analytics",
+    bg: "var(--cofex-pastel-lilac)",
+    user: "See your impact and how many coffees you've unlocked.",
+    cafe: "Analytics dashboard to measure reach, engagement, and visits.",
+  },
+];
+
+function Features() {
+  return (
+    <section className="mx-auto max-w-6xl px-5 pb-24 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {features.map((f) => (
+        <div
+          key={f.title}
+          className="rounded-3xl p-7 flex flex-col justify-end min-h-[340px]"
+          style={{ background: f.bg }}
+        >
+          <h3 className="text-xl font-extrabold mb-4">{f.title}</h3>
+          <p className="text-sm font-semibold mb-3" style={{ color: "var(--cofex-cyan)" }}>
+            For users: <span className="text-[color:var(--cofex-black)] font-normal">{f.user}</span>
+          </p>
+          <p className="text-sm font-semibold" style={{ color: "var(--cofex-cyan)" }}>
+            For cafés: <span className="text-[color:var(--cofex-black)] font-normal">{f.cafe}</span>
+          </p>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+/* ───────────── Testimonial ───────────── */
+function Testimonial() {
+  return (
+    <section id="reviews" className="py-24" style={{ background: "var(--cofex-lime)" }}>
+      <div className="mx-auto max-w-4xl px-5">
+        <div className="relative rounded-3xl bg-white p-10 sm:p-16 shadow-sm">
+          <span
+            className="absolute -top-4 left-10 rounded-full px-5 py-2 text-sm font-bold rotate-[-3deg]"
+            style={{ background: "var(--cofex-pastel-lilac)" }}
+          >
+            What Coffee Lovers are saying…
+          </span>
+          <p className="text-2xl sm:text-3xl font-extrabold leading-snug text-center">
+            "The coffee run has never been easier.<br />
+            I discover new cafés, share a quick post, and get my free coffee right away.<br />
+            Finally, using social media comes with a real tangible reward!"
+          </p>
+          <p className="mt-8 text-center text-sm font-medium">Floria N. (Entrepreneur)</p>
+        </div>
+        <div className="mt-8 flex justify-center gap-3">
+          <button className="h-12 w-12 rounded-xl bg-[color:var(--cofex-black)] text-white grid place-items-center hover:opacity-80">
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <button className="h-12 w-12 rounded-xl bg-[color:var(--cofex-black)] text-white grid place-items-center hover:opacity-80">
+            <ArrowRight className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ───────────── Download ───────────── */
+function Download() {
+  return (
+    <section id="download" className="mx-auto max-w-4xl px-5 py-24 text-center">
+      <h2 className="text-5xl sm:text-7xl font-black tracking-tight">Download CO:FE(X)</h2>
+      <p className="mt-4 text-base">Available starting September 28, 2025, on…</p>
+
+      <div className="mt-8 flex justify-center gap-4">
+        <a href="#" className="inline-flex items-center gap-3 rounded-xl bg-[color:var(--cofex-black)] text-white px-5 py-3">
+          <Apple className="h-7 w-7" />
+          <div className="text-left leading-tight">
+            <div className="text-[10px] opacity-80">Download on the</div>
+            <div className="text-base font-semibold">App Store</div>
+          </div>
+        </a>
+        <a href="#" className="inline-flex items-center gap-3 rounded-xl bg-[color:var(--cofex-black)] text-white px-5 py-3">
+          <Play className="h-7 w-7" />
+          <div className="text-left leading-tight">
+            <div className="text-[10px] opacity-80">GET IT ON</div>
+            <div className="text-base font-semibold">Google Play</div>
+          </div>
+        </a>
+      </div>
+
+      <form
+        className="mt-16 text-left max-w-xl mx-auto"
+        onSubmit={(e) => {
+          e.preventDefault();
+          alert("Thanks — we'll keep you posted!");
+        }}
+      >
+        <h3 className="text-2xl font-bold mb-6">Sign Up for Early Access</h3>
+        <label className="text-sm font-medium">Email *</label>
+        <input
+          required
+          type="email"
+          className="mt-2 w-full border border-[color:var(--cofex-black)] rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[color:var(--cofex-cyan)]"
+        />
+        <label className="mt-4 flex items-center gap-2 text-sm">
+          <input type="checkbox" required className="h-4 w-4" />
+          Yes, I want to be notified. *
+        </label>
+        <button
+          type="submit"
+          className="mt-5 w-full bg-[color:var(--cofex-black)] text-white py-3 font-semibold rounded-sm hover:opacity-90"
+        >
+          Submit
+        </button>
+      </form>
+    </section>
+  );
+}
+
+/* ───────────── Footer ───────────── */
+function Footer() {
+  return (
+    <footer className="bg-[color:var(--cofex-black)] text-white">
+      <div className="mx-auto max-w-6xl px-5 py-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 text-sm">
+        <div>
+          <div className="font-bold tracking-[0.3em] text-lg">CO:FE(X)</div>
+        </div>
+        <div>
+          <p>Contact@COFE-X.com</p>
+          <p className="font-bold mt-4">Contact Us</p>
+          <p className="mt-2 opacity-80">Maria-Sybilla-Merian-Str. 12<br />80999 München, Germany</p>
+        </div>
+        <div>
+          <p className="font-bold">Follow Us</p>
+          <p className="mt-2 underline">Instagram</p>
+          <p className="underline">X.com</p>
+        </div>
+        <div>
+          <p className="font-bold">Legal</p>
+          <p className="mt-2">Terms &amp; Conditions</p>
+          <p>Privacy Policy</p>
+          <p>Accessibility Statement</p>
+        </div>
+      </div>
+      <div className="px-5 pb-6 text-xs opacity-70">© {new Date().getFullYear()} by CO:FE(X)</div>
+    </footer>
   );
 }
