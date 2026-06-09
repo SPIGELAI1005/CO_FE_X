@@ -99,17 +99,27 @@
 
   /* CO:FE(X) brand accents */
   --cofex-cyan: #00b6f0;
-  --cofex-coffee: #7b4a2b;
+  --cofex-coffee: #7b4a2b;        /* Coffee Brown — primary brand */
+  --cofex-coffee-deep: #4a2c1a;   /* deeper espresso for hover/contrast */
+  --cofex-cream: #fbfaf6;         /* Cream White — surfaces */
+  --cofex-cream-warm: #f3ede1;    /* warm cream alt */
+  --cofex-black: #0a0a0a;         /* Black — text/buttons */
+  --cofex-gold: #c9a44c;          /* Accent Gold */
+  --cofex-gold-soft: #e8cf86;     /* soft gold highlight */
   --cofex-red: #ff2d2d;
   --cofex-magenta: #ff2db5;
   --cofex-yellow: #e0c800;
-  --cofex-black: #0a0a0a;
-  --cofex-cream: #fbfaf6;
   --cofex-lime: #dff19a;
   --cofex-pastel-blue: #d4f1f9;
   --cofex-pastel-pink: #fde3df;
   --cofex-pastel-lilac: #f1e3f9;
   --cofex-pastel-gray: #ececec;
+
+  /* Premium gradients & shadows */
+  --gradient-gold: linear-gradient(135deg, var(--cofex-gold), var(--cofex-gold-soft));
+  --gradient-coffee: linear-gradient(135deg, var(--cofex-coffee-deep), var(--cofex-coffee));
+  --shadow-premium: 0 18px 40px -18px color-mix(in oklab, var(--cofex-coffee) 55%, transparent);
+  --shadow-gold: 0 18px 40px -18px color-mix(in oklab, var(--cofex-gold) 60%, transparent);
 }
 
 .dark {

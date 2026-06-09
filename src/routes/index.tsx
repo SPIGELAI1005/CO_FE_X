@@ -98,6 +98,30 @@ function Hero() {
         (€)arn Experiences
       </h2>
 
+      {/* Hero CTA */}
+      <div className="mt-10 flex flex-col items-center gap-3">
+        <a
+          href="#download"
+          className="group inline-flex items-center gap-3 rounded-full px-8 py-4 text-base sm:text-lg font-medium text-white transition-transform active:scale-[0.98] hover:-translate-y-0.5"
+          style={{
+            background: "var(--gradient-coffee)",
+            boxShadow: "var(--shadow-premium)",
+          }}
+        >
+          <DownloadIcon className="h-5 w-5" />
+          Download CO:FE(X)
+          <span
+            className="ml-1 rounded-full px-2 py-0.5 text-[11px] font-semibold tracking-wider"
+            style={{ background: "var(--gradient-gold)", color: "var(--cofex-black)" }}
+          >
+            FREE
+          </span>
+        </a>
+        <p className="text-sm sm:text-base text-[color:var(--cofex-coffee-deep)]/80 max-w-md">
+          Snap a pic, share the moment — your next coffee is on us.
+        </p>
+      </div>
+
       {/* Mockup */}
       <div className="relative mt-16 flex justify-center">
         <div className="relative w-full max-w-[420px]">
