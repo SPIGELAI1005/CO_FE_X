@@ -85,7 +85,7 @@ function Hero() {
         </span>
       </div>
       <h2
-        className="font-black tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
+        className="font-bold tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
         style={{
           backgroundImage:
             "linear-gradient(90deg, var(--cofex-coffee), #b88259, var(--cofex-coffee))",
