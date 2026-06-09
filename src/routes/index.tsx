@@ -179,7 +179,7 @@ function ShareLove() {
           { c: "var(--cofex-cyan)", word: "Explore", rest: " cozy cafés, spread the love and…" },
           { c: "var(--cofex-coffee)", word: "Keep", rest: " your cup full, one post at a time." },
         ].map((l, i) => (
-          <p key={i} className="cofex-reveal" style={{ transitionDelay: `${i * 90}ms` }}>
+          <p key={i} className="cofex-reveal" style={{ ["--i" as any]: i }}>
             <span style={{ color: l.c }}>{l.word}</span>{l.rest}
           </p>
         ))}
@@ -218,26 +218,38 @@ const features = [
 
 function Features() {
   return (
-    <section className="mx-auto max-w-6xl px-5 pb-24 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <section className="mx-auto max-w-6xl px-5 pb-24 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" data-parallax>
       {features.map((f, i) => (
         <div
           key={f.title}
-          className="rounded-3xl p-7 flex flex-col justify-end min-h-[340px] cofex-reveal cofex-lift"
+          className="cofex-reveal cofex-px"
           style={{
-            background: f.bg,
-            transitionDelay: `${i * 120}ms`,
-            animation: `cofex-float-sm ${5 + i * 0.4}s ease-in-out ${i * 0.3}s infinite`,
+            ["--i" as any]: i + 1,
+            ["--depth-x" as any]: `${(i % 2 === 0 ? -1 : 1) * 10}px`,
+            ["--depth-y" as any]: "6px",
+            ["--depth-s" as any]: `${14 + i * 4}px`,
           }}
         >
-          <h3 className="text-xl font-extrabold mb-4">{f.title}</h3>
-          <p className="text-sm font-semibold mb-3" style={{ color: "var(--cofex-cyan)" }}>
-            For users: <span className="text-[color:var(--cofex-black)] font-normal">{f.user}</span>
-          </p>
-          <p className="text-sm font-semibold" style={{ color: "var(--cofex-cyan)" }}>
-            For cafés: <span className="text-[color:var(--cofex-black)] font-normal">{f.cafe}</span>
-          </p>
+          <div
+            className="rounded-3xl p-7 flex flex-col justify-end min-h-[340px] cofex-lift h-full"
+            style={{
+              background: f.bg,
+              animation: `cofex-float-sm ${5.5 + i * 0.4}s ease-in-out ${i * 0.4}s infinite`,
+            }}
+          >
+            <h3 className="text-xl font-extrabold mb-4">{f.title}</h3>
+            <p className="text-sm font-semibold mb-3" style={{ color: "var(--cofex-cyan)" }}>
+              For users: <span className="text-[color:var(--cofex-black)] font-normal">{f.user}</span>
+            </p>
+            <p className="text-sm font-semibold" style={{ color: "var(--cofex-cyan)" }}>
+              For cafés: <span className="text-[color:var(--cofex-black)] font-normal">{f.cafe}</span>
+            </p>
+          </div>
         </div>
       ))}
+    </section>
+  );
+}
     </section>
   );
 }
