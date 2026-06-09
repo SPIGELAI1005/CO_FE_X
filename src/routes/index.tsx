@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Download as DownloadIcon, ArrowRight, ArrowLeft, Apple, Play } from "lucide-react";
 import heroImage from "@/assets/hero-explorer.jpg";
+import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,8 +23,9 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  useScrollReveal();
   return (
-    <div className="min-h-screen bg-white text-[color:var(--cofex-black)]" style={{ fontFamily: "'Nunito Sans', system-ui, sans-serif" }}>
+    <div className="min-h-screen bg-white text-[color:var(--cofex-black)] overflow-x-hidden" style={{ fontFamily: "'Nunito Sans', system-ui, sans-serif" }}>
       <Nav />
       <Hero />
       <ShareLove />
