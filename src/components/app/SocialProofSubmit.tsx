@@ -67,7 +67,7 @@ export function SocialProofSubmit({ campaignId, hashtag }: { campaignId: string;
         if (!url.trim()) throw new Error("Paste your link");
         try { new URL(url); } catch { throw new Error("Invalid URL"); }
       }
-      const { error } = await supabase.rpc("submit_social_proof", {
+      const { error } = await (supabase as any).rpc("submit_social_proof", {
         _campaign_id: campaignId,
         _platform: platform,
         _submission_type: meta.type,
