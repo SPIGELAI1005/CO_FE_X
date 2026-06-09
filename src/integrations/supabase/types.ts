@@ -645,6 +645,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_leaderboard: {
+        Args: { _limit?: number; _metric?: string }
+        Returns: {
+          avatar_url: string
+          cafes_visited: number
+          campaigns_completed: number
+          city: string
+          display_name: string
+          rank: number
+          reviews_written: number
+          social_posts: number
+          total_points: number
+          user_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
