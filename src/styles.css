@@ -157,3 +157,61 @@
     color: var(--color-foreground);
   }
 }
+
+/* ───────────── CO:FE(X) motion ───────────── */
+@keyframes cofex-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-14px) rotate(0.4deg); }
+}
+@keyframes cofex-float-sm {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+@keyframes cofex-float-pill {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50%      { transform: translateY(-10px) rotate(-1deg); }
+}
+@keyframes cofex-blob {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  33%      { transform: translate(20px,-15px) scale(1.05); }
+  66%      { transform: translate(-15px,10px) scale(0.97); }
+}
+@keyframes cofex-rise {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes cofex-pop {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes cofex-shine {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.cofex-float       { animation: cofex-float 6s ease-in-out infinite; will-change: transform; }
+.cofex-float-sm    { animation: cofex-float-sm 4.5s ease-in-out infinite; will-change: transform; }
+.cofex-float-pill  { animation: cofex-float-pill 5s ease-in-out infinite; will-change: transform; }
+.cofex-blob        { animation: cofex-blob 14s ease-in-out infinite; will-change: transform; }
+
+/* Scroll reveal */
+.cofex-reveal { opacity: 0; transform: translateY(28px); transition: opacity 700ms cubic-bezier(.2,.7,.2,1), transform 700ms cubic-bezier(.2,.7,.2,1); }
+.cofex-reveal.is-visible { opacity: 1; transform: none; }
+
+/* Hover lift */
+.cofex-lift { transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s; }
+.cofex-lift:hover { transform: translateY(-6px); box-shadow: 0 24px 50px -20px rgba(0,0,0,.18); }
+
+/* Gradient text shine for hero */
+.cofex-shine {
+  background-size: 200% auto;
+  animation: cofex-shine 6s linear infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cofex-float, .cofex-float-sm, .cofex-float-pill, .cofex-blob, .cofex-shine { animation: none !important; }
+  .cofex-reveal { opacity: 1; transform: none; transition: none; }
+}

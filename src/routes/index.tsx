@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Download as DownloadIcon, ArrowRight, ArrowLeft, Apple, Play } from "lucide-react";
 import heroImage from "@/assets/hero-explorer.jpg";
+import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,8 +23,9 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  useScrollReveal();
   return (
-    <div className="min-h-screen bg-white text-[color:var(--cofex-black)]" style={{ fontFamily: "'Nunito Sans', system-ui, sans-serif" }}>
+    <div className="min-h-screen bg-white text-[color:var(--cofex-black)] overflow-x-hidden" style={{ fontFamily: "'Nunito Sans', system-ui, sans-serif" }}>
       <Nav />
       <Hero />
       <ShareLove />
@@ -63,38 +65,53 @@ function Hero() {
   return (
     <section className="mx-auto max-w-6xl px-5 pt-16 pb-12 text-center">
       <h1
-        className="font-black tracking-tight leading-[0.95] text-[14vw] sm:text-[110px]"
-        style={{ color: "var(--cofex-cyan)" }}
+        className="font-black tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
+        style={{
+          backgroundImage:
+            "linear-gradient(90deg, var(--cofex-cyan), #5cd3ff, var(--cofex-cyan))",
+        }}
       >
         (X)plore Cafés
       </h1>
-      <div className="my-6 flex justify-center">
-        <span className="rounded-full bg-[color:var(--cofex-black)] text-white px-5 py-2 text-sm font-medium">
+      <div className="my-6 flex justify-center cofex-float-sm">
+        <span className="rounded-full bg-[color:var(--cofex-black)] text-white px-5 py-2 text-sm font-medium shadow-lg">
           Coming September 28, 2025
         </span>
       </div>
       <h2
-        className="font-black tracking-tight leading-[0.95] text-[14vw] sm:text-[110px]"
-        style={{ color: "var(--cofex-coffee)" }}
+        className="font-black tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
+        style={{
+          backgroundImage:
+            "linear-gradient(90deg, var(--cofex-coffee), #b88259, var(--cofex-coffee))",
+          animationDelay: "-2s",
+        }}
       >
         (€)arn Coffees
       </h2>
 
       {/* Mockup */}
       <div className="relative mt-16 flex justify-center">
+        {/* animated blob backdrop */}
         <div
           aria-hidden
-          className="absolute inset-0 -z-10 blur-3xl opacity-60"
+          className="absolute inset-0 -z-10 blur-3xl opacity-70 cofex-blob"
           style={{
             background:
               "conic-gradient(from 180deg at 50% 50%, #d4f1f9, #fde3df, #f1e3f9, #dff19a, #d4f1f9)",
           }}
         />
-        <div className="relative w-full max-w-[420px]">
+        <div className="relative w-full max-w-[420px] cofex-float">
           {/* floating pill */}
-          <div className="absolute -left-2 sm:-left-10 top-24 z-10 rounded-full bg-white shadow-lg px-5 py-3 text-base font-semibold whitespace-nowrap">
+          <div className="absolute -left-2 sm:-left-16 top-24 z-10 rounded-full bg-white shadow-xl px-5 py-3 text-base font-semibold whitespace-nowrap cofex-float-pill">
             1 <span style={{ color: "var(--cofex-cyan)" }}>Post</span> = 1{" "}
             <span style={{ color: "var(--cofex-coffee)" }}>Coffee</span>
+          </div>
+          {/* floating coffee chip on the right */}
+          <div
+            className="absolute -right-2 sm:-right-14 top-72 z-10 rounded-full bg-white shadow-xl px-4 py-2 text-sm font-bold cofex-float-sm"
+            style={{ animationDelay: "-1.5s", color: "var(--cofex-coffee)" }}
+          >
+            ☕ +1 Free
           </div>
           {/* phone frame */}
           <div className="rounded-[40px] bg-[color:var(--cofex-black)] p-3 shadow-2xl">
@@ -104,7 +121,7 @@ function Hero() {
                 <h3 className="text-2xl font-extrabold leading-tight">
                   Hi Olga,<br />Your Next<br />Coffee Is On Us!
                 </h3>
-                <button className="mt-5 rounded-full border border-[color:var(--cofex-black)] px-5 py-2 text-sm font-semibold hover:bg-[color:var(--cofex-black)] hover:text-white transition">
+                <button className="mt-5 rounded-full border border-[color:var(--cofex-black)] px-5 py-2 text-sm font-semibold hover:bg-[color:var(--cofex-black)] hover:text-white transition hover:scale-105">
                   Get Started
                 </button>
               </div>
@@ -121,7 +138,7 @@ function ShareLove() {
   return (
     <section id="about" className="mx-auto max-w-6xl px-5 py-24">
       <span
-        className="inline-block rounded-full px-5 py-2 text-sm font-semibold"
+        className="inline-block rounded-full px-5 py-2 text-sm font-semibold cofex-float-pill"
         style={{ background: "var(--cofex-pastel-blue)" }}
       >
         Share your <span style={{ color: "var(--cofex-red)" }}>Love</span> for{" "}
@@ -129,12 +146,18 @@ function ShareLove() {
       </span>
 
       <div className="mt-10 space-y-3 font-black leading-[1.1] tracking-tight text-4xl sm:text-6xl">
-        <p><span style={{ color: "var(--cofex-red)" }}>Love</span> coffee?</p>
-        <p><span style={{ color: "var(--cofex-red)" }}>Love</span> sharing?</p>
-        <p><span style={{ color: "var(--cofex-magenta)" }}>Perfect</span> match!</p>
-        <p><span style={{ color: "var(--cofex-yellow)" }}>Snap</span> a pic, post it, and score a free coffee on us.</p>
-        <p><span style={{ color: "var(--cofex-cyan)" }}>Explore</span> cozy cafés, spread the love and…</p>
-        <p><span style={{ color: "var(--cofex-coffee)" }}>Keep</span> your cup full, one post at a time.</p>
+        {[
+          { c: "var(--cofex-red)", word: "Love", rest: " coffee?" },
+          { c: "var(--cofex-red)", word: "Love", rest: " sharing?" },
+          { c: "var(--cofex-magenta)", word: "Perfect", rest: " match!" },
+          { c: "var(--cofex-yellow)", word: "Snap", rest: " a pic, post it, and score a free coffee on us." },
+          { c: "var(--cofex-cyan)", word: "Explore", rest: " cozy cafés, spread the love and…" },
+          { c: "var(--cofex-coffee)", word: "Keep", rest: " your cup full, one post at a time." },
+        ].map((l, i) => (
+          <p key={i} className="cofex-reveal" style={{ transitionDelay: `${i * 90}ms` }}>
+            <span style={{ color: l.c }}>{l.word}</span>{l.rest}
+          </p>
+        ))}
       </div>
     </section>
   );
@@ -171,11 +194,15 @@ const features = [
 function Features() {
   return (
     <section className="mx-auto max-w-6xl px-5 pb-24 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-      {features.map((f) => (
+      {features.map((f, i) => (
         <div
           key={f.title}
-          className="rounded-3xl p-7 flex flex-col justify-end min-h-[340px]"
-          style={{ background: f.bg }}
+          className="rounded-3xl p-7 flex flex-col justify-end min-h-[340px] cofex-reveal cofex-lift"
+          style={{
+            background: f.bg,
+            transitionDelay: `${i * 120}ms`,
+            animation: `cofex-float-sm ${5 + i * 0.4}s ease-in-out ${i * 0.3}s infinite`,
+          }}
         >
           <h3 className="text-xl font-extrabold mb-4">{f.title}</h3>
           <p className="text-sm font-semibold mb-3" style={{ color: "var(--cofex-cyan)" }}>
@@ -195,9 +222,9 @@ function Testimonial() {
   return (
     <section id="reviews" className="py-24" style={{ background: "var(--cofex-lime)" }}>
       <div className="mx-auto max-w-4xl px-5">
-        <div className="relative rounded-3xl bg-white p-10 sm:p-16 shadow-sm">
+        <div className="relative rounded-3xl bg-white p-10 sm:p-16 shadow-sm cofex-reveal cofex-float">
           <span
-            className="absolute -top-4 left-10 rounded-full px-5 py-2 text-sm font-bold rotate-[-3deg]"
+            className="absolute -top-4 left-10 rounded-full px-5 py-2 text-sm font-bold cofex-float-pill"
             style={{ background: "var(--cofex-pastel-lilac)" }}
           >
             What Coffee Lovers are saying…
