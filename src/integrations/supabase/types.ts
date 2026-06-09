@@ -489,6 +489,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      perform_check_in: { Args: { _shop_id: string }; Returns: Json }
     }
     Enums: {
       app_role: "explorer" | "partner" | "admin"
