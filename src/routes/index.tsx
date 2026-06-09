@@ -167,7 +167,7 @@ function ShareLove() {
           { c: "var(--cofex-red)", word: "Love", rest: " coffee?" },
           { c: "var(--cofex-red)", word: "Love", rest: " sharing?" },
           { c: "var(--cofex-magenta)", word: "Perfect", rest: " match!" },
-          { c: "var(--cofex-yellow)", word: "Snap", rest: " a pic, post it, and score a free coffee on us." },
+          { c: "var(--cofex-yellow)", word: "Experience", rest: " the moments, share them." },
           { c: "var(--cofex-cyan)", word: "Explore", rest: " cozy cafés, spread the love and…" },
           { c: "var(--cofex-coffee)", word: "Keep", rest: " your cup full, one post at a time." },
         ].map((l, i) => (
