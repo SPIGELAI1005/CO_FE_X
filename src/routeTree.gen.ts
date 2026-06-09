@@ -21,6 +21,7 @@ import { Route as AuthenticatedPartnerShopRouteImport } from './routes/_authenti
 import { Route as AuthenticatedPartnerRewardsRouteImport } from './routes/_authenticated/partner.rewards'
 import { Route as AuthenticatedPartnerCampaignsRouteImport } from './routes/_authenticated/partner.campaigns'
 import { Route as AuthenticatedPartnerAnalyticsRouteImport } from './routes/_authenticated/partner.analytics'
+import { Route as AuthenticatedCoffeeSlugRouteImport } from './routes/_authenticated/coffee.$slug'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedAdminRevenueRouteImport } from './routes/_authenticated/admin.revenue'
 import { Route as AuthenticatedAdminPartnersRouteImport } from './routes/_authenticated/admin.partners'
@@ -96,6 +97,11 @@ const AuthenticatedPartnerAnalyticsRoute =
     path: '/analytics',
     getParentRoute: () => AuthenticatedPartnerRoute,
   } as any)
+const AuthenticatedCoffeeSlugRoute = AuthenticatedCoffeeSlugRouteImport.update({
+  id: '/coffee/$slug',
+  path: '/coffee/$slug',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -171,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/admin/revenue': typeof AuthenticatedAdminRevenueRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/coffee/$slug': typeof AuthenticatedCoffeeSlugRoute
   '/partner/analytics': typeof AuthenticatedPartnerAnalyticsRoute
   '/partner/campaigns': typeof AuthenticatedPartnerCampaignsRoute
   '/partner/rewards': typeof AuthenticatedPartnerRewardsRoute
@@ -191,6 +198,7 @@ export interface FileRoutesByTo {
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/admin/revenue': typeof AuthenticatedAdminRevenueRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/coffee/$slug': typeof AuthenticatedCoffeeSlugRoute
   '/partner/analytics': typeof AuthenticatedPartnerAnalyticsRoute
   '/partner/campaigns': typeof AuthenticatedPartnerCampaignsRoute
   '/partner/rewards': typeof AuthenticatedPartnerRewardsRoute
@@ -216,6 +224,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/_authenticated/admin/revenue': typeof AuthenticatedAdminRevenueRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/coffee/$slug': typeof AuthenticatedCoffeeSlugRoute
   '/_authenticated/partner/analytics': typeof AuthenticatedPartnerAnalyticsRoute
   '/_authenticated/partner/campaigns': typeof AuthenticatedPartnerCampaignsRoute
   '/_authenticated/partner/rewards': typeof AuthenticatedPartnerRewardsRoute
@@ -240,6 +249,7 @@ export interface FileRouteTypes {
     | '/admin/partners'
     | '/admin/revenue'
     | '/admin/users'
+    | '/coffee/$slug'
     | '/partner/analytics'
     | '/partner/campaigns'
     | '/partner/rewards'
@@ -260,6 +270,7 @@ export interface FileRouteTypes {
     | '/admin/partners'
     | '/admin/revenue'
     | '/admin/users'
+    | '/coffee/$slug'
     | '/partner/analytics'
     | '/partner/campaigns'
     | '/partner/rewards'
@@ -284,6 +295,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/partners'
     | '/_authenticated/admin/revenue'
     | '/_authenticated/admin/users'
+    | '/_authenticated/coffee/$slug'
     | '/_authenticated/partner/analytics'
     | '/_authenticated/partner/campaigns'
     | '/_authenticated/partner/rewards'
@@ -383,6 +395,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/partner/analytics'
       preLoaderRoute: typeof AuthenticatedPartnerAnalyticsRouteImport
       parentRoute: typeof AuthenticatedPartnerRoute
+    }
+    '/_authenticated/coffee/$slug': {
+      id: '/_authenticated/coffee/$slug'
+      path: '/coffee/$slug'
+      fullPath: '/coffee/$slug'
+      preLoaderRoute: typeof AuthenticatedCoffeeSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/users': {
       id: '/_authenticated/admin/users'
@@ -524,12 +543,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedExplorerRouteRoute: typeof AuthenticatedExplorerRouteRouteWithChildren
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedPartnerRoute: typeof AuthenticatedPartnerRouteWithChildren
+  AuthenticatedCoffeeSlugRoute: typeof AuthenticatedCoffeeSlugRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedExplorerRouteRoute: AuthenticatedExplorerRouteRouteWithChildren,
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedPartnerRoute: AuthenticatedPartnerRouteWithChildren,
+  AuthenticatedCoffeeSlugRoute: AuthenticatedCoffeeSlugRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -543,13 +564,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
