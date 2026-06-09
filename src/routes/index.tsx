@@ -274,7 +274,7 @@ function Testimonial() {
   const [idx, setIdx] = useState(0);
   const t = testimonials[idx];
   const go = (d: number) =>
-    setIdx((i) => (i + d + testimonials.length) % testimonials.length);
+    setIdx((i: number) => (i + d + testimonials.length) % testimonials.length);
   return (
     <section id="reviews" className="py-24" style={{ background: "var(--cofex-lime)" }} data-parallax>
       <div className="mx-auto max-w-4xl px-5">
