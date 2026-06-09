@@ -9,38 +9,310 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedPartnerRouteImport } from './routes/_authenticated/partner'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedExplorerRouteImport } from './routes/_authenticated/_explorer'
+import { Route as AuthenticatedPartnerIndexRouteImport } from './routes/_authenticated/partner.index'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedPartnerShopRouteImport } from './routes/_authenticated/partner.shop'
+import { Route as AuthenticatedPartnerRewardsRouteImport } from './routes/_authenticated/partner.rewards'
+import { Route as AuthenticatedPartnerCampaignsRouteImport } from './routes/_authenticated/partner.campaigns'
+import { Route as AuthenticatedPartnerAnalyticsRouteImport } from './routes/_authenticated/partner.analytics'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
+import { Route as AuthenticatedAdminRevenueRouteImport } from './routes/_authenticated/admin.revenue'
+import { Route as AuthenticatedAdminPartnersRouteImport } from './routes/_authenticated/admin.partners'
+import { Route as AuthenticatedAdminCampaignsRouteImport } from './routes/_authenticated/admin.campaigns'
+import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
+import { Route as AuthenticatedExplorerProfileRouteImport } from './routes/_authenticated/_explorer.profile'
+import { Route as AuthenticatedExplorerPassportRouteImport } from './routes/_authenticated/_explorer.passport'
+import { Route as AuthenticatedExplorerLeaderboardRouteImport } from './routes/_authenticated/_explorer.leaderboard'
+import { Route as AuthenticatedExplorerExploreRouteImport } from './routes/_authenticated/_explorer.explore'
+import { Route as AuthenticatedExplorerCampaignsRouteImport } from './routes/_authenticated/_explorer.campaigns'
 
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedPartnerRoute = AuthenticatedPartnerRouteImport.update({
+  id: '/partner',
+  path: '/partner',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedExplorerRoute = AuthenticatedExplorerRouteImport.update({
+  id: '/_explorer',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPartnerIndexRoute =
+  AuthenticatedPartnerIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPartnerRoute,
+  } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedPartnerShopRoute =
+  AuthenticatedPartnerShopRouteImport.update({
+    id: '/shop',
+    path: '/shop',
+    getParentRoute: () => AuthenticatedPartnerRoute,
+  } as any)
+const AuthenticatedPartnerRewardsRoute =
+  AuthenticatedPartnerRewardsRouteImport.update({
+    id: '/rewards',
+    path: '/rewards',
+    getParentRoute: () => AuthenticatedPartnerRoute,
+  } as any)
+const AuthenticatedPartnerCampaignsRoute =
+  AuthenticatedPartnerCampaignsRouteImport.update({
+    id: '/campaigns',
+    path: '/campaigns',
+    getParentRoute: () => AuthenticatedPartnerRoute,
+  } as any)
+const AuthenticatedPartnerAnalyticsRoute =
+  AuthenticatedPartnerAnalyticsRouteImport.update({
+    id: '/analytics',
+    path: '/analytics',
+    getParentRoute: () => AuthenticatedPartnerRoute,
+  } as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminRevenueRoute =
+  AuthenticatedAdminRevenueRouteImport.update({
+    id: '/revenue',
+    path: '/revenue',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminPartnersRoute =
+  AuthenticatedAdminPartnersRouteImport.update({
+    id: '/partners',
+    path: '/partners',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminCampaignsRoute =
+  AuthenticatedAdminCampaignsRouteImport.update({
+    id: '/campaigns',
+    path: '/campaigns',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAnalyticsRoute =
+  AuthenticatedAdminAnalyticsRouteImport.update({
+    id: '/analytics',
+    path: '/analytics',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedExplorerProfileRoute =
+  AuthenticatedExplorerProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => AuthenticatedExplorerRoute,
+  } as any)
+const AuthenticatedExplorerPassportRoute =
+  AuthenticatedExplorerPassportRouteImport.update({
+    id: '/passport',
+    path: '/passport',
+    getParentRoute: () => AuthenticatedExplorerRoute,
+  } as any)
+const AuthenticatedExplorerLeaderboardRoute =
+  AuthenticatedExplorerLeaderboardRouteImport.update({
+    id: '/leaderboard',
+    path: '/leaderboard',
+    getParentRoute: () => AuthenticatedExplorerRoute,
+  } as any)
+const AuthenticatedExplorerExploreRoute =
+  AuthenticatedExplorerExploreRouteImport.update({
+    id: '/explore',
+    path: '/explore',
+    getParentRoute: () => AuthenticatedExplorerRoute,
+  } as any)
+const AuthenticatedExplorerCampaignsRoute =
+  AuthenticatedExplorerCampaignsRouteImport.update({
+    id: '/campaigns',
+    path: '/campaigns',
+    getParentRoute: () => AuthenticatedExplorerRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/partner': typeof AuthenticatedPartnerRouteWithChildren
+  '/campaigns': typeof AuthenticatedExplorerCampaignsRoute
+  '/explore': typeof AuthenticatedExplorerExploreRoute
+  '/leaderboard': typeof AuthenticatedExplorerLeaderboardRoute
+  '/passport': typeof AuthenticatedExplorerPassportRoute
+  '/profile': typeof AuthenticatedExplorerProfileRoute
+  '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/admin/campaigns': typeof AuthenticatedAdminCampaignsRoute
+  '/admin/partners': typeof AuthenticatedAdminPartnersRoute
+  '/admin/revenue': typeof AuthenticatedAdminRevenueRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/partner/analytics': typeof AuthenticatedPartnerAnalyticsRoute
+  '/partner/campaigns': typeof AuthenticatedPartnerCampaignsRoute
+  '/partner/rewards': typeof AuthenticatedPartnerRewardsRoute
+  '/partner/shop': typeof AuthenticatedPartnerShopRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/partner/': typeof AuthenticatedPartnerIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/campaigns': typeof AuthenticatedExplorerCampaignsRoute
+  '/explore': typeof AuthenticatedExplorerExploreRoute
+  '/leaderboard': typeof AuthenticatedExplorerLeaderboardRoute
+  '/passport': typeof AuthenticatedExplorerPassportRoute
+  '/profile': typeof AuthenticatedExplorerProfileRoute
+  '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/admin/campaigns': typeof AuthenticatedAdminCampaignsRoute
+  '/admin/partners': typeof AuthenticatedAdminPartnersRoute
+  '/admin/revenue': typeof AuthenticatedAdminRevenueRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/partner/analytics': typeof AuthenticatedPartnerAnalyticsRoute
+  '/partner/campaigns': typeof AuthenticatedPartnerCampaignsRoute
+  '/partner/rewards': typeof AuthenticatedPartnerRewardsRoute
+  '/partner/shop': typeof AuthenticatedPartnerShopRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
+  '/partner': typeof AuthenticatedPartnerIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/_explorer': typeof AuthenticatedExplorerRouteWithChildren
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/partner': typeof AuthenticatedPartnerRouteWithChildren
+  '/_authenticated/_explorer/campaigns': typeof AuthenticatedExplorerCampaignsRoute
+  '/_authenticated/_explorer/explore': typeof AuthenticatedExplorerExploreRoute
+  '/_authenticated/_explorer/leaderboard': typeof AuthenticatedExplorerLeaderboardRoute
+  '/_authenticated/_explorer/passport': typeof AuthenticatedExplorerPassportRoute
+  '/_authenticated/_explorer/profile': typeof AuthenticatedExplorerProfileRoute
+  '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/_authenticated/admin/campaigns': typeof AuthenticatedAdminCampaignsRoute
+  '/_authenticated/admin/partners': typeof AuthenticatedAdminPartnersRoute
+  '/_authenticated/admin/revenue': typeof AuthenticatedAdminRevenueRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/partner/analytics': typeof AuthenticatedPartnerAnalyticsRoute
+  '/_authenticated/partner/campaigns': typeof AuthenticatedPartnerCampaignsRoute
+  '/_authenticated/partner/rewards': typeof AuthenticatedPartnerRewardsRoute
+  '/_authenticated/partner/shop': typeof AuthenticatedPartnerShopRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/partner/': typeof AuthenticatedPartnerIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/admin'
+    | '/partner'
+    | '/campaigns'
+    | '/explore'
+    | '/leaderboard'
+    | '/passport'
+    | '/profile'
+    | '/admin/analytics'
+    | '/admin/campaigns'
+    | '/admin/partners'
+    | '/admin/revenue'
+    | '/admin/users'
+    | '/partner/analytics'
+    | '/partner/campaigns'
+    | '/partner/rewards'
+    | '/partner/shop'
+    | '/admin/'
+    | '/partner/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/campaigns'
+    | '/explore'
+    | '/leaderboard'
+    | '/passport'
+    | '/profile'
+    | '/admin/analytics'
+    | '/admin/campaigns'
+    | '/admin/partners'
+    | '/admin/revenue'
+    | '/admin/users'
+    | '/partner/analytics'
+    | '/partner/campaigns'
+    | '/partner/rewards'
+    | '/partner/shop'
+    | '/admin'
+    | '/partner'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/_explorer'
+    | '/_authenticated/admin'
+    | '/_authenticated/partner'
+    | '/_authenticated/_explorer/campaigns'
+    | '/_authenticated/_explorer/explore'
+    | '/_authenticated/_explorer/leaderboard'
+    | '/_authenticated/_explorer/passport'
+    | '/_authenticated/_explorer/profile'
+    | '/_authenticated/admin/analytics'
+    | '/_authenticated/admin/campaigns'
+    | '/_authenticated/admin/partners'
+    | '/_authenticated/admin/revenue'
+    | '/_authenticated/admin/users'
+    | '/_authenticated/partner/analytics'
+    | '/_authenticated/partner/campaigns'
+    | '/_authenticated/partner/rewards'
+    | '/_authenticated/partner/shop'
+    | '/_authenticated/admin/'
+    | '/_authenticated/partner/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +320,223 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/partner': {
+      id: '/_authenticated/partner'
+      path: '/partner'
+      fullPath: '/partner'
+      preLoaderRoute: typeof AuthenticatedPartnerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/_explorer': {
+      id: '/_authenticated/_explorer'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedExplorerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/partner/': {
+      id: '/_authenticated/partner/'
+      path: '/'
+      fullPath: '/partner/'
+      preLoaderRoute: typeof AuthenticatedPartnerIndexRouteImport
+      parentRoute: typeof AuthenticatedPartnerRoute
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/partner/shop': {
+      id: '/_authenticated/partner/shop'
+      path: '/shop'
+      fullPath: '/partner/shop'
+      preLoaderRoute: typeof AuthenticatedPartnerShopRouteImport
+      parentRoute: typeof AuthenticatedPartnerRoute
+    }
+    '/_authenticated/partner/rewards': {
+      id: '/_authenticated/partner/rewards'
+      path: '/rewards'
+      fullPath: '/partner/rewards'
+      preLoaderRoute: typeof AuthenticatedPartnerRewardsRouteImport
+      parentRoute: typeof AuthenticatedPartnerRoute
+    }
+    '/_authenticated/partner/campaigns': {
+      id: '/_authenticated/partner/campaigns'
+      path: '/campaigns'
+      fullPath: '/partner/campaigns'
+      preLoaderRoute: typeof AuthenticatedPartnerCampaignsRouteImport
+      parentRoute: typeof AuthenticatedPartnerRoute
+    }
+    '/_authenticated/partner/analytics': {
+      id: '/_authenticated/partner/analytics'
+      path: '/analytics'
+      fullPath: '/partner/analytics'
+      preLoaderRoute: typeof AuthenticatedPartnerAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedPartnerRoute
+    }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/revenue': {
+      id: '/_authenticated/admin/revenue'
+      path: '/revenue'
+      fullPath: '/admin/revenue'
+      preLoaderRoute: typeof AuthenticatedAdminRevenueRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/partners': {
+      id: '/_authenticated/admin/partners'
+      path: '/partners'
+      fullPath: '/admin/partners'
+      preLoaderRoute: typeof AuthenticatedAdminPartnersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/campaigns': {
+      id: '/_authenticated/admin/campaigns'
+      path: '/campaigns'
+      fullPath: '/admin/campaigns'
+      preLoaderRoute: typeof AuthenticatedAdminCampaignsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/analytics': {
+      id: '/_authenticated/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AuthenticatedAdminAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/_explorer/profile': {
+      id: '/_authenticated/_explorer/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedExplorerProfileRouteImport
+      parentRoute: typeof AuthenticatedExplorerRoute
+    }
+    '/_authenticated/_explorer/passport': {
+      id: '/_authenticated/_explorer/passport'
+      path: '/passport'
+      fullPath: '/passport'
+      preLoaderRoute: typeof AuthenticatedExplorerPassportRouteImport
+      parentRoute: typeof AuthenticatedExplorerRoute
+    }
+    '/_authenticated/_explorer/leaderboard': {
+      id: '/_authenticated/_explorer/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof AuthenticatedExplorerLeaderboardRouteImport
+      parentRoute: typeof AuthenticatedExplorerRoute
+    }
+    '/_authenticated/_explorer/explore': {
+      id: '/_authenticated/_explorer/explore'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof AuthenticatedExplorerExploreRouteImport
+      parentRoute: typeof AuthenticatedExplorerRoute
+    }
+    '/_authenticated/_explorer/campaigns': {
+      id: '/_authenticated/_explorer/campaigns'
+      path: '/campaigns'
+      fullPath: '/campaigns'
+      preLoaderRoute: typeof AuthenticatedExplorerCampaignsRouteImport
+      parentRoute: typeof AuthenticatedExplorerRoute
+    }
   }
 }
 
+interface AuthenticatedExplorerRouteChildren {
+  AuthenticatedExplorerCampaignsRoute: typeof AuthenticatedExplorerCampaignsRoute
+  AuthenticatedExplorerExploreRoute: typeof AuthenticatedExplorerExploreRoute
+  AuthenticatedExplorerLeaderboardRoute: typeof AuthenticatedExplorerLeaderboardRoute
+  AuthenticatedExplorerPassportRoute: typeof AuthenticatedExplorerPassportRoute
+  AuthenticatedExplorerProfileRoute: typeof AuthenticatedExplorerProfileRoute
+}
+
+const AuthenticatedExplorerRouteChildren: AuthenticatedExplorerRouteChildren = {
+  AuthenticatedExplorerCampaignsRoute: AuthenticatedExplorerCampaignsRoute,
+  AuthenticatedExplorerExploreRoute: AuthenticatedExplorerExploreRoute,
+  AuthenticatedExplorerLeaderboardRoute: AuthenticatedExplorerLeaderboardRoute,
+  AuthenticatedExplorerPassportRoute: AuthenticatedExplorerPassportRoute,
+  AuthenticatedExplorerProfileRoute: AuthenticatedExplorerProfileRoute,
+}
+
+const AuthenticatedExplorerRouteWithChildren =
+  AuthenticatedExplorerRoute._addFileChildren(
+    AuthenticatedExplorerRouteChildren,
+  )
+
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminAnalyticsRoute: typeof AuthenticatedAdminAnalyticsRoute
+  AuthenticatedAdminCampaignsRoute: typeof AuthenticatedAdminCampaignsRoute
+  AuthenticatedAdminPartnersRoute: typeof AuthenticatedAdminPartnersRoute
+  AuthenticatedAdminRevenueRoute: typeof AuthenticatedAdminRevenueRoute
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminAnalyticsRoute: AuthenticatedAdminAnalyticsRoute,
+  AuthenticatedAdminCampaignsRoute: AuthenticatedAdminCampaignsRoute,
+  AuthenticatedAdminPartnersRoute: AuthenticatedAdminPartnersRoute,
+  AuthenticatedAdminRevenueRoute: AuthenticatedAdminRevenueRoute,
+  AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
+interface AuthenticatedPartnerRouteChildren {
+  AuthenticatedPartnerAnalyticsRoute: typeof AuthenticatedPartnerAnalyticsRoute
+  AuthenticatedPartnerCampaignsRoute: typeof AuthenticatedPartnerCampaignsRoute
+  AuthenticatedPartnerRewardsRoute: typeof AuthenticatedPartnerRewardsRoute
+  AuthenticatedPartnerShopRoute: typeof AuthenticatedPartnerShopRoute
+  AuthenticatedPartnerIndexRoute: typeof AuthenticatedPartnerIndexRoute
+}
+
+const AuthenticatedPartnerRouteChildren: AuthenticatedPartnerRouteChildren = {
+  AuthenticatedPartnerAnalyticsRoute: AuthenticatedPartnerAnalyticsRoute,
+  AuthenticatedPartnerCampaignsRoute: AuthenticatedPartnerCampaignsRoute,
+  AuthenticatedPartnerRewardsRoute: AuthenticatedPartnerRewardsRoute,
+  AuthenticatedPartnerShopRoute: AuthenticatedPartnerShopRoute,
+  AuthenticatedPartnerIndexRoute: AuthenticatedPartnerIndexRoute,
+}
+
+const AuthenticatedPartnerRouteWithChildren =
+  AuthenticatedPartnerRoute._addFileChildren(AuthenticatedPartnerRouteChildren)
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedExplorerRoute: typeof AuthenticatedExplorerRouteWithChildren
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedPartnerRoute: typeof AuthenticatedPartnerRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedExplorerRoute: AuthenticatedExplorerRouteWithChildren,
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedPartnerRoute: AuthenticatedPartnerRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

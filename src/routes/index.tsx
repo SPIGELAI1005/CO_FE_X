@@ -54,12 +54,13 @@ function Nav() {
         <div className="flex items-center gap-6 text-sm">
           <a href="#about" className="hidden sm:inline hover:opacity-70">About</a>
           <a href="#reviews" className="hidden sm:inline hover:opacity-70">Reviews</a>
-          <a
-            href="#download"
-            className="inline-flex items-center gap-2 rounded-full border border-[color:var(--cofex-black)] px-4 py-2 hover:bg-[color:var(--cofex-black)] hover:text-white transition"
+          <Link to="/auth" className="hidden sm:inline text-sm hover:opacity-70">Sign in</Link>
+          <Link
+            to="/auth"
+            className="inline-flex items-center gap-2 rounded-full border border-[color:var(--cofex-black)] px-4 py-2 text-sm hover:bg-[color:var(--cofex-black)] hover:text-white transition"
           >
-            Check on 28.09. <DownloadIcon className="h-4 w-4" />
-          </a>
+            Get started <DownloadIcon className="h-4 w-4" />
+          </Link>
         </div>
       </nav>
     </header>
