@@ -45,8 +45,11 @@ function Nav() {
   return (
     <header className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-[color:var(--border)]">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-        <Link to="/" className="font-bold tracking-[0.3em] text-base">
-          CO:FE(X) // Coffee Explorer Network // Explore. Share. Earn.
+        <Link to="/" className="font-medium leading-tight">
+          <span className="block sm:inline text-[11px] sm:text-base tracking-[0.2em] sm:tracking-[0.3em]">CO:FE(X)</span>
+          <span className="hidden sm:inline text-base tracking-[0.3em]"> // Coffee Explorer Network // Explore. Share. Earn.</span>
+          <span className="sm:hidden block text-[10px] tracking-[0.12em] opacity-60 mt-0.5">Coffee Explorer Network</span>
+          <span className="sm:hidden block text-[10px] tracking-[0.12em] opacity-60">Explore. Share. Earn.</span>
         </Link>
         <div className="flex items-center gap-6 text-sm">
           <a href="#about" className="hidden sm:inline hover:opacity-70">About</a>
