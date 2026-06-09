@@ -14,7 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedPartnerRouteImport } from './routes/_authenticated/partner'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
-import { Route as AuthenticatedExplorerRouteImport } from './routes/_authenticated/_explorer'
+import { Route as AuthenticatedExplorerRouteRouteImport } from './routes/_authenticated/_explorer/route'
 import { Route as AuthenticatedPartnerIndexRouteImport } from './routes/_authenticated/partner.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedPartnerShopRouteImport } from './routes/_authenticated/partner.shop'
@@ -26,11 +26,11 @@ import { Route as AuthenticatedAdminRevenueRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminPartnersRouteImport } from './routes/_authenticated/admin.partners'
 import { Route as AuthenticatedAdminCampaignsRouteImport } from './routes/_authenticated/admin.campaigns'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
-import { Route as AuthenticatedExplorerProfileRouteImport } from './routes/_authenticated/_explorer.profile'
-import { Route as AuthenticatedExplorerPassportRouteImport } from './routes/_authenticated/_explorer.passport'
-import { Route as AuthenticatedExplorerLeaderboardRouteImport } from './routes/_authenticated/_explorer.leaderboard'
-import { Route as AuthenticatedExplorerExploreRouteImport } from './routes/_authenticated/_explorer.explore'
-import { Route as AuthenticatedExplorerCampaignsRouteImport } from './routes/_authenticated/_explorer.campaigns'
+import { Route as AuthenticatedExplorerProfileRouteImport } from './routes/_authenticated/_explorer/profile'
+import { Route as AuthenticatedExplorerPassportRouteImport } from './routes/_authenticated/_explorer/passport'
+import { Route as AuthenticatedExplorerLeaderboardRouteImport } from './routes/_authenticated/_explorer/leaderboard'
+import { Route as AuthenticatedExplorerExploreRouteImport } from './routes/_authenticated/_explorer/explore'
+import { Route as AuthenticatedExplorerCampaignsRouteImport } from './routes/_authenticated/_explorer/campaigns'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -56,10 +56,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedExplorerRoute = AuthenticatedExplorerRouteImport.update({
-  id: '/_explorer',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
+const AuthenticatedExplorerRouteRoute =
+  AuthenticatedExplorerRouteRouteImport.update({
+    id: '/_explorer',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPartnerIndexRoute =
   AuthenticatedPartnerIndexRouteImport.update({
     id: '/',
@@ -128,31 +129,31 @@ const AuthenticatedExplorerProfileRoute =
   AuthenticatedExplorerProfileRouteImport.update({
     id: '/profile',
     path: '/profile',
-    getParentRoute: () => AuthenticatedExplorerRoute,
+    getParentRoute: () => AuthenticatedExplorerRouteRoute,
   } as any)
 const AuthenticatedExplorerPassportRoute =
   AuthenticatedExplorerPassportRouteImport.update({
     id: '/passport',
     path: '/passport',
-    getParentRoute: () => AuthenticatedExplorerRoute,
+    getParentRoute: () => AuthenticatedExplorerRouteRoute,
   } as any)
 const AuthenticatedExplorerLeaderboardRoute =
   AuthenticatedExplorerLeaderboardRouteImport.update({
     id: '/leaderboard',
     path: '/leaderboard',
-    getParentRoute: () => AuthenticatedExplorerRoute,
+    getParentRoute: () => AuthenticatedExplorerRouteRoute,
   } as any)
 const AuthenticatedExplorerExploreRoute =
   AuthenticatedExplorerExploreRouteImport.update({
     id: '/explore',
     path: '/explore',
-    getParentRoute: () => AuthenticatedExplorerRoute,
+    getParentRoute: () => AuthenticatedExplorerRouteRoute,
   } as any)
 const AuthenticatedExplorerCampaignsRoute =
   AuthenticatedExplorerCampaignsRouteImport.update({
     id: '/campaigns',
     path: '/campaigns',
-    getParentRoute: () => AuthenticatedExplorerRoute,
+    getParentRoute: () => AuthenticatedExplorerRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -202,7 +203,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/_authenticated/_explorer': typeof AuthenticatedExplorerRouteWithChildren
+  '/_authenticated/_explorer': typeof AuthenticatedExplorerRouteRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/partner': typeof AuthenticatedPartnerRouteWithChildren
   '/_authenticated/_explorer/campaigns': typeof AuthenticatedExplorerCampaignsRoute
@@ -338,7 +339,7 @@ declare module '@tanstack/react-router' {
       id: '/_authenticated/_explorer'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedExplorerRouteImport
+      preLoaderRoute: typeof AuthenticatedExplorerRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/partner/': {
@@ -423,40 +424,40 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof AuthenticatedExplorerProfileRouteImport
-      parentRoute: typeof AuthenticatedExplorerRoute
+      parentRoute: typeof AuthenticatedExplorerRouteRoute
     }
     '/_authenticated/_explorer/passport': {
       id: '/_authenticated/_explorer/passport'
       path: '/passport'
       fullPath: '/passport'
       preLoaderRoute: typeof AuthenticatedExplorerPassportRouteImport
-      parentRoute: typeof AuthenticatedExplorerRoute
+      parentRoute: typeof AuthenticatedExplorerRouteRoute
     }
     '/_authenticated/_explorer/leaderboard': {
       id: '/_authenticated/_explorer/leaderboard'
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof AuthenticatedExplorerLeaderboardRouteImport
-      parentRoute: typeof AuthenticatedExplorerRoute
+      parentRoute: typeof AuthenticatedExplorerRouteRoute
     }
     '/_authenticated/_explorer/explore': {
       id: '/_authenticated/_explorer/explore'
       path: '/explore'
       fullPath: '/explore'
       preLoaderRoute: typeof AuthenticatedExplorerExploreRouteImport
-      parentRoute: typeof AuthenticatedExplorerRoute
+      parentRoute: typeof AuthenticatedExplorerRouteRoute
     }
     '/_authenticated/_explorer/campaigns': {
       id: '/_authenticated/_explorer/campaigns'
       path: '/campaigns'
       fullPath: '/campaigns'
       preLoaderRoute: typeof AuthenticatedExplorerCampaignsRouteImport
-      parentRoute: typeof AuthenticatedExplorerRoute
+      parentRoute: typeof AuthenticatedExplorerRouteRoute
     }
   }
 }
 
-interface AuthenticatedExplorerRouteChildren {
+interface AuthenticatedExplorerRouteRouteChildren {
   AuthenticatedExplorerCampaignsRoute: typeof AuthenticatedExplorerCampaignsRoute
   AuthenticatedExplorerExploreRoute: typeof AuthenticatedExplorerExploreRoute
   AuthenticatedExplorerLeaderboardRoute: typeof AuthenticatedExplorerLeaderboardRoute
@@ -464,17 +465,19 @@ interface AuthenticatedExplorerRouteChildren {
   AuthenticatedExplorerProfileRoute: typeof AuthenticatedExplorerProfileRoute
 }
 
-const AuthenticatedExplorerRouteChildren: AuthenticatedExplorerRouteChildren = {
-  AuthenticatedExplorerCampaignsRoute: AuthenticatedExplorerCampaignsRoute,
-  AuthenticatedExplorerExploreRoute: AuthenticatedExplorerExploreRoute,
-  AuthenticatedExplorerLeaderboardRoute: AuthenticatedExplorerLeaderboardRoute,
-  AuthenticatedExplorerPassportRoute: AuthenticatedExplorerPassportRoute,
-  AuthenticatedExplorerProfileRoute: AuthenticatedExplorerProfileRoute,
-}
+const AuthenticatedExplorerRouteRouteChildren: AuthenticatedExplorerRouteRouteChildren =
+  {
+    AuthenticatedExplorerCampaignsRoute: AuthenticatedExplorerCampaignsRoute,
+    AuthenticatedExplorerExploreRoute: AuthenticatedExplorerExploreRoute,
+    AuthenticatedExplorerLeaderboardRoute:
+      AuthenticatedExplorerLeaderboardRoute,
+    AuthenticatedExplorerPassportRoute: AuthenticatedExplorerPassportRoute,
+    AuthenticatedExplorerProfileRoute: AuthenticatedExplorerProfileRoute,
+  }
 
-const AuthenticatedExplorerRouteWithChildren =
-  AuthenticatedExplorerRoute._addFileChildren(
-    AuthenticatedExplorerRouteChildren,
+const AuthenticatedExplorerRouteRouteWithChildren =
+  AuthenticatedExplorerRouteRoute._addFileChildren(
+    AuthenticatedExplorerRouteRouteChildren,
   )
 
 interface AuthenticatedAdminRouteChildren {
@@ -518,13 +521,13 @@ const AuthenticatedPartnerRouteWithChildren =
   AuthenticatedPartnerRoute._addFileChildren(AuthenticatedPartnerRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedExplorerRoute: typeof AuthenticatedExplorerRouteWithChildren
+  AuthenticatedExplorerRouteRoute: typeof AuthenticatedExplorerRouteRouteWithChildren
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedPartnerRoute: typeof AuthenticatedPartnerRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedExplorerRoute: AuthenticatedExplorerRouteWithChildren,
+  AuthenticatedExplorerRouteRoute: AuthenticatedExplorerRouteRouteWithChildren,
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedPartnerRoute: AuthenticatedPartnerRouteWithChildren,
 }
@@ -540,3 +543,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
