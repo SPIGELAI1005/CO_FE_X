@@ -250,16 +250,18 @@ function Features() {
     </section>
   );
 }
-    </section>
-  );
-}
+
+
 
 /* ───────────── Testimonial ───────────── */
 function Testimonial() {
   return (
-    <section id="reviews" className="py-24" style={{ background: "var(--cofex-lime)" }}>
+    <section id="reviews" className="py-24" style={{ background: "var(--cofex-lime)" }} data-parallax>
       <div className="mx-auto max-w-4xl px-5">
-        <div className="relative rounded-3xl bg-white p-10 sm:p-16 shadow-sm cofex-reveal cofex-float">
+        <div
+          className="relative rounded-3xl bg-white p-10 sm:p-16 shadow-sm cofex-reveal cofex-px"
+          style={{ ["--depth-x" as any]: "8px", ["--depth-y" as any]: "6px", ["--depth-s" as any]: "20px" }}
+        >
           <span
             className="absolute -top-4 left-10 rounded-full px-5 py-2 text-sm font-bold cofex-float-pill"
             style={{ background: "var(--cofex-pastel-lilac)" }}
