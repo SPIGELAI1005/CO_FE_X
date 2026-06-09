@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect, useNavigate, Link } from "@tanstack/react-router";
-import { LogOut, LayoutDashboard, Store, Megaphone, Gift, BarChart3 } from "lucide-react";
+import { LogOut, LayoutDashboard, Store, Megaphone, Gift, BarChart3, Shield } from "lucide-react";
 import { SideNav } from "@/components/app/SideNav";
+import { NotificationsBell } from "@/components/app/NotificationsBell";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/partner")({
@@ -21,6 +22,7 @@ const items = [
   { to: "/partner", label: "Dashboard", Icon: LayoutDashboard },
   { to: "/partner/shop", label: "Shop profile", Icon: Store },
   { to: "/partner/campaigns", label: "Campaigns", Icon: Megaphone },
+  { to: "/partner/verify", label: "Verify code", Icon: Shield },
   { to: "/partner/rewards", label: "Rewards", Icon: Gift },
   { to: "/partner/analytics", label: "Analytics", Icon: BarChart3 },
 ];
