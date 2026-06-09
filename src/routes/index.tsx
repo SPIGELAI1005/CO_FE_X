@@ -319,7 +319,7 @@ function Testimonial() {
 function Download() {
   return (
     <section id="download" className="mx-auto max-w-4xl px-5 py-24 text-center">
-      <h2 className="text-5xl sm:text-7xl font-black tracking-tight">Download CO:FE(X)</h2>
+      <h2 className="text-5xl sm:text-7xl font-bold tracking-tight">Download CO:FE(X)</h2>
       <p className="mt-4 text-base">Available starting September 28, 2025, on…</p>
 
       <div className="mt-8 flex justify-center gap-4">
