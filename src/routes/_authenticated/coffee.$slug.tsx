@@ -162,14 +162,70 @@ function CoffeeShopDetail() {
           </section>
         )}
 
-        <button
-          className="w-full rounded-full py-3 text-sm font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5"
-          style={{ background: "var(--cofex-coffee-deep, #3d2417)" }}
-        >
-          <Users className="mr-2 inline h-4 w-4" />
-          Check in & earn
-        </button>
+        <CheckInButton shopId={shop.id} />
       </div>
+    </div>
+  );
+}
+
+function CheckInButton({ shopId }: { shopId: string }) {
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<
+    | null
+    | { points_awarded: number; total_points: number; total_check_ins: number; new_badges: { slug: string; name: string }[] }
+  >(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const checkIn = async () => {
+    setBusy(true);
+    setError(null);
+    const { data, error } = await supabase.rpc("perform_check_in", { _shop_id: shopId });
+    setBusy(false);
+    if (error) {
+      setError(error.message.replace(/^.*?: /, ""));
+      return;
+    }
+    setResult(data as any);
+  };
+
+  if (result) {
+    return (
+      <div className="rounded-2xl border-2 border-dashed p-5 text-center" style={{ borderColor: "var(--cofex-accent-gold, #c8a063)", background: "white" }}>
+        <p className="text-2xl">☕✨</p>
+        <p className="mt-1 font-semibold" style={{ color: "var(--cofex-coffee-deep)" }}>
+          Check-in confirmed!
+        </p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          +{result.points_awarded} points · {result.total_points} total · {result.total_check_ins} visits
+        </p>
+        {result.new_badges?.length > 0 && (
+          <div className="mt-3 flex flex-wrap justify-center gap-2">
+            {result.new_badges.map((b) => (
+              <span key={b.slug} className="rounded-full px-3 py-1 text-xs font-semibold text-white" style={{ background: "var(--cofex-accent-gold, #c8a063)" }}>
+                🏅 {b.name} unlocked
+              </span>
+            ))}
+          </div>
+        )}
+        <Link to="/passport" className="mt-4 inline-block text-xs font-medium underline">
+          View passport →
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      <button
+        onClick={checkIn}
+        disabled={busy}
+        className="w-full rounded-full py-3 text-sm font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5 disabled:opacity-60"
+        style={{ background: "var(--cofex-coffee-deep, #3d2417)" }}
+      >
+        <Users className="mr-2 inline h-4 w-4" />
+        {busy ? "Checking in…" : "Check in & earn +10 points"}
+      </button>
+      {error && <p className="text-center text-xs text-red-600">{error}</p>}
     </div>
   );
 }
