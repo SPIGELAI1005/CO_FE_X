@@ -29,6 +29,7 @@ import { Route as AuthenticatedAdminRevenueRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminPartnersRouteImport } from './routes/_authenticated/admin.partners'
 import { Route as AuthenticatedAdminCampaignsRouteImport } from './routes/_authenticated/admin.campaigns'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
+import { Route as AuthenticatedExplorerWalletRouteImport } from './routes/_authenticated/_explorer/wallet'
 import { Route as AuthenticatedExplorerProfileRouteImport } from './routes/_authenticated/_explorer/profile'
 import { Route as AuthenticatedExplorerPassportRouteImport } from './routes/_authenticated/_explorer/passport'
 import { Route as AuthenticatedExplorerLeaderboardRouteImport } from './routes/_authenticated/_explorer/leaderboard'
@@ -146,6 +147,12 @@ const AuthenticatedAdminAnalyticsRoute =
     path: '/analytics',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedExplorerWalletRoute =
+  AuthenticatedExplorerWalletRouteImport.update({
+    id: '/wallet',
+    path: '/wallet',
+    getParentRoute: () => AuthenticatedExplorerRouteRoute,
+  } as any)
 const AuthenticatedExplorerProfileRoute =
   AuthenticatedExplorerProfileRouteImport.update({
     id: '/profile',
@@ -193,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof AuthenticatedExplorerLeaderboardRoute
   '/passport': typeof AuthenticatedExplorerPassportRoute
   '/profile': typeof AuthenticatedExplorerProfileRoute
+  '/wallet': typeof AuthenticatedExplorerWalletRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/campaigns': typeof AuthenticatedAdminCampaignsRoute
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
@@ -217,6 +225,7 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof AuthenticatedExplorerLeaderboardRoute
   '/passport': typeof AuthenticatedExplorerPassportRoute
   '/profile': typeof AuthenticatedExplorerProfileRoute
+  '/wallet': typeof AuthenticatedExplorerWalletRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/campaigns': typeof AuthenticatedAdminCampaignsRoute
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
@@ -246,6 +255,7 @@ export interface FileRoutesById {
   '/_authenticated/_explorer/leaderboard': typeof AuthenticatedExplorerLeaderboardRoute
   '/_authenticated/_explorer/passport': typeof AuthenticatedExplorerPassportRoute
   '/_authenticated/_explorer/profile': typeof AuthenticatedExplorerProfileRoute
+  '/_authenticated/_explorer/wallet': typeof AuthenticatedExplorerWalletRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/campaigns': typeof AuthenticatedAdminCampaignsRoute
   '/_authenticated/admin/partners': typeof AuthenticatedAdminPartnersRoute
@@ -274,6 +284,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/passport'
     | '/profile'
+    | '/wallet'
     | '/admin/analytics'
     | '/admin/campaigns'
     | '/admin/partners'
@@ -298,6 +309,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/passport'
     | '/profile'
+    | '/wallet'
     | '/admin/analytics'
     | '/admin/campaigns'
     | '/admin/partners'
@@ -326,6 +338,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_explorer/leaderboard'
     | '/_authenticated/_explorer/passport'
     | '/_authenticated/_explorer/profile'
+    | '/_authenticated/_explorer/wallet'
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/campaigns'
     | '/_authenticated/admin/partners'
@@ -491,6 +504,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAnalyticsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/_explorer/wallet': {
+      id: '/_authenticated/_explorer/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof AuthenticatedExplorerWalletRouteImport
+      parentRoute: typeof AuthenticatedExplorerRouteRoute
+    }
     '/_authenticated/_explorer/profile': {
       id: '/_authenticated/_explorer/profile'
       path: '/profile'
@@ -542,6 +562,7 @@ interface AuthenticatedExplorerRouteRouteChildren {
   AuthenticatedExplorerLeaderboardRoute: typeof AuthenticatedExplorerLeaderboardRoute
   AuthenticatedExplorerPassportRoute: typeof AuthenticatedExplorerPassportRoute
   AuthenticatedExplorerProfileRoute: typeof AuthenticatedExplorerProfileRoute
+  AuthenticatedExplorerWalletRoute: typeof AuthenticatedExplorerWalletRoute
   AuthenticatedExplorerCampaignIdRoute: typeof AuthenticatedExplorerCampaignIdRoute
 }
 
@@ -553,6 +574,7 @@ const AuthenticatedExplorerRouteRouteChildren: AuthenticatedExplorerRouteRouteCh
       AuthenticatedExplorerLeaderboardRoute,
     AuthenticatedExplorerPassportRoute: AuthenticatedExplorerPassportRoute,
     AuthenticatedExplorerProfileRoute: AuthenticatedExplorerProfileRoute,
+    AuthenticatedExplorerWalletRoute: AuthenticatedExplorerWalletRoute,
     AuthenticatedExplorerCampaignIdRoute: AuthenticatedExplorerCampaignIdRoute,
   }
 
@@ -630,3 +652,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
