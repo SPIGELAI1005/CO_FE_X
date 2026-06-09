@@ -325,19 +325,19 @@ function Download() {
       <h2 className="text-5xl sm:text-7xl font-medium tracking-tight">Download CO:FE(X)</h2>
       <p className="mt-4 text-base">Available starting September 28, 2025, on…</p>
 
-      <div className="mt-8 flex justify-center gap-4">
-        <a href="#" className="inline-flex items-center gap-3 rounded-xl bg-[color:var(--cofex-black)] text-white px-5 py-3">
+      <div className="mt-8 flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-3 sm:gap-4">
+        <a href="#" className="inline-flex items-center justify-center gap-3 rounded-xl bg-[color:var(--cofex-black)] text-white px-6 py-4 sm:px-5 sm:py-3 hover:opacity-90 active:scale-[0.98] transition">
           <Apple className="h-7 w-7" />
           <div className="text-left leading-tight">
             <div className="text-[10px] opacity-80">Download on the</div>
-            <div className="text-base font-semibold">App Store</div>
+            <div className="text-base font-medium">App Store</div>
           </div>
         </a>
-        <a href="#" className="inline-flex items-center gap-3 rounded-xl bg-[color:var(--cofex-black)] text-white px-5 py-3">
+        <a href="#" className="inline-flex items-center justify-center gap-3 rounded-xl bg-[color:var(--cofex-black)] text-white px-6 py-4 sm:px-5 sm:py-3 hover:opacity-90 active:scale-[0.98] transition">
           <Play className="h-7 w-7" />
           <div className="text-left leading-tight">
             <div className="text-[10px] opacity-80">GET IT ON</div>
-            <div className="text-base font-semibold">Google Play</div>
+            <div className="text-base font-medium">Google Play</div>
           </div>
         </a>
       </div>
