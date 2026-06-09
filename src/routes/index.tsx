@@ -71,7 +71,7 @@ function Hero() {
       className="relative mx-auto max-w-6xl px-5 pt-16 pb-12 text-center isolate"
     >
       <h1
-        className="font-black tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
+        className="font-bold tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
         style={{
           backgroundImage:
             "linear-gradient(90deg, var(--cofex-cyan), #5cd3ff, var(--cofex-cyan))",
