@@ -45,8 +45,11 @@ function Nav() {
   return (
     <header className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-[color:var(--border)]">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-        <Link to="/" className="font-bold tracking-[0.3em] text-base">
-          CO:FE(X) // Coffee Explorer Network // Explore. Share. Earn.
+        <Link to="/" className="font-medium leading-tight">
+          <span className="block sm:inline text-[11px] sm:text-base tracking-[0.2em] sm:tracking-[0.3em]">CO:FE(X)</span>
+          <span className="hidden sm:inline text-base tracking-[0.3em]"> // Coffee Explorer Network // Explore. Share. Earn.</span>
+          <span className="sm:hidden block text-[10px] tracking-[0.12em] opacity-60 mt-0.5">Coffee Explorer Network</span>
+          <span className="sm:hidden block text-[10px] tracking-[0.12em] opacity-60">Explore. Share. Earn.</span>
         </Link>
         <div className="flex items-center gap-6 text-sm">
           <a href="#about" className="hidden sm:inline hover:opacity-70">About</a>
@@ -71,7 +74,7 @@ function Hero() {
       className="relative mx-auto max-w-6xl px-5 pt-16 pb-12 text-center isolate"
     >
       <h1
-        className="font-bold tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
+        className="font-medium tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
         style={{
           backgroundImage:
             "linear-gradient(90deg, var(--cofex-cyan), #5cd3ff, var(--cofex-cyan))",
@@ -85,7 +88,7 @@ function Hero() {
         </span>
       </div>
       <h2
-        className="font-bold tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
+        className="font-medium tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
         style={{
           backgroundImage:
             "linear-gradient(90deg, var(--cofex-coffee), #b88259, var(--cofex-coffee))",
@@ -319,22 +322,22 @@ function Testimonial() {
 function Download() {
   return (
     <section id="download" className="mx-auto max-w-4xl px-5 py-24 text-center">
-      <h2 className="text-5xl sm:text-7xl font-bold tracking-tight">Download CO:FE(X)</h2>
+      <h2 className="text-5xl sm:text-7xl font-medium tracking-tight">Download CO:FE(X)</h2>
       <p className="mt-4 text-base">Available starting September 28, 2025, on…</p>
 
-      <div className="mt-8 flex justify-center gap-4">
-        <a href="#" className="inline-flex items-center gap-3 rounded-xl bg-[color:var(--cofex-black)] text-white px-5 py-3">
+      <div className="mt-8 flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-3 sm:gap-4">
+        <a href="#" className="inline-flex items-center justify-center gap-3 rounded-xl bg-[color:var(--cofex-black)] text-white px-6 py-4 sm:px-5 sm:py-3 hover:opacity-90 active:scale-[0.98] transition">
           <Apple className="h-7 w-7" />
           <div className="text-left leading-tight">
             <div className="text-[10px] opacity-80">Download on the</div>
-            <div className="text-base font-semibold">App Store</div>
+            <div className="text-base font-medium">App Store</div>
           </div>
         </a>
-        <a href="#" className="inline-flex items-center gap-3 rounded-xl bg-[color:var(--cofex-black)] text-white px-5 py-3">
+        <a href="#" className="inline-flex items-center justify-center gap-3 rounded-xl bg-[color:var(--cofex-black)] text-white px-6 py-4 sm:px-5 sm:py-3 hover:opacity-90 active:scale-[0.98] transition">
           <Play className="h-7 w-7" />
           <div className="text-left leading-tight">
             <div className="text-[10px] opacity-80">GET IT ON</div>
-            <div className="text-base font-semibold">Google Play</div>
+            <div className="text-base font-medium">Google Play</div>
           </div>
         </a>
       </div>
