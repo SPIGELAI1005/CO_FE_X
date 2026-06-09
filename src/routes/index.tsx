@@ -65,38 +65,53 @@ function Hero() {
   return (
     <section className="mx-auto max-w-6xl px-5 pt-16 pb-12 text-center">
       <h1
-        className="font-black tracking-tight leading-[0.95] text-[14vw] sm:text-[110px]"
-        style={{ color: "var(--cofex-cyan)" }}
+        className="font-black tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
+        style={{
+          backgroundImage:
+            "linear-gradient(90deg, var(--cofex-cyan), #5cd3ff, var(--cofex-cyan))",
+        }}
       >
         (X)plore Cafés
       </h1>
-      <div className="my-6 flex justify-center">
-        <span className="rounded-full bg-[color:var(--cofex-black)] text-white px-5 py-2 text-sm font-medium">
+      <div className="my-6 flex justify-center cofex-float-sm">
+        <span className="rounded-full bg-[color:var(--cofex-black)] text-white px-5 py-2 text-sm font-medium shadow-lg">
           Coming September 28, 2025
         </span>
       </div>
       <h2
-        className="font-black tracking-tight leading-[0.95] text-[14vw] sm:text-[110px]"
-        style={{ color: "var(--cofex-coffee)" }}
+        className="font-black tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
+        style={{
+          backgroundImage:
+            "linear-gradient(90deg, var(--cofex-coffee), #b88259, var(--cofex-coffee))",
+          animationDelay: "-2s",
+        }}
       >
         (€)arn Coffees
       </h2>
 
       {/* Mockup */}
       <div className="relative mt-16 flex justify-center">
+        {/* animated blob backdrop */}
         <div
           aria-hidden
-          className="absolute inset-0 -z-10 blur-3xl opacity-60"
+          className="absolute inset-0 -z-10 blur-3xl opacity-70 cofex-blob"
           style={{
             background:
               "conic-gradient(from 180deg at 50% 50%, #d4f1f9, #fde3df, #f1e3f9, #dff19a, #d4f1f9)",
           }}
         />
-        <div className="relative w-full max-w-[420px]">
+        <div className="relative w-full max-w-[420px] cofex-float">
           {/* floating pill */}
-          <div className="absolute -left-2 sm:-left-10 top-24 z-10 rounded-full bg-white shadow-lg px-5 py-3 text-base font-semibold whitespace-nowrap">
+          <div className="absolute -left-2 sm:-left-16 top-24 z-10 rounded-full bg-white shadow-xl px-5 py-3 text-base font-semibold whitespace-nowrap cofex-float-pill">
             1 <span style={{ color: "var(--cofex-cyan)" }}>Post</span> = 1{" "}
             <span style={{ color: "var(--cofex-coffee)" }}>Coffee</span>
+          </div>
+          {/* floating coffee chip on the right */}
+          <div
+            className="absolute -right-2 sm:-right-14 top-72 z-10 rounded-full bg-white shadow-xl px-4 py-2 text-sm font-bold cofex-float-sm"
+            style={{ animationDelay: "-1.5s", color: "var(--cofex-coffee)" }}
+          >
+            ☕ +1 Free
           </div>
           {/* phone frame */}
           <div className="rounded-[40px] bg-[color:var(--cofex-black)] p-3 shadow-2xl">
@@ -106,7 +121,7 @@ function Hero() {
                 <h3 className="text-2xl font-extrabold leading-tight">
                   Hi Olga,<br />Your Next<br />Coffee Is On Us!
                 </h3>
-                <button className="mt-5 rounded-full border border-[color:var(--cofex-black)] px-5 py-2 text-sm font-semibold hover:bg-[color:var(--cofex-black)] hover:text-white transition">
+                <button className="mt-5 rounded-full border border-[color:var(--cofex-black)] px-5 py-2 text-sm font-semibold hover:bg-[color:var(--cofex-black)] hover:text-white transition hover:scale-105">
                   Get Started
                 </button>
               </div>
