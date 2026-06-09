@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, redirect, useNavigate, Link } from "@tanstack/react-router";
-import { LogOut, LayoutDashboard, Store, Megaphone, Gift, BarChart3, Shield } from "lucide-react";
+import { LogOut, LayoutDashboard, Store, Megaphone, Gift, BarChart3, Shield, Share2 } from "lucide-react";
 import { SideNav } from "@/components/app/SideNav";
 import { NotificationsBell } from "@/components/app/NotificationsBell";
 import { supabase } from "@/integrations/supabase/client";
