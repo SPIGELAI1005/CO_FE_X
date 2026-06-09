@@ -160,53 +160,74 @@ export type Database = {
       coffee_shops: {
         Row: {
           address: string | null
+          amenities: string[]
           city: string | null
           country: string | null
           cover_image_url: string | null
           created_at: string
           description: string | null
+          free_coffee_available: boolean
+          gallery_urls: string[]
           id: string
           latitude: number | null
           logo_url: string | null
           longitude: number | null
           name: string
           partner_id: string | null
+          price_level: number
+          rating: number
+          rating_count: number
           slug: string
           status: string
+          tags: string[]
           updated_at: string
         }
         Insert: {
           address?: string | null
+          amenities?: string[]
           city?: string | null
           country?: string | null
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
+          free_coffee_available?: boolean
+          gallery_urls?: string[]
           id?: string
           latitude?: number | null
           logo_url?: string | null
           longitude?: number | null
           name: string
           partner_id?: string | null
+          price_level?: number
+          rating?: number
+          rating_count?: number
           slug: string
           status?: string
+          tags?: string[]
           updated_at?: string
         }
         Update: {
           address?: string | null
+          amenities?: string[]
           city?: string | null
           country?: string | null
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
+          free_coffee_available?: boolean
+          gallery_urls?: string[]
           id?: string
           latitude?: number | null
           logo_url?: string | null
           longitude?: number | null
           name?: string
           partner_id?: string | null
+          price_level?: number
+          rating?: number
+          rating_count?: number
           slug?: string
           status?: string
+          tags?: string[]
           updated_at?: string
         }
         Relationships: []
