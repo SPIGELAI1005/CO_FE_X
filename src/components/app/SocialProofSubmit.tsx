@@ -39,7 +39,7 @@ export function SocialProofSubmit({ campaignId, hashtag }: { campaignId: string;
   async function load() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from("social_submissions")
       .select("id, platform, status, url, review_notes, redemption_code, created_at")
       .eq("campaign_id", campaignId)
