@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ArrowLeft, Calendar, Gift, Hash, MapPin, Users, CheckCircle2, Trophy, Sparkles } from "lucide-react";
+import { SocialProofSubmit } from "@/components/app/SocialProofSubmit";
 
 export const Route = createFileRoute("/_authenticated/_explorer/campaign/$id")({
   head: () => ({ meta: [{ title: "Campaign — CO:FE(X)" }] }),
@@ -170,6 +171,10 @@ function CampaignDetail() {
               )}
             </div>
           </div>
+        )}
+
+        {joined && !redemption && (
+          <SocialProofSubmit campaignId={c.id} hashtag={c.hashtag} />
         )}
       </div>
     </div>
