@@ -138,7 +138,7 @@ function ShareLove() {
   return (
     <section id="about" className="mx-auto max-w-6xl px-5 py-24">
       <span
-        className="inline-block rounded-full px-5 py-2 text-sm font-semibold"
+        className="inline-block rounded-full px-5 py-2 text-sm font-semibold cofex-float-pill"
         style={{ background: "var(--cofex-pastel-blue)" }}
       >
         Share your <span style={{ color: "var(--cofex-red)" }}>Love</span> for{" "}
@@ -146,12 +146,18 @@ function ShareLove() {
       </span>
 
       <div className="mt-10 space-y-3 font-black leading-[1.1] tracking-tight text-4xl sm:text-6xl">
-        <p><span style={{ color: "var(--cofex-red)" }}>Love</span> coffee?</p>
-        <p><span style={{ color: "var(--cofex-red)" }}>Love</span> sharing?</p>
-        <p><span style={{ color: "var(--cofex-magenta)" }}>Perfect</span> match!</p>
-        <p><span style={{ color: "var(--cofex-yellow)" }}>Snap</span> a pic, post it, and score a free coffee on us.</p>
-        <p><span style={{ color: "var(--cofex-cyan)" }}>Explore</span> cozy cafés, spread the love and…</p>
-        <p><span style={{ color: "var(--cofex-coffee)" }}>Keep</span> your cup full, one post at a time.</p>
+        {[
+          { c: "var(--cofex-red)", word: "Love", rest: " coffee?" },
+          { c: "var(--cofex-red)", word: "Love", rest: " sharing?" },
+          { c: "var(--cofex-magenta)", word: "Perfect", rest: " match!" },
+          { c: "var(--cofex-yellow)", word: "Snap", rest: " a pic, post it, and score a free coffee on us." },
+          { c: "var(--cofex-cyan)", word: "Explore", rest: " cozy cafés, spread the love and…" },
+          { c: "var(--cofex-coffee)", word: "Keep", rest: " your cup full, one post at a time." },
+        ].map((l, i) => (
+          <p key={i} className="cofex-reveal" style={{ transitionDelay: `${i * 90}ms` }}>
+            <span style={{ color: l.c }}>{l.word}</span>{l.rest}
+          </p>
+        ))}
       </div>
     </section>
   );
@@ -188,11 +194,15 @@ const features = [
 function Features() {
   return (
     <section className="mx-auto max-w-6xl px-5 pb-24 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-      {features.map((f) => (
+      {features.map((f, i) => (
         <div
           key={f.title}
-          className="rounded-3xl p-7 flex flex-col justify-end min-h-[340px]"
-          style={{ background: f.bg }}
+          className="rounded-3xl p-7 flex flex-col justify-end min-h-[340px] cofex-reveal cofex-lift"
+          style={{
+            background: f.bg,
+            transitionDelay: `${i * 120}ms`,
+            animation: `cofex-float-sm ${5 + i * 0.4}s ease-in-out ${i * 0.3}s infinite`,
+          }}
         >
           <h3 className="text-xl font-extrabold mb-4">{f.title}</h3>
           <p className="text-sm font-semibold mb-3" style={{ color: "var(--cofex-cyan)" }}>
@@ -212,9 +222,9 @@ function Testimonial() {
   return (
     <section id="reviews" className="py-24" style={{ background: "var(--cofex-lime)" }}>
       <div className="mx-auto max-w-4xl px-5">
-        <div className="relative rounded-3xl bg-white p-10 sm:p-16 shadow-sm">
+        <div className="relative rounded-3xl bg-white p-10 sm:p-16 shadow-sm cofex-reveal cofex-float">
           <span
-            className="absolute -top-4 left-10 rounded-full px-5 py-2 text-sm font-bold rotate-[-3deg]"
+            className="absolute -top-4 left-10 rounded-full px-5 py-2 text-sm font-bold cofex-float-pill"
             style={{ background: "var(--cofex-pastel-lilac)" }}
           >
             What Coffee Lovers are saying…
