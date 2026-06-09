@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Download as DownloadIcon, ArrowRight, ArrowLeft, Apple, Play } from "lucide-react";
 import heroImage from "@/assets/hero-explorer.jpg";
