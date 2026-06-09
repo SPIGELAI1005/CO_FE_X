@@ -49,6 +49,7 @@ export type Database = {
       }
       campaigns: {
         Row: {
+          campaign_type: string
           coffee_shop_id: string
           cover_image_url: string | null
           created_at: string
@@ -56,7 +57,9 @@ export type Database = {
           ends_at: string | null
           hashtag: string | null
           id: string
+          max_participants: number | null
           points_reward: number
+          requirements: string | null
           reward_description: string | null
           starts_at: string | null
           status: string
@@ -64,6 +67,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          campaign_type?: string
           coffee_shop_id: string
           cover_image_url?: string | null
           created_at?: string
@@ -71,7 +75,9 @@ export type Database = {
           ends_at?: string | null
           hashtag?: string | null
           id?: string
+          max_participants?: number | null
           points_reward?: number
+          requirements?: string | null
           reward_description?: string | null
           starts_at?: string | null
           status?: string
@@ -79,6 +85,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          campaign_type?: string
           coffee_shop_id?: string
           cover_image_url?: string | null
           created_at?: string
@@ -86,7 +93,9 @@ export type Database = {
           ends_at?: string | null
           hashtag?: string | null
           id?: string
+          max_participants?: number | null
           points_reward?: number
+          requirements?: string | null
           reward_description?: string | null
           starts_at?: string | null
           status?: string
