@@ -246,12 +246,40 @@ function Features() {
 
 
 /* ───────────── Testimonial ───────────── */
+const testimonials = [
+  {
+    quote:
+      "The coffee run has never been easier.\nI discover new cafés, share a quick post, and get my free coffee right away.\nFinally, using social media comes with a real tangible reward!",
+    author: "Floria N. (Entrepreneur)",
+  },
+  {
+    quote:
+      "I used to just scroll. Now every post turns into a real-life coffee moment in a new spot.\nIt completely changed how I explore my city.",
+    author: "Marco T. (Designer)",
+  },
+  {
+    quote:
+      "CO:FE(X) introduced me to three cafés I'd walked past for years.\nOne snap, one post — and suddenly the barista knows my name.",
+    author: "Lena K. (Photographer)",
+  },
+  {
+    quote:
+      "It feels less like a loyalty app and more like a tiny adventure between meetings.\nThe rewards are the cherry on top.",
+    author: "Sofía R. (Product Manager)",
+  },
+];
+
 function Testimonial() {
+  const [idx, setIdx] = useState(0);
+  const t = testimonials[idx];
+  const go = (d: number) =>
+    setIdx((i) => (i + d + testimonials.length) % testimonials.length);
   return (
     <section id="reviews" className="py-24" style={{ background: "var(--cofex-lime)" }} data-parallax>
       <div className="mx-auto max-w-4xl px-5">
         <div
-          className="relative rounded-3xl bg-white p-10 sm:p-16 shadow-sm cofex-reveal cofex-px"
+          key={idx}
+          className="relative rounded-3xl bg-white p-10 sm:p-16 shadow-sm cofex-reveal is-visible cofex-px"
           style={{ ["--depth-x" as any]: "8px", ["--depth-y" as any]: "6px", ["--depth-s" as any]: "20px" }}
         >
           <span
@@ -260,18 +288,24 @@ function Testimonial() {
           >
             What Coffee Lovers are saying…
           </span>
-          <p className="text-2xl sm:text-3xl font-extrabold leading-snug text-center">
-            "The coffee run has never been easier.<br />
-            I discover new cafés, share a quick post, and get my free coffee right away.<br />
-            Finally, using social media comes with a real tangible reward!"
+          <p className="text-2xl sm:text-3xl font-extrabold leading-snug text-center whitespace-pre-line">
+            "{t.quote}"
           </p>
-          <p className="mt-8 text-center text-sm font-medium">Floria N. (Entrepreneur)</p>
+          <p className="mt-8 text-center text-sm font-medium">{t.author}</p>
         </div>
         <div className="mt-8 flex justify-center gap-3">
-          <button className="h-12 w-12 rounded-xl bg-[color:var(--cofex-black)] text-white grid place-items-center hover:opacity-80">
+          <button
+            onClick={() => go(-1)}
+            aria-label="Previous testimonial"
+            className="h-12 w-12 rounded-xl bg-[color:var(--cofex-black)] text-white grid place-items-center hover:opacity-80"
+          >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <button className="h-12 w-12 rounded-xl bg-[color:var(--cofex-black)] text-white grid place-items-center hover:opacity-80">
+          <button
+            onClick={() => go(1)}
+            aria-label="Next testimonial"
+            className="h-12 w-12 rounded-xl bg-[color:var(--cofex-black)] text-white grid place-items-center hover:opacity-80"
+          >
             <ArrowRight className="h-5 w-5" />
           </button>
         </div>
