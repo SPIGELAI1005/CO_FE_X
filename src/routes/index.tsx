@@ -69,14 +69,6 @@ function Hero() {
       data-parallax
       className="relative mx-auto max-w-6xl px-5 pt-16 pb-12 text-center isolate"
     >
-      {/* Coffee-themed animated atmosphere */}
-      <div aria-hidden className="cofex-hero-bg">
-        <div className="cofex-glow cofex-glow--a cofex-px" style={{ ["--depth-x" as any]: "20px", ["--depth-y" as any]: "16px", ["--depth-s" as any]: "30px" }} />
-        <div className="cofex-glow cofex-glow--b cofex-px" style={{ ["--depth-x" as any]: "-26px", ["--depth-y" as any]: "-18px", ["--depth-s" as any]: "40px" }} />
-        <div className="cofex-glow cofex-glow--c cofex-px" style={{ ["--depth-x" as any]: "12px", ["--depth-y" as any]: "-10px", ["--depth-s" as any]: "18px" }} />
-        <div className="cofex-grain" />
-      </div>
-
       <h1
         className="font-black tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
         style={{
