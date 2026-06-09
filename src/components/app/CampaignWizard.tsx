@@ -219,8 +219,8 @@ export function CampaignWizard({
         )}
 
         {step === 3 && (
-          <div className="space-y-3">
-            <h3 className="font-semibold flex items-center gap-2"><Calendar className="h-4 w-4" /> Review & publish</h3>
+          <div className="space-y-4">
+            <h3 className="font-semibold flex items-center gap-2"><Calendar className="h-4 w-4" /> Review & test</h3>
             <div className="rounded-2xl border bg-gradient-to-br from-amber-50 to-orange-100 p-5">
               <div className="text-3xl">{template?.emoji}</div>
               <div className="mt-1 text-xl font-bold">{form.title}</div>
@@ -240,6 +240,8 @@ export function CampaignWizard({
                 </div>
               )}
             </div>
+
+            <RulesTester form={form} />
           </div>
         )}
 
