@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Download as DownloadIcon, ArrowRight, ArrowLeft, Apple, Play } from "lucide-react";
 import heroImage from "@/assets/hero-explorer.jpg";
@@ -80,7 +81,7 @@ function Hero() {
       </h1>
       <div className="my-6 flex justify-center cofex-float-sm">
         <span className="rounded-full bg-[color:var(--cofex-black)] text-white px-5 py-2 text-sm font-medium shadow-lg">
-          Coming September 28, 2025
+          Coming September 28, 2026
         </span>
       </div>
       <h2
@@ -91,7 +92,7 @@ function Hero() {
           animationDelay: "-2s",
         }}
       >
-        (€)arn Coffees
+        (€)arn Experiences
       </h2>
 
       {/* Mockup */}
@@ -167,7 +168,7 @@ function ShareLove() {
           { c: "var(--cofex-red)", word: "Love", rest: " coffee?" },
           { c: "var(--cofex-red)", word: "Love", rest: " sharing?" },
           { c: "var(--cofex-magenta)", word: "Perfect", rest: " match!" },
-          { c: "var(--cofex-yellow)", word: "Snap", rest: " a pic, post it, and score a free coffee on us." },
+          { c: "var(--cofex-yellow)", word: "Experience", rest: " the moments, share them." },
           { c: "var(--cofex-cyan)", word: "Explore", rest: " cozy cafés, spread the love and…" },
           { c: "var(--cofex-coffee)", word: "Keep", rest: " your cup full, one post at a time." },
         ].map((l, i) => (
@@ -246,12 +247,40 @@ function Features() {
 
 
 /* ───────────── Testimonial ───────────── */
+const testimonials = [
+  {
+    quote:
+      "The coffee run has never been easier.\nI discover new cafés, share a quick post, and get my free coffee right away.\nFinally, using social media comes with a real tangible reward!",
+    author: "Floria N. (Entrepreneur)",
+  },
+  {
+    quote:
+      "I used to just scroll. Now every post turns into a real-life coffee moment in a new spot.\nIt completely changed how I explore my city.",
+    author: "Marco T. (Designer)",
+  },
+  {
+    quote:
+      "CO:FE(X) introduced me to three cafés I'd walked past for years.\nOne snap, one post — and suddenly the barista knows my name.",
+    author: "Lena K. (Photographer)",
+  },
+  {
+    quote:
+      "It feels less like a loyalty app and more like a tiny adventure between meetings.\nThe rewards are the cherry on top.",
+    author: "Sofía R. (Product Manager)",
+  },
+];
+
 function Testimonial() {
+  const [idx, setIdx] = useState(0);
+  const t = testimonials[idx];
+  const go = (d: number) =>
+    setIdx((i: number) => (i + d + testimonials.length) % testimonials.length);
   return (
     <section id="reviews" className="py-24" style={{ background: "var(--cofex-lime)" }} data-parallax>
       <div className="mx-auto max-w-4xl px-5">
         <div
-          className="relative rounded-3xl bg-white p-10 sm:p-16 shadow-sm cofex-reveal cofex-px"
+          key={idx}
+          className="relative rounded-3xl bg-white p-10 sm:p-16 shadow-sm cofex-reveal is-visible cofex-px"
           style={{ ["--depth-x" as any]: "8px", ["--depth-y" as any]: "6px", ["--depth-s" as any]: "20px" }}
         >
           <span
@@ -260,18 +289,24 @@ function Testimonial() {
           >
             What Coffee Lovers are saying…
           </span>
-          <p className="text-2xl sm:text-3xl font-extrabold leading-snug text-center">
-            "The coffee run has never been easier.<br />
-            I discover new cafés, share a quick post, and get my free coffee right away.<br />
-            Finally, using social media comes with a real tangible reward!"
+          <p className="text-2xl sm:text-3xl font-extrabold leading-snug text-center whitespace-pre-line">
+            "{t.quote}"
           </p>
-          <p className="mt-8 text-center text-sm font-medium">Floria N. (Entrepreneur)</p>
+          <p className="mt-8 text-center text-sm font-medium">{t.author}</p>
         </div>
         <div className="mt-8 flex justify-center gap-3">
-          <button className="h-12 w-12 rounded-xl bg-[color:var(--cofex-black)] text-white grid place-items-center hover:opacity-80">
+          <button
+            onClick={() => go(-1)}
+            aria-label="Previous testimonial"
+            className="h-12 w-12 rounded-xl bg-[color:var(--cofex-black)] text-white grid place-items-center hover:opacity-80"
+          >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <button className="h-12 w-12 rounded-xl bg-[color:var(--cofex-black)] text-white grid place-items-center hover:opacity-80">
+          <button
+            onClick={() => go(1)}
+            aria-label="Next testimonial"
+            className="h-12 w-12 rounded-xl bg-[color:var(--cofex-black)] text-white grid place-items-center hover:opacity-80"
+          >
             <ArrowRight className="h-5 w-5" />
           </button>
         </div>
