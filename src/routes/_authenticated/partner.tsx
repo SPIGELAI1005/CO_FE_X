@@ -23,6 +23,7 @@ const items = [
   { to: "/partner/shop", label: "Shop profile", Icon: Store },
   { to: "/partner/campaigns", label: "Campaigns", Icon: Megaphone },
   { to: "/partner/verify", label: "Verify code", Icon: Shield },
+  { to: "/partner/submissions", label: "Submissions", Icon: Share2 },
   { to: "/partner/rewards", label: "Rewards", Icon: Gift },
   { to: "/partner/analytics", label: "Analytics", Icon: BarChart3 },
 ];
