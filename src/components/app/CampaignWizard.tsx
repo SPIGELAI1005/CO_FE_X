@@ -244,11 +244,42 @@ export function CampaignWizard({
         )}
 
         <div className="flex justify-between mt-6">
-          <Button variant="ghost" disabled={step === 0 || saving} onClick={() => setStep((s) => Math.max(0, s - 1))}>
+          <Button variant="ghost" disabled={step === 0 || saving} onClick={() => { setErrors({}); setStep((s) => Math.max(0, s - 1)); }}>
             <ArrowLeft className="h-4 w-4 mr-1" /> Back
           </Button>
           {step < 3 ? (
-            <Button onClick={() => setStep((s) => Math.min(3, s + 1))} disabled={step === 0 && !template}>
+            <Button
+              onClick={() => {
+                if (step === 0) {
+                  if (!template) { toast.error("Pick a template to continue"); return; }
+                  setStep(1); return;
+                }
+                const fields = stepFields[step] ?? [];
+                const partial = campaignSchema.partial().safeParse(form);
+                const errs: Record<string, string> = {};
+                if (!partial.success) {
+                  for (const issue of partial.error.issues) {
+                    const key = issue.path.join(".");
+                    if (fields.includes(key as any)) errs[key] = issue.message;
+                  }
+                }
+                // required-on-this-step manual checks (partial allows empty)
+                if (step === 1) {
+                  if (!form.title.trim() || form.title.trim().length < 3) errs.title = "Title must be at least 3 characters";
+                  if (!form.description.trim() || form.description.trim().length < 10) errs.description = "Tell explorers what this is about (10+ characters)";
+                }
+                if (step === 2) {
+                  if (!form.reward_description.trim() || form.reward_description.trim().length < 3) errs.reward_description = "Describe the reward";
+                  if (!Number.isFinite(form.points_reward) || form.points_reward < 0 || form.points_reward > 500) errs.points_reward = "0–500 points";
+                  if (!Number.isFinite(form.max_participants) || form.max_participants < 1 || form.max_participants > 10000) errs.max_participants = "1–10,000 participants";
+                  if (!Number.isFinite(form.durationDays) || form.durationDays < 1 || form.durationDays > 120) errs.durationDays = "1–120 days";
+                }
+                setErrors(errs);
+                if (Object.keys(errs).length > 0) { toast.error("Please fix the highlighted fields"); return; }
+                setStep((s) => Math.min(3, s + 1));
+              }}
+              disabled={step === 0 && !template}
+            >
               Next <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           ) : (
