@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Download, ArrowRight, ArrowLeft, Apple, Play } from "lucide-react";
+import { Download as DownloadIcon, ArrowRight, ArrowLeft, Apple, Play } from "lucide-react";
 import heroImage from "@/assets/hero-explorer.jpg";
 
 export const Route = createFileRoute("/")({
@@ -50,7 +50,7 @@ function Nav() {
             href="#download"
             className="inline-flex items-center gap-2 rounded-full border border-[color:var(--cofex-black)] px-4 py-2 hover:bg-[color:var(--cofex-black)] hover:text-white transition"
           >
-            Check on 28.09. <Download className="h-4 w-4" />
+            Check on 28.09. <DownloadIcon className="h-4 w-4" />
           </a>
         </div>
       </nav>
