@@ -60,7 +60,7 @@ function VerifyPage() {
   async function verify() {
     if (!code.trim()) return;
     setBusy(true);
-    const { data, error } = await supabase.rpc("verify_redemption_code", { _code: code.trim(), _ip: null });
+    const { data, error } = await supabase.rpc("verify_redemption_code", { _code: code.trim(), _ip: undefined });
     setBusy(false);
     if (error) {
       toast.error(error.message.replace(/^.*?: /, ""));

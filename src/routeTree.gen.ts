@@ -17,6 +17,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedExplorerRouteRouteImport } from './routes/_authenticated/_explorer/route'
 import { Route as AuthenticatedPartnerIndexRouteImport } from './routes/_authenticated/partner.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedPartnerVerifyRouteImport } from './routes/_authenticated/partner.verify'
 import { Route as AuthenticatedPartnerShopRouteImport } from './routes/_authenticated/partner.shop'
 import { Route as AuthenticatedPartnerRewardsRouteImport } from './routes/_authenticated/partner.rewards'
 import { Route as AuthenticatedPartnerCampaignsRouteImport } from './routes/_authenticated/partner.campaigns'
@@ -74,6 +75,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedPartnerVerifyRoute =
+  AuthenticatedPartnerVerifyRouteImport.update({
+    id: '/verify',
+    path: '/verify',
+    getParentRoute: () => AuthenticatedPartnerRoute,
+  } as any)
 const AuthenticatedPartnerShopRoute =
   AuthenticatedPartnerShopRouteImport.update({
     id: '/shop',
@@ -189,6 +196,7 @@ export interface FileRoutesByFullPath {
   '/partner/campaigns': typeof AuthenticatedPartnerCampaignsRoute
   '/partner/rewards': typeof AuthenticatedPartnerRewardsRoute
   '/partner/shop': typeof AuthenticatedPartnerShopRoute
+  '/partner/verify': typeof AuthenticatedPartnerVerifyRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/partner/': typeof AuthenticatedPartnerIndexRoute
   '/campaign/$id': typeof AuthenticatedExplorerCampaignIdRoute
@@ -211,6 +219,7 @@ export interface FileRoutesByTo {
   '/partner/campaigns': typeof AuthenticatedPartnerCampaignsRoute
   '/partner/rewards': typeof AuthenticatedPartnerRewardsRoute
   '/partner/shop': typeof AuthenticatedPartnerShopRoute
+  '/partner/verify': typeof AuthenticatedPartnerVerifyRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/partner': typeof AuthenticatedPartnerIndexRoute
   '/campaign/$id': typeof AuthenticatedExplorerCampaignIdRoute
@@ -238,6 +247,7 @@ export interface FileRoutesById {
   '/_authenticated/partner/campaigns': typeof AuthenticatedPartnerCampaignsRoute
   '/_authenticated/partner/rewards': typeof AuthenticatedPartnerRewardsRoute
   '/_authenticated/partner/shop': typeof AuthenticatedPartnerShopRoute
+  '/_authenticated/partner/verify': typeof AuthenticatedPartnerVerifyRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/partner/': typeof AuthenticatedPartnerIndexRoute
   '/_authenticated/_explorer/campaign/$id': typeof AuthenticatedExplorerCampaignIdRoute
@@ -264,6 +274,7 @@ export interface FileRouteTypes {
     | '/partner/campaigns'
     | '/partner/rewards'
     | '/partner/shop'
+    | '/partner/verify'
     | '/admin/'
     | '/partner/'
     | '/campaign/$id'
@@ -286,6 +297,7 @@ export interface FileRouteTypes {
     | '/partner/campaigns'
     | '/partner/rewards'
     | '/partner/shop'
+    | '/partner/verify'
     | '/admin'
     | '/partner'
     | '/campaign/$id'
@@ -312,6 +324,7 @@ export interface FileRouteTypes {
     | '/_authenticated/partner/campaigns'
     | '/_authenticated/partner/rewards'
     | '/_authenticated/partner/shop'
+    | '/_authenticated/partner/verify'
     | '/_authenticated/admin/'
     | '/_authenticated/partner/'
     | '/_authenticated/_explorer/campaign/$id'
@@ -380,6 +393,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/partner/verify': {
+      id: '/_authenticated/partner/verify'
+      path: '/verify'
+      fullPath: '/partner/verify'
+      preLoaderRoute: typeof AuthenticatedPartnerVerifyRouteImport
+      parentRoute: typeof AuthenticatedPartnerRoute
     }
     '/_authenticated/partner/shop': {
       id: '/_authenticated/partner/shop'
@@ -547,6 +567,7 @@ interface AuthenticatedPartnerRouteChildren {
   AuthenticatedPartnerCampaignsRoute: typeof AuthenticatedPartnerCampaignsRoute
   AuthenticatedPartnerRewardsRoute: typeof AuthenticatedPartnerRewardsRoute
   AuthenticatedPartnerShopRoute: typeof AuthenticatedPartnerShopRoute
+  AuthenticatedPartnerVerifyRoute: typeof AuthenticatedPartnerVerifyRoute
   AuthenticatedPartnerIndexRoute: typeof AuthenticatedPartnerIndexRoute
 }
 
@@ -555,6 +576,7 @@ const AuthenticatedPartnerRouteChildren: AuthenticatedPartnerRouteChildren = {
   AuthenticatedPartnerCampaignsRoute: AuthenticatedPartnerCampaignsRoute,
   AuthenticatedPartnerRewardsRoute: AuthenticatedPartnerRewardsRoute,
   AuthenticatedPartnerShopRoute: AuthenticatedPartnerShopRoute,
+  AuthenticatedPartnerVerifyRoute: AuthenticatedPartnerVerifyRoute,
   AuthenticatedPartnerIndexRoute: AuthenticatedPartnerIndexRoute,
 }
 
