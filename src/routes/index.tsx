@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Download as DownloadIcon, ArrowRight, ArrowLeft, Apple, Play } from "lucide-react";
 import heroImage from "@/assets/hero-explorer.jpg";
 import { useScrollReveal } from "@/hooks/use-scroll-reveal";
+import { useParallax } from "@/hooks/use-parallax";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/")({
 
 function Landing() {
   useScrollReveal();
+  useParallax();
   return (
     <div className="min-h-screen bg-white text-[color:var(--cofex-black)] overflow-x-hidden" style={{ fontFamily: "'Nunito Sans', system-ui, sans-serif" }}>
       <Nav />
@@ -63,7 +65,18 @@ function Nav() {
 /* ───────────── Hero ───────────── */
 function Hero() {
   return (
-    <section className="mx-auto max-w-6xl px-5 pt-16 pb-12 text-center">
+    <section
+      data-parallax
+      className="relative mx-auto max-w-6xl px-5 pt-16 pb-12 text-center isolate"
+    >
+      {/* Coffee-themed animated atmosphere */}
+      <div aria-hidden className="cofex-hero-bg">
+        <div className="cofex-glow cofex-glow--a cofex-px" style={{ ["--depth-x" as any]: "20px", ["--depth-y" as any]: "16px", ["--depth-s" as any]: "30px" }} />
+        <div className="cofex-glow cofex-glow--b cofex-px" style={{ ["--depth-x" as any]: "-26px", ["--depth-y" as any]: "-18px", ["--depth-s" as any]: "40px" }} />
+        <div className="cofex-glow cofex-glow--c cofex-px" style={{ ["--depth-x" as any]: "12px", ["--depth-y" as any]: "-10px", ["--depth-s" as any]: "18px" }} />
+        <div className="cofex-grain" />
+      </div>
+
       <h1
         className="font-black tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
         style={{
@@ -91,39 +104,51 @@ function Hero() {
 
       {/* Mockup */}
       <div className="relative mt-16 flex justify-center">
-        {/* animated blob backdrop */}
-        <div
-          aria-hidden
-          className="absolute inset-0 -z-10 blur-3xl opacity-70 cofex-blob"
-          style={{
-            background:
-              "conic-gradient(from 180deg at 50% 50%, #d4f1f9, #fde3df, #f1e3f9, #dff19a, #d4f1f9)",
-          }}
-        />
-        <div className="relative w-full max-w-[420px] cofex-float">
-          {/* floating pill */}
-          <div className="absolute -left-2 sm:-left-16 top-24 z-10 rounded-full bg-white shadow-xl px-5 py-3 text-base font-semibold whitespace-nowrap cofex-float-pill">
-            1 <span style={{ color: "var(--cofex-cyan)" }}>Post</span> = 1{" "}
-            <span style={{ color: "var(--cofex-coffee)" }}>Coffee</span>
-          </div>
-          {/* floating coffee chip on the right */}
+        <div className="relative w-full max-w-[420px]">
+          {/* floating left pill — parallax outer, float inner */}
           <div
-            className="absolute -right-2 sm:-right-14 top-72 z-10 rounded-full bg-white shadow-xl px-4 py-2 text-sm font-bold cofex-float-sm"
-            style={{ animationDelay: "-1.5s", color: "var(--cofex-coffee)" }}
+            className="absolute -left-2 sm:-left-16 top-24 z-10 cofex-px"
+            style={{ ["--depth-x" as any]: "18px", ["--depth-y" as any]: "12px", ["--depth-s" as any]: "20px" }}
           >
-            ☕ +1 Free
+            <div className="rounded-full bg-white shadow-xl px-5 py-3 text-base font-semibold whitespace-nowrap cofex-float-pill">
+              1 <span style={{ color: "var(--cofex-cyan)" }}>Post</span> = 1{" "}
+              <span style={{ color: "var(--cofex-coffee)" }}>Coffee</span>
+            </div>
           </div>
-          {/* phone frame */}
-          <div className="rounded-[40px] bg-[color:var(--cofex-black)] p-3 shadow-2xl">
-            <div className="rounded-[30px] overflow-hidden bg-white">
-              <img src={heroImage} alt="CO:FE(X) Explorer holding phone with free coffee reward" className="w-full h-[520px] object-cover" />
-              <div className="p-6 text-left">
-                <h3 className="text-2xl font-extrabold leading-tight">
-                  Hi Olga,<br />Your Next<br />Coffee Is On Us!
-                </h3>
-                <button className="mt-5 rounded-full border border-[color:var(--cofex-black)] px-5 py-2 text-sm font-semibold hover:bg-[color:var(--cofex-black)] hover:text-white transition hover:scale-105">
-                  Get Started
-                </button>
+          {/* floating right chip */}
+          <div
+            className="absolute -right-2 sm:-right-14 top-72 z-10 cofex-px"
+            style={{ ["--depth-x" as any]: "-22px", ["--depth-y" as any]: "-14px", ["--depth-s" as any]: "24px" }}
+          >
+            <div
+              className="rounded-full bg-white shadow-xl px-4 py-2 text-sm font-bold cofex-float-sm"
+              style={{ animationDelay: "-1.5s", color: "var(--cofex-coffee)" }}
+            >
+              ☕ +1 Free
+            </div>
+          </div>
+          {/* phone — gentle parallax + float */}
+          <div
+            className="cofex-px"
+            style={{ ["--depth-x" as any]: "-8px", ["--depth-y" as any]: "-6px", ["--depth-s" as any]: "12px" }}
+          >
+            <div className="cofex-float">
+              <div className="rounded-[40px] bg-[color:var(--cofex-black)] p-3 shadow-2xl">
+                <div className="rounded-[30px] overflow-hidden bg-white">
+                  <img
+                    src={heroImage}
+                    alt="CO:FE(X) Explorer holding phone with free coffee reward"
+                    className="w-full h-[520px] object-cover"
+                  />
+                  <div className="p-6 text-left">
+                    <h3 className="text-2xl font-extrabold leading-tight">
+                      Hi Olga,<br />Your Next<br />Coffee Is On Us!
+                    </h3>
+                    <button className="mt-5 rounded-full border border-[color:var(--cofex-black)] px-5 py-2 text-sm font-semibold hover:bg-[color:var(--cofex-black)] hover:text-white transition hover:scale-105">
+                      Get Started
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -154,7 +179,7 @@ function ShareLove() {
           { c: "var(--cofex-cyan)", word: "Explore", rest: " cozy cafés, spread the love and…" },
           { c: "var(--cofex-coffee)", word: "Keep", rest: " your cup full, one post at a time." },
         ].map((l, i) => (
-          <p key={i} className="cofex-reveal" style={{ transitionDelay: `${i * 90}ms` }}>
+          <p key={i} className="cofex-reveal" style={{ ["--i" as any]: i }}>
             <span style={{ color: l.c }}>{l.word}</span>{l.rest}
           </p>
         ))}
@@ -193,36 +218,50 @@ const features = [
 
 function Features() {
   return (
-    <section className="mx-auto max-w-6xl px-5 pb-24 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <section className="mx-auto max-w-6xl px-5 pb-24 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" data-parallax>
       {features.map((f, i) => (
         <div
           key={f.title}
-          className="rounded-3xl p-7 flex flex-col justify-end min-h-[340px] cofex-reveal cofex-lift"
+          className="cofex-reveal cofex-px"
           style={{
-            background: f.bg,
-            transitionDelay: `${i * 120}ms`,
-            animation: `cofex-float-sm ${5 + i * 0.4}s ease-in-out ${i * 0.3}s infinite`,
+            ["--i" as any]: i + 1,
+            ["--depth-x" as any]: `${(i % 2 === 0 ? -1 : 1) * 10}px`,
+            ["--depth-y" as any]: "6px",
+            ["--depth-s" as any]: `${14 + i * 4}px`,
           }}
         >
-          <h3 className="text-xl font-extrabold mb-4">{f.title}</h3>
-          <p className="text-sm font-semibold mb-3" style={{ color: "var(--cofex-cyan)" }}>
-            For users: <span className="text-[color:var(--cofex-black)] font-normal">{f.user}</span>
-          </p>
-          <p className="text-sm font-semibold" style={{ color: "var(--cofex-cyan)" }}>
-            For cafés: <span className="text-[color:var(--cofex-black)] font-normal">{f.cafe}</span>
-          </p>
+          <div
+            className="rounded-3xl p-7 flex flex-col justify-end min-h-[340px] cofex-lift h-full"
+            style={{
+              background: f.bg,
+              animation: `cofex-float-sm ${5.5 + i * 0.4}s ease-in-out ${i * 0.4}s infinite`,
+            }}
+          >
+            <h3 className="text-xl font-extrabold mb-4">{f.title}</h3>
+            <p className="text-sm font-semibold mb-3" style={{ color: "var(--cofex-cyan)" }}>
+              For users: <span className="text-[color:var(--cofex-black)] font-normal">{f.user}</span>
+            </p>
+            <p className="text-sm font-semibold" style={{ color: "var(--cofex-cyan)" }}>
+              For cafés: <span className="text-[color:var(--cofex-black)] font-normal">{f.cafe}</span>
+            </p>
+          </div>
         </div>
       ))}
     </section>
   );
 }
 
+
+
 /* ───────────── Testimonial ───────────── */
 function Testimonial() {
   return (
-    <section id="reviews" className="py-24" style={{ background: "var(--cofex-lime)" }}>
+    <section id="reviews" className="py-24" style={{ background: "var(--cofex-lime)" }} data-parallax>
       <div className="mx-auto max-w-4xl px-5">
-        <div className="relative rounded-3xl bg-white p-10 sm:p-16 shadow-sm cofex-reveal cofex-float">
+        <div
+          className="relative rounded-3xl bg-white p-10 sm:p-16 shadow-sm cofex-reveal cofex-px"
+          style={{ ["--depth-x" as any]: "8px", ["--depth-y" as any]: "6px", ["--depth-s" as any]: "20px" }}
+        >
           <span
             className="absolute -top-4 left-10 rounded-full px-5 py-2 text-sm font-bold cofex-float-pill"
             style={{ background: "var(--cofex-pastel-lilac)" }}
