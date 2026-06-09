@@ -47,6 +47,73 @@ export type Database = {
         }
         Relationships: []
       }
+      campaign_participants: {
+        Row: {
+          campaign_id: string
+          id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          campaign_id: string
+          id?: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          campaign_id?: string
+          id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_participants_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campaign_redemptions: {
+        Row: {
+          campaign_id: string
+          id: string
+          points_awarded: number
+          redeemed_at: string
+          redemption_code: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          campaign_id: string
+          id?: string
+          points_awarded?: number
+          redeemed_at?: string
+          redemption_code?: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          campaign_id?: string
+          id?: string
+          points_awarded?: number
+          redeemed_at?: string
+          redemption_code?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_redemptions_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaigns: {
         Row: {
           campaign_type: string
@@ -59,6 +126,7 @@ export type Database = {
           id: string
           max_participants: number | null
           points_reward: number
+          required_check_ins: number
           requirements: string | null
           reward_description: string | null
           starts_at: string | null
@@ -77,6 +145,7 @@ export type Database = {
           id?: string
           max_participants?: number | null
           points_reward?: number
+          required_check_ins?: number
           requirements?: string | null
           reward_description?: string | null
           starts_at?: string | null
@@ -95,6 +164,7 @@ export type Database = {
           id?: string
           max_participants?: number | null
           points_reward?: number
+          required_check_ins?: number
           requirements?: string | null
           reward_description?: string | null
           starts_at?: string | null
@@ -498,7 +568,11 @@ export type Database = {
         }
         Returns: boolean
       }
-      perform_check_in: { Args: { _shop_id: string }; Returns: Json }
+      join_campaign: { Args: { _campaign_id: string }; Returns: Json }
+      perform_check_in:
+        | { Args: { _shop_id: string }; Returns: Json }
+        | { Args: { _campaign_id?: string; _shop_id: string }; Returns: Json }
+      redeem_campaign: { Args: { _campaign_id: string }; Returns: Json }
     }
     Enums: {
       app_role: "explorer" | "partner" | "admin"

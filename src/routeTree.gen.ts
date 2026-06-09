@@ -32,6 +32,7 @@ import { Route as AuthenticatedExplorerPassportRouteImport } from './routes/_aut
 import { Route as AuthenticatedExplorerLeaderboardRouteImport } from './routes/_authenticated/_explorer/leaderboard'
 import { Route as AuthenticatedExplorerExploreRouteImport } from './routes/_authenticated/_explorer/explore'
 import { Route as AuthenticatedExplorerCampaignsRouteImport } from './routes/_authenticated/_explorer/campaigns'
+import { Route as AuthenticatedExplorerCampaignIdRouteImport } from './routes/_authenticated/_explorer/campaign.$id'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -161,6 +162,12 @@ const AuthenticatedExplorerCampaignsRoute =
     path: '/campaigns',
     getParentRoute: () => AuthenticatedExplorerRouteRoute,
   } as any)
+const AuthenticatedExplorerCampaignIdRoute =
+  AuthenticatedExplorerCampaignIdRouteImport.update({
+    id: '/campaign/$id',
+    path: '/campaign/$id',
+    getParentRoute: () => AuthenticatedExplorerRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -184,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/partner/shop': typeof AuthenticatedPartnerShopRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/partner/': typeof AuthenticatedPartnerIndexRoute
+  '/campaign/$id': typeof AuthenticatedExplorerCampaignIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -205,6 +213,7 @@ export interface FileRoutesByTo {
   '/partner/shop': typeof AuthenticatedPartnerShopRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/partner': typeof AuthenticatedPartnerIndexRoute
+  '/campaign/$id': typeof AuthenticatedExplorerCampaignIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -231,6 +240,7 @@ export interface FileRoutesById {
   '/_authenticated/partner/shop': typeof AuthenticatedPartnerShopRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/partner/': typeof AuthenticatedPartnerIndexRoute
+  '/_authenticated/_explorer/campaign/$id': typeof AuthenticatedExplorerCampaignIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -256,6 +266,7 @@ export interface FileRouteTypes {
     | '/partner/shop'
     | '/admin/'
     | '/partner/'
+    | '/campaign/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -277,6 +288,7 @@ export interface FileRouteTypes {
     | '/partner/shop'
     | '/admin'
     | '/partner'
+    | '/campaign/$id'
   id:
     | '__root__'
     | '/'
@@ -302,6 +314,7 @@ export interface FileRouteTypes {
     | '/_authenticated/partner/shop'
     | '/_authenticated/admin/'
     | '/_authenticated/partner/'
+    | '/_authenticated/_explorer/campaign/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -473,6 +486,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedExplorerCampaignsRouteImport
       parentRoute: typeof AuthenticatedExplorerRouteRoute
     }
+    '/_authenticated/_explorer/campaign/$id': {
+      id: '/_authenticated/_explorer/campaign/$id'
+      path: '/campaign/$id'
+      fullPath: '/campaign/$id'
+      preLoaderRoute: typeof AuthenticatedExplorerCampaignIdRouteImport
+      parentRoute: typeof AuthenticatedExplorerRouteRoute
+    }
   }
 }
 
@@ -482,6 +502,7 @@ interface AuthenticatedExplorerRouteRouteChildren {
   AuthenticatedExplorerLeaderboardRoute: typeof AuthenticatedExplorerLeaderboardRoute
   AuthenticatedExplorerPassportRoute: typeof AuthenticatedExplorerPassportRoute
   AuthenticatedExplorerProfileRoute: typeof AuthenticatedExplorerProfileRoute
+  AuthenticatedExplorerCampaignIdRoute: typeof AuthenticatedExplorerCampaignIdRoute
 }
 
 const AuthenticatedExplorerRouteRouteChildren: AuthenticatedExplorerRouteRouteChildren =
@@ -492,6 +513,7 @@ const AuthenticatedExplorerRouteRouteChildren: AuthenticatedExplorerRouteRouteCh
       AuthenticatedExplorerLeaderboardRoute,
     AuthenticatedExplorerPassportRoute: AuthenticatedExplorerPassportRoute,
     AuthenticatedExplorerProfileRoute: AuthenticatedExplorerProfileRoute,
+    AuthenticatedExplorerCampaignIdRoute: AuthenticatedExplorerCampaignIdRoute,
   }
 
 const AuthenticatedExplorerRouteRouteWithChildren =

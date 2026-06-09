@@ -14,15 +14,20 @@ import { toast } from "sonner";
 type Shop = { id: string; name: string };
 
 const campaignSchema = z.object({
-  title: z.string().trim().min(3, "Title is too short").max(80, "Max 80 characters"),
-  description: z.string().trim().min(10, "Description is too short").max(600, "Max 600 characters"),
-  reward_description: z.string().trim().min(3, "Reward is required").max(200),
-  requirements: z.string().trim().max(400).optional().or(z.literal("")),
-  hashtag: z.string().trim().regex(/^#?[A-Za-z0-9_]{2,40}$/, "Use letters/numbers, no spaces").max(40),
-  points_reward: z.number().int().min(0).max(500),
-  durationDays: z.number().int().min(1).max(120),
-  max_participants: z.number().int().min(1).max(10000),
+  title: z.string().trim().min(3, "Title must be at least 3 characters").max(80, "Max 80 characters"),
+  description: z.string().trim().min(10, "Tell explorers what this is about (10+ characters)").max(600, "Max 600 characters"),
+  reward_description: z.string().trim().min(3, "Describe the reward (e.g. ‘Free espresso’)").max(200, "Max 200 characters"),
+  requirements: z.string().trim().max(400, "Max 400 characters").optional().or(z.literal("")),
+  hashtag: z.string().trim().regex(/^#?[A-Za-z0-9_]{2,40}$/, "Letters/numbers only, 2–40 chars, no spaces").max(40),
+  points_reward: z.number().int("Whole number").min(0, "Cannot be negative").max(500, "Cap is 500 points"),
+  durationDays: z.number().int("Whole number").min(1, "At least 1 day").max(120, "Max 120 days"),
+  max_participants: z.number().int("Whole number").min(1, "At least 1 participant").max(10000, "Cap is 10,000"),
 });
+
+const stepFields: Record<number, (keyof z.infer<typeof campaignSchema>)[]> = {
+  1: ["title", "description", "hashtag"],
+  2: ["reward_description", "requirements", "points_reward", "durationDays", "max_participants"],
+};
 
 export function CampaignWizard({
   open,
@@ -239,11 +244,42 @@ export function CampaignWizard({
         )}
 
         <div className="flex justify-between mt-6">
-          <Button variant="ghost" disabled={step === 0 || saving} onClick={() => setStep((s) => Math.max(0, s - 1))}>
+          <Button variant="ghost" disabled={step === 0 || saving} onClick={() => { setErrors({}); setStep((s) => Math.max(0, s - 1)); }}>
             <ArrowLeft className="h-4 w-4 mr-1" /> Back
           </Button>
           {step < 3 ? (
-            <Button onClick={() => setStep((s) => Math.min(3, s + 1))} disabled={step === 0 && !template}>
+            <Button
+              onClick={() => {
+                if (step === 0) {
+                  if (!template) { toast.error("Pick a template to continue"); return; }
+                  setStep(1); return;
+                }
+                const fields = stepFields[step] ?? [];
+                const partial = campaignSchema.partial().safeParse(form);
+                const errs: Record<string, string> = {};
+                if (!partial.success) {
+                  for (const issue of partial.error.issues) {
+                    const key = issue.path.join(".");
+                    if (fields.includes(key as any)) errs[key] = issue.message;
+                  }
+                }
+                // required-on-this-step manual checks (partial allows empty)
+                if (step === 1) {
+                  if (!form.title.trim() || form.title.trim().length < 3) errs.title = "Title must be at least 3 characters";
+                  if (!form.description.trim() || form.description.trim().length < 10) errs.description = "Tell explorers what this is about (10+ characters)";
+                }
+                if (step === 2) {
+                  if (!form.reward_description.trim() || form.reward_description.trim().length < 3) errs.reward_description = "Describe the reward";
+                  if (!Number.isFinite(form.points_reward) || form.points_reward < 0 || form.points_reward > 500) errs.points_reward = "0–500 points";
+                  if (!Number.isFinite(form.max_participants) || form.max_participants < 1 || form.max_participants > 10000) errs.max_participants = "1–10,000 participants";
+                  if (!Number.isFinite(form.durationDays) || form.durationDays < 1 || form.durationDays > 120) errs.durationDays = "1–120 days";
+                }
+                setErrors(errs);
+                if (Object.keys(errs).length > 0) { toast.error("Please fix the highlighted fields"); return; }
+                setStep((s) => Math.min(3, s + 1));
+              }}
+              disabled={step === 0 && !template}
+            >
               Next <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           ) : (

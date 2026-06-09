@@ -92,8 +92,8 @@ function ExplorerCampaignsPage() {
             return (
               <Link
                 key={c.id}
-                to="/coffee/$slug"
-                params={{ slug: c.coffee_shops?.slug ?? "" }}
+                to="/campaign/$id"
+                params={{ id: c.id }}
                 className="group rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-xl transition border border-zinc-200"
               >
                 <div className="relative h-40 bg-gradient-to-br from-amber-200 to-orange-300">
