@@ -313,3 +313,95 @@ function Row({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+type RuleForm = {
+  title: string;
+  description: string;
+  reward_description: string;
+  points_reward: number;
+  durationDays: number;
+  max_participants: number;
+  hashtag: string;
+};
+
+function RulesTester({ form }: { form: RuleForm }) {
+  const [scenarioJoins, setScenarioJoins] = useState(Math.min(50, form.max_participants));
+  const [conversionPct, setConversionPct] = useState(60);
+
+  const cap = Math.max(1, form.max_participants);
+  const joins = Math.min(scenarioJoins, cap);
+  const redemptions = Math.round((joins * conversionPct) / 100);
+  const totalPoints = redemptions * form.points_reward;
+  const fillPct = Math.round((joins / cap) * 100);
+
+  const warnings: { tone: "warn" | "info" | "ok"; text: string }[] = [];
+  if (form.points_reward === 0) warnings.push({ tone: "info", text: "No bonus points — explorers won't earn extra for redeeming." });
+  if (form.points_reward > 100) warnings.push({ tone: "warn", text: "High point reward (>100). Make sure this matches the offer's value." });
+  if (form.max_participants < 10) warnings.push({ tone: "warn", text: "Very small cap — campaign may fill within hours." });
+  if (form.max_participants > 1000) warnings.push({ tone: "warn", text: "Large cap (>1,000). Make sure staff can handle the volume." });
+  if (form.durationDays < 3) warnings.push({ tone: "warn", text: "Short window — consider 7+ days to reach more explorers." });
+  if (form.durationDays > 60) warnings.push({ tone: "info", text: "Long window — momentum may dip in the middle." });
+  if (!form.reward_description.toLowerCase().match(/free|%|off|bogo|buy/)) warnings.push({ tone: "info", text: "Reward text is vague. ‘Free X’ or ‘XX% off’ converts better." });
+  if (warnings.length === 0) warnings.push({ tone: "ok", text: "Looks good. No rule warnings detected." });
+
+  return (
+    <div className="rounded-2xl border bg-white p-5 space-y-4">
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-semibold uppercase tracking-widest text-amber-700">Rules tester</span>
+        <span className="text-xs text-zinc-500">Simulate what an explorer would see — before publishing.</span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label className="text-xs">If {joins} explorers join…</Label>
+          <input type="range" min={1} max={cap} value={joins}
+            onChange={(e) => setScenarioJoins(Number(e.target.value))}
+            className="w-full accent-amber-700" />
+          <div className="text-[10px] text-zinc-500">{fillPct}% of {cap}-spot cap</div>
+        </div>
+        <div>
+          <Label className="text-xs">…and {conversionPct}% redeem</Label>
+          <input type="range" min={0} max={100} value={conversionPct}
+            onChange={(e) => setConversionPct(Number(e.target.value))}
+            className="w-full accent-amber-700" />
+          <div className="text-[10px] text-zinc-500">Typical EEFFOC: 40–70%</div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3 text-center">
+        <Pill label="Redemptions" value={redemptions} />
+        <Pill label="Points awarded" value={totalPoints} />
+        <Pill label="Per day avg." value={Math.max(1, Math.round(redemptions / Math.max(1, form.durationDays)))} />
+      </div>
+
+      <div className="space-y-2">
+        {warnings.map((w, i) => (
+          <div key={i} className={`text-xs rounded-lg px-3 py-2 ${
+            w.tone === "warn" ? "bg-amber-50 text-amber-900 border border-amber-200" :
+            w.tone === "ok" ? "bg-emerald-50 text-emerald-800 border border-emerald-200" :
+            "bg-zinc-50 text-zinc-700 border border-zinc-200"
+          }`}>
+            {w.tone === "warn" ? "⚠️ " : w.tone === "ok" ? "✓ " : "ℹ️ "}{w.text}
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-xl border-dashed border-2 border-zinc-200 p-3">
+        <div className="text-[10px] uppercase tracking-widest text-zinc-500 mb-1">Explorer preview</div>
+        <div className="text-sm">
+          <span className="font-semibold">{form.title || "Your campaign"}</span> · {form.reward_description || "Reward"} · <span className="text-amber-700">+{form.points_reward} pts</span>
+        </div>
+        <div className="text-xs text-zinc-500 mt-1">{form.hashtag} · Ends in {form.durationDays} days · {cap} spots</div>
+      </div>
+    </div>
+  );
+}
+
+function Pill({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-xl bg-gradient-to-br from-amber-50 to-orange-100 p-3">
+      <div className="text-2xl font-bold text-amber-900">{value.toLocaleString()}</div>
+      <div className="text-[10px] uppercase tracking-widest text-amber-700">{label}</div>
+    </div>
+  );
+}
