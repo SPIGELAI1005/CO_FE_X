@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect, useNavigate, Link } from "@tanstack/react-router";
-import { LogOut, LayoutDashboard, Store, Megaphone, Gift, BarChart3 } from "lucide-react";
+import { LogOut, LayoutDashboard, Store, Megaphone, Gift, BarChart3, Shield } from "lucide-react";
 import { SideNav } from "@/components/app/SideNav";
+import { NotificationsBell } from "@/components/app/NotificationsBell";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/partner")({
@@ -21,6 +22,7 @@ const items = [
   { to: "/partner", label: "Dashboard", Icon: LayoutDashboard },
   { to: "/partner/shop", label: "Shop profile", Icon: Store },
   { to: "/partner/campaigns", label: "Campaigns", Icon: Megaphone },
+  { to: "/partner/verify", label: "Verify code", Icon: Shield },
   { to: "/partner/rewards", label: "Rewards", Icon: Gift },
   { to: "/partner/analytics", label: "Analytics", Icon: BarChart3 },
 ];
@@ -42,9 +44,12 @@ function PartnerLayout() {
           <Link to="/partner" className="text-xs font-bold tracking-[0.3em]" style={{ color: "var(--cofex-coffee-deep)" }}>
             CO:FE(X) · Partner
           </Link>
-          <button onClick={signOut} className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
-            <LogOut className="h-4 w-4" /> Sign out
-          </button>
+          <div className="flex items-center gap-1">
+            <NotificationsBell />
+            <button onClick={signOut} className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 px-2">
+              <LogOut className="h-4 w-4" /> Sign out
+            </button>
+          </div>
         </header>
         <main className="flex-1">
           <Outlet />

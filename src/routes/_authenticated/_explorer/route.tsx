@@ -1,6 +1,7 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { LogOut } from "lucide-react";
 import { BottomNav } from "@/components/app/BottomNav";
+import { NotificationsBell } from "@/components/app/NotificationsBell";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/_explorer")({
@@ -22,13 +23,16 @@ function ExplorerLayout() {
         <Link to="/explore" className="text-xs font-bold tracking-[0.3em]" style={{ color: "var(--cofex-coffee-deep)" }}>
           CO:FE(X)
         </Link>
-        <button
-          onClick={signOut}
-          className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
-          aria-label="Sign out"
-        >
-          <LogOut className="h-4 w-4" /> Sign out
-        </button>
+        <div className="flex items-center gap-1">
+          <NotificationsBell />
+          <button
+            onClick={signOut}
+            className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 px-2"
+            aria-label="Sign out"
+          >
+            <LogOut className="h-4 w-4" /> Sign out
+          </button>
+        </div>
       </header>
       <main>
         <Outlet />
