@@ -62,8 +62,9 @@ export const Route = createFileRoute("/_authenticated/_explorer/explore")({
 function ExplorePage() {
   const { q, tags, amenities, free, sort, view, radius } = Route.useSearch();
   const navigate = useNavigate({ from: "/_authenticated/_explorer/explore" });
-  const update = (patch: Partial<z.infer<typeof searchSchema>>) =>
-    navigate({ search: (prev) => ({ ...prev, ...patch }), replace: true });
+  type S = z.infer<typeof searchSchema>;
+  const update = (patch: Partial<S>) =>
+    navigate({ search: (prev: S) => ({ ...prev, ...patch }), replace: true });
 
   const [rows, setRows] = useState<Row[]>([]);
   const [counts, setCounts] = useState<Record<string, { campaigns: number; popularity: number }>>({});
@@ -123,8 +124,8 @@ function ExplorePage() {
     const ql = q.trim().toLowerCase();
     const list = rows
       .filter((r) => (free ? r.free_coffee_available : true))
-      .filter((r) => (tags.length ? tags.every((t) => r.tags.includes(t)) : true))
-      .filter((r) => (amenities.length ? amenities.every((a) => r.amenities.includes(a)) : true))
+      .filter((r) => (tags.length ? tags.every((t: string) => r.tags.includes(t)) : true))
+      .filter((r) => (amenities.length ? amenities.every((a: string) => r.amenities.includes(a)) : true))
       .filter((r) =>
         ql
           ? r.name.toLowerCase().includes(ql) ||
