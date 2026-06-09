@@ -311,6 +311,42 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          link: string | null
+          payload: Json | null
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          payload?: Json | null
+          read_at?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          payload?: Json | null
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       partner_applications: {
         Row: {
           business_name: string
@@ -397,6 +433,54 @@ export type Database = {
           x_handle?: string | null
         }
         Relationships: []
+      }
+      redemption_verifications: {
+        Row: {
+          campaign_id: string | null
+          code: string
+          id: string
+          ip: string | null
+          partner_id: string
+          redemption_id: string | null
+          result: string
+          verified_at: string
+        }
+        Insert: {
+          campaign_id?: string | null
+          code: string
+          id?: string
+          ip?: string | null
+          partner_id: string
+          redemption_id?: string | null
+          result: string
+          verified_at?: string
+        }
+        Update: {
+          campaign_id?: string | null
+          code?: string
+          id?: string
+          ip?: string | null
+          partner_id?: string
+          redemption_id?: string | null
+          result?: string
+          verified_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "redemption_verifications_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "redemption_verifications_redemption_id_fkey"
+            columns: ["redemption_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_redemptions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reviews: {
         Row: {
@@ -573,6 +657,10 @@ export type Database = {
         | { Args: { _shop_id: string }; Returns: Json }
         | { Args: { _campaign_id?: string; _shop_id: string }; Returns: Json }
       redeem_campaign: { Args: { _campaign_id: string }; Returns: Json }
+      verify_redemption_code: {
+        Args: { _code: string; _ip?: string }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "explorer" | "partner" | "admin"
