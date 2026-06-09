@@ -14,15 +14,20 @@ import { toast } from "sonner";
 type Shop = { id: string; name: string };
 
 const campaignSchema = z.object({
-  title: z.string().trim().min(3, "Title is too short").max(80, "Max 80 characters"),
-  description: z.string().trim().min(10, "Description is too short").max(600, "Max 600 characters"),
-  reward_description: z.string().trim().min(3, "Reward is required").max(200),
-  requirements: z.string().trim().max(400).optional().or(z.literal("")),
-  hashtag: z.string().trim().regex(/^#?[A-Za-z0-9_]{2,40}$/, "Use letters/numbers, no spaces").max(40),
-  points_reward: z.number().int().min(0).max(500),
-  durationDays: z.number().int().min(1).max(120),
-  max_participants: z.number().int().min(1).max(10000),
+  title: z.string().trim().min(3, "Title must be at least 3 characters").max(80, "Max 80 characters"),
+  description: z.string().trim().min(10, "Tell explorers what this is about (10+ characters)").max(600, "Max 600 characters"),
+  reward_description: z.string().trim().min(3, "Describe the reward (e.g. ‘Free espresso’)").max(200, "Max 200 characters"),
+  requirements: z.string().trim().max(400, "Max 400 characters").optional().or(z.literal("")),
+  hashtag: z.string().trim().regex(/^#?[A-Za-z0-9_]{2,40}$/, "Letters/numbers only, 2–40 chars, no spaces").max(40),
+  points_reward: z.number().int("Whole number").min(0, "Cannot be negative").max(500, "Cap is 500 points"),
+  durationDays: z.number().int("Whole number").min(1, "At least 1 day").max(120, "Max 120 days"),
+  max_participants: z.number().int("Whole number").min(1, "At least 1 participant").max(10000, "Cap is 10,000"),
 });
+
+const stepFields: Record<number, (keyof z.infer<typeof campaignSchema>)[]> = {
+  1: ["title", "description", "hashtag"],
+  2: ["reward_description", "requirements", "points_reward", "durationDays", "max_participants"],
+};
 
 export function CampaignWizard({
   open,
