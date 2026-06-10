@@ -259,10 +259,9 @@ function WalletPage() {
             <div className="rounded-2xl border bg-white overflow-hidden divide-y">
               {redemptions.map((r) => {
                 const item = catalog.find((c) => c.id === r.catalog_id);
-                const status: "active" | "used" | "expired" = r.used_at ? "used" : "active";
+                const status: "active" | "used" = r.used_at ? "used" : "active";
                 const statusStyle =
                   status === "used" ? "bg-zinc-100 text-zinc-700" :
-                  status === "expired" ? "bg-rose-100 text-rose-700" :
                   "bg-emerald-100 text-emerald-700";
                 return (
                   <div key={r.id} className="flex items-center gap-3 p-3">
