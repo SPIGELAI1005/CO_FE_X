@@ -1,19 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Coffee, Sparkles, Gift, Users, Copy, Check, ArrowDownLeft, ArrowUpRight, Wallet, Megaphone, Share2, MessageSquareText } from "lucide-react";
+import {
+  Coffee, Sparkles, Gift, Users, Copy, Check, ArrowDownLeft, ArrowUpRight, Wallet,
+  Megaphone, Share2, MessageSquareText, Download, Calendar, Hourglass, History, AlertTriangle,
+} from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/_explorer/wallet")({
   head: () => ({ meta: [{ title: "Wallet — CO:FE(X)" }] }),
   component: WalletPage,
 });
 
-type Ledger = { id: string; delta: number; balance_after: number; source: string; metadata: any; created_at: string };
+type Ledger = { id: string; delta: number; balance_after: number; source: string; metadata: any; created_at: string; expires_at: string | null };
 type CatalogItem = { id: string; name: string; description: string | null; cost_points: number; emoji: string | null; tier: string | null };
 type Redemption = { id: string; catalog_id: string; points_spent: number; redemption_code: string; used_at: string | null; created_at: string };
+type ExpiringBucket = { bucket: string; expires_at: string; amount: number };
 
 const SOURCE_META: Record<string, { label: string; Icon: any; color: string }> = {
   check_in: { label: "Check-in", Icon: Coffee, color: "text-amber-700 bg-amber-50" },
@@ -24,6 +29,14 @@ const SOURCE_META: Record<string, { label: string; Icon: any; color: string }> =
   referral_reward: { label: "Referral reward", Icon: Users, color: "text-emerald-700 bg-emerald-50" },
   catalog_redemption: { label: "Reward redeemed", Icon: Gift, color: "text-zinc-700 bg-zinc-100" },
 };
+
+const EXPIRY_OPTIONS = [
+  { value: "off", label: "No expiration" },
+  { value: "90", label: "90 days" },
+  { value: "180", label: "6 months" },
+  { value: "365", label: "12 months" },
+  { value: "730", label: "24 months" },
+];
 
 function WalletPage() {
   const [balance, setBalance] = useState(0);
@@ -36,26 +49,43 @@ function WalletPage() {
   const [copied, setCopied] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [expireDays, setExpireDays] = useState<string>("off");
+  const [expiring, setExpiring] = useState<ExpiringBucket[]>([]);
+  const [from, setFrom] = useState<string>("");
+  const [to, setTo] = useState<string>("");
 
   const load = useCallback(async () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    const [{ data: prof }, { data: led }, { data: cat }, { data: red }] = await Promise.all([
-      supabase.from("profiles").select("total_points, referral_code, referred_by").eq("id", user.id).maybeSingle() as any,
-      (supabase as any).from("points_ledger").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(40),
+    const [{ data: prof }, { data: cat }, { data: red }, { data: buckets }] = await Promise.all([
+      supabase.from("profiles").select("total_points, referral_code, referred_by, points_expire_days").eq("id", user.id).maybeSingle() as any,
       (supabase as any).from("reward_catalog").select("*").eq("active", true).order("sort_order"),
-      (supabase as any).from("catalog_redemptions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(10),
+      (supabase as any).from("catalog_redemptions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(50),
+      (supabase as any).rpc("get_expiring_points_buckets"),
     ]);
     setBalance(prof?.total_points ?? 0);
     setRefCode(prof?.referral_code ?? null);
     setReferredBy(prof?.referred_by ?? null);
-    setLedger((led as Ledger[]) ?? []);
+    setExpireDays(prof?.points_expire_days ? String(prof.points_expire_days) : "off");
     setCatalog((cat as CatalogItem[]) ?? []);
     setRedemptions((red as Redemption[]) ?? []);
+    setExpiring((buckets as ExpiringBucket[]) ?? []);
     setLoading(false);
   }, []);
+
+  const loadLedger = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    let q = (supabase as any).from("points_ledger").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(200);
+    if (from) q = q.gte("created_at", new Date(from).toISOString());
+    if (to) q = q.lte("created_at", new Date(new Date(to).getTime() + 86400000 - 1).toISOString());
+    const { data } = await q;
+    setLedger((data as Ledger[]) ?? []);
+  }, [from, to]);
+
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { loadLedger(); }, [loadLedger]);
 
   async function redeem(item: CatalogItem) {
     if (balance < item.cost_points) return toast.error(`Need ${item.cost_points - balance} more points`);
@@ -64,7 +94,7 @@ function WalletPage() {
     setBusyId(null);
     if (error) return toast.error(error.message.replace(/^.*?: /, ""));
     toast.success(`Reward unlocked: ${data.item}`);
-    load();
+    load(); loadLedger();
   }
 
   async function claim() {
@@ -72,16 +102,53 @@ function WalletPage() {
     const { error } = await (supabase as any).rpc("claim_referral", { _code: claimInput.trim() });
     if (error) return toast.error(error.message.replace(/^.*?: /, ""));
     toast.success("Referral claimed! +50 points");
-    setClaimInput("");
+    setClaimInput(""); load(); loadLedger();
+  }
+
+  async function updateExpiry(val: string) {
+    setExpireDays(val);
+    const days = val === "off" ? null : Number(val);
+    const { error } = await (supabase as any).rpc("set_points_expiration_policy", { _days: days });
+    if (error) return toast.error(error.message.replace(/^.*?: /, ""));
+    toast.success(days ? `Points will expire after ${days} days (applies to new points)` : "Points expiration disabled");
     load();
   }
 
   function copyCode() {
     if (!refCode) return;
     navigator.clipboard.writeText(refCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    setCopied(true); setTimeout(() => setCopied(false), 1500);
   }
+
+  function exportCsv() {
+    if (ledger.length === 0) return toast.error("Nothing to export");
+    const rows = [["Date", "Source", "Delta", "Balance after", "Expires at", "Reference"]];
+    ledger.forEach((l) => rows.push([
+      new Date(l.created_at).toISOString(),
+      SOURCE_META[l.source]?.label ?? l.source,
+      String(l.delta),
+      String(l.balance_after),
+      l.expires_at ? new Date(l.expires_at).toISOString() : "",
+      JSON.stringify(l.metadata ?? {}),
+    ]));
+    const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `cofex-ledger-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+  }
+
+  const totals = useMemo(() => {
+    const earned = ledger.filter((l) => l.delta > 0).reduce((s, l) => s + l.delta, 0);
+    const spent = ledger.filter((l) => l.delta < 0).reduce((s, l) => s + Math.abs(l.delta), 0);
+    return { earned, spent };
+  }, [ledger]);
+
+  const expiringSoon = useMemo(
+    () => expiring.filter((b) => b.bucket === "7d" || b.bucket === "30d").reduce((s, b) => s + Number(b.amount), 0),
+    [expiring]
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 via-rose-50/40 to-white pb-20">
@@ -98,6 +165,11 @@ function WalletPage() {
               <span className="text-base font-medium opacity-70 ml-2">pts</span>
             </div>
             <div className="mt-1 text-xs opacity-80">Internal reward currency · upgradeable to on-chain later</div>
+            {expiringSoon > 0 && (
+              <div className="mt-3 inline-flex items-center gap-1.5 text-[11px] bg-amber-100 text-amber-900 px-2.5 py-1 rounded-full font-semibold">
+                <AlertTriangle className="h-3 w-3" /> {expiringSoon.toLocaleString()} pts expiring within 30 days
+              </div>
+            )}
             <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[11px]">
               <Earn Icon={Coffee} label="Check-in" pts={10} />
               <Earn Icon={MessageSquareText} label="Review" pts={5} />
@@ -108,6 +180,47 @@ function WalletPage() {
             </div>
           </div>
         </div>
+
+        {/* Expiration policy */}
+        <section className="rounded-2xl border bg-white p-4">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center"><Hourglass className="h-4 w-4" /></div>
+              <div>
+                <div className="font-semibold text-sm">Point expiration</div>
+                <div className="text-xs text-zinc-500 max-w-xs">Optional — choose how long newly earned points stay valid. Existing points keep their original expiry.</div>
+              </div>
+            </div>
+            <Select value={expireDays} onValueChange={updateExpiry}>
+              <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+              <SelectContent>{EXPIRY_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+
+          {expiring.length > 0 && (
+            <div className="mt-4">
+              <div className="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold mb-2">Expiration timeline</div>
+              <div className="space-y-1.5">
+                {expiring.slice(0, 8).map((b, i) => {
+                  const isExpired = b.bucket === "expired";
+                  const isSoon = b.bucket === "7d" || b.bucket === "30d";
+                  const date = new Date(b.expires_at);
+                  return (
+                    <div key={i} className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm ${isExpired ? "bg-rose-50 text-rose-900" : isSoon ? "bg-amber-50 text-amber-900" : "bg-zinc-50 text-zinc-700"}`}>
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-3.5 w-3.5 opacity-70" />
+                        <span>{date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</span>
+                        {isExpired && <span className="text-[10px] uppercase font-bold">Expired</span>}
+                        {isSoon && !isExpired && <span className="text-[10px] uppercase font-bold">Soon</span>}
+                      </div>
+                      <span className="font-bold tabular-nums">{Number(b.amount).toLocaleString()} pts</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </section>
 
         {/* Catalog */}
         <section>
@@ -137,26 +250,40 @@ function WalletPage() {
           </div>
         </section>
 
-        {/* Active vouchers */}
-        {redemptions.length > 0 && (
-          <section>
-            <h2 className="text-sm font-bold text-zinc-900 mb-2">Your reward codes</h2>
-            <div className="space-y-2">
+        {/* Redemption history */}
+        <section>
+          <h2 className="text-sm font-bold text-zinc-900 mb-2 inline-flex items-center gap-1.5"><History className="h-4 w-4 text-amber-700" /> Redemption history</h2>
+          {redemptions.length === 0 ? (
+            <div className="py-6 text-center text-sm text-muted-foreground rounded-2xl border bg-white">No redemptions yet.</div>
+          ) : (
+            <div className="rounded-2xl border bg-white overflow-hidden divide-y">
               {redemptions.map((r) => {
                 const item = catalog.find((c) => c.id === r.catalog_id);
+                const status: "active" | "used" | "expired" = r.used_at ? "used" : "active";
+                const statusStyle =
+                  status === "used" ? "bg-zinc-100 text-zinc-700" :
+                  status === "expired" ? "bg-rose-100 text-rose-700" :
+                  "bg-emerald-100 text-emerald-700";
                 return (
-                  <div key={r.id} className={`rounded-xl border p-3 flex items-center justify-between ${r.used_at ? "bg-zinc-50 opacity-70" : "bg-white border-amber-300"}`}>
-                    <div className="min-w-0">
-                      <div className="text-sm font-semibold">{item?.name ?? "Reward"}</div>
-                      <div className="text-[11px] text-zinc-500">{r.used_at ? `Redeemed ${new Date(r.used_at).toLocaleDateString()}` : "Show at any partner café"}</div>
+                  <div key={r.id} className="flex items-center gap-3 p-3">
+                    <div className="text-2xl">{item?.emoji ?? "🎁"}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <div className="text-sm font-semibold truncate">{item?.name ?? "Reward"}</div>
+                        <span className={`text-[10px] uppercase tracking-wider font-bold rounded-full px-2 py-0.5 ${statusStyle}`}>{status}</span>
+                      </div>
+                      <div className="text-[11px] text-zinc-500 mt-0.5">
+                        {status === "used" ? `Used ${new Date(r.used_at!).toLocaleString()}` : `Issued ${new Date(r.created_at).toLocaleDateString()}`}
+                        {" · "}{r.points_spent} pts spent
+                      </div>
                     </div>
-                    <div className="font-mono text-sm tracking-[0.25em] font-bold text-amber-900 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200">{r.redemption_code}</div>
+                    <div className="font-mono text-xs tracking-[0.2em] font-bold text-amber-900 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">{r.redemption_code}</div>
                   </div>
                 );
               })}
             </div>
-          </section>
-        )}
+          )}
+        </section>
 
         {/* Referrals */}
         <section className="rounded-2xl border-2 border-dashed border-amber-300 p-5 bg-amber-50/50">
@@ -183,16 +310,38 @@ function WalletPage() {
 
         {/* Ledger */}
         <section>
-          <h2 className="text-sm font-bold text-zinc-900 mb-2 inline-flex items-center gap-1.5"><Sparkles className="h-4 w-4 text-amber-700" /> Recent activity</h2>
+          <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
+            <h2 className="text-sm font-bold text-zinc-900 inline-flex items-center gap-1.5"><Sparkles className="h-4 w-4 text-amber-700" /> Activity & ledger</h2>
+            <Button onClick={exportCsv} size="sm" variant="outline" className="h-8 text-xs"><Download className="h-3.5 w-3.5 mr-1" /> Export CSV</Button>
+          </div>
+          <div className="rounded-2xl border bg-white p-3 mb-2 flex items-end gap-2 flex-wrap">
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold">From</label>
+              <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-8 text-xs w-36" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold">To</label>
+              <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-8 text-xs w-36" />
+            </div>
+            {(from || to) && (
+              <Button onClick={() => { setFrom(""); setTo(""); }} variant="ghost" size="sm" className="h-8 text-xs">Clear</Button>
+            )}
+            <div className="ml-auto flex gap-3 text-[11px]">
+              <span className="text-emerald-700 font-semibold">+{totals.earned.toLocaleString()} earned</span>
+              <span className="text-rose-700 font-semibold">−{totals.spent.toLocaleString()} spent</span>
+            </div>
+          </div>
           {loading ? (
             <div className="py-8 text-center text-sm text-muted-foreground">Loading…</div>
           ) : ledger.length === 0 ? (
-            <div className="py-8 text-center text-sm text-muted-foreground rounded-2xl border bg-white">Check in at a café to start earning.</div>
+            <div className="py-8 text-center text-sm text-muted-foreground rounded-2xl border bg-white">No activity in this range.</div>
           ) : (
             <div className="rounded-2xl border bg-white overflow-hidden divide-y">
               {ledger.map((l) => {
                 const meta = SOURCE_META[l.source] ?? { label: l.source, Icon: Sparkles, color: "text-zinc-700 bg-zinc-100" };
                 const pos = l.delta > 0;
+                const exp = l.expires_at ? new Date(l.expires_at) : null;
+                const expiresSoon = exp && exp.getTime() - Date.now() < 30 * 86400000 && exp.getTime() > Date.now();
                 return (
                   <div key={l.id} className="flex items-center gap-3 p-3">
                     <div className={`w-9 h-9 rounded-full flex items-center justify-center ${meta.color}`}>
@@ -200,7 +349,10 @@ function WalletPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium text-zinc-900 truncate">{meta.label}</div>
-                      <div className="text-[11px] text-zinc-500">{new Date(l.created_at).toLocaleString()}</div>
+                      <div className="text-[11px] text-zinc-500">
+                        {new Date(l.created_at).toLocaleString()}
+                        {exp && <> · expires {exp.toLocaleDateString()}{expiresSoon && <span className="text-amber-700 font-semibold"> (soon)</span>}</>}
+                      </div>
                     </div>
                     <div className={`text-sm font-bold inline-flex items-center gap-0.5 ${pos ? "text-emerald-700" : "text-rose-700"}`}>
                       {pos ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownLeft className="h-3.5 w-3.5" />}
