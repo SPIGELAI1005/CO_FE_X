@@ -435,6 +435,7 @@ export type Database = {
           balance_after: number
           created_at: string
           delta: number
+          expires_at: string | null
           id: string
           metadata: Json | null
           ref_id: string | null
@@ -446,6 +447,7 @@ export type Database = {
           balance_after: number
           created_at?: string
           delta: number
+          expires_at?: string | null
           id?: string
           metadata?: Json | null
           ref_id?: string | null
@@ -457,6 +459,7 @@ export type Database = {
           balance_after?: number
           created_at?: string
           delta?: number
+          expires_at?: string | null
           id?: string
           metadata?: Json | null
           ref_id?: string | null
@@ -476,6 +479,7 @@ export type Database = {
           handle: string | null
           id: string
           instagram_handle: string | null
+          points_expire_days: number | null
           referral_code: string | null
           referred_by: string | null
           total_check_ins: number
@@ -492,6 +496,7 @@ export type Database = {
           handle?: string | null
           id: string
           instagram_handle?: string | null
+          points_expire_days?: number | null
           referral_code?: string | null
           referred_by?: string | null
           total_check_ins?: number
@@ -508,6 +513,7 @@ export type Database = {
           handle?: string | null
           id?: string
           instagram_handle?: string | null
+          points_expire_days?: number | null
           referral_code?: string | null
           referred_by?: string | null
           total_check_ins?: number
@@ -776,6 +782,14 @@ export type Database = {
         Returns: number
       }
       claim_referral: { Args: { _code: string }; Returns: Json }
+      get_expiring_points_buckets: {
+        Args: never
+        Returns: {
+          amount: number
+          bucket: string
+          expires_at: string
+        }[]
+      }
       get_leaderboard: {
         Args: { _limit?: number; _metric?: string }
         Returns: {
@@ -799,6 +813,7 @@ export type Database = {
         Returns: boolean
       }
       join_campaign: { Args: { _campaign_id: string }; Returns: Json }
+      partner_mark_catalog_code_used: { Args: { _code: string }; Returns: Json }
       perform_check_in:
         | { Args: { _shop_id: string }; Returns: Json }
         | { Args: { _campaign_id?: string; _shop_id: string }; Returns: Json }
@@ -808,6 +823,7 @@ export type Database = {
         Args: { _decision: string; _notes?: string; _submission_id: string }
         Returns: Json
       }
+      set_points_expiration_policy: { Args: { _days: number }; Returns: Json }
       verify_redemption_code: {
         Args: { _code: string; _ip?: string }
         Returns: Json
