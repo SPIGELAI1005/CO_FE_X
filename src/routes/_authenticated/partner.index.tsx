@@ -93,10 +93,10 @@ function PartnerDashboard() {
           ? supabase.from("campaign_participants").select("user_id, joined_at, campaign_id").in("campaign_id", cIds).gte("joined_at", prevMonthStartISO).lt("joined_at", monthStartISO)
           : Promise.resolve({ data: [] as any[] }),
         cIds.length
-          ? supabase.from("social_submissions").select("platform, created_at, campaign_id").in("campaign_id", cIds).eq("status", "approved").gte("created_at", monthStartISO)
+          ? (supabase as any).from("social_submissions").select("platform, created_at, campaign_id").in("campaign_id", cIds).eq("status", "approved").gte("created_at", monthStartISO)
           : Promise.resolve({ data: [] as any[] }),
         cIds.length
-          ? supabase.from("social_submissions").select("*", { count: "exact", head: true }).in("campaign_id", cIds).eq("status", "approved").gte("created_at", monthStartISO)
+          ? (supabase as any).from("social_submissions").select("*", { count: "exact", head: true }).in("campaign_id", cIds).eq("status", "approved").gte("created_at", monthStartISO)
           : Promise.resolve({ count: 0 }),
       ]);
 
