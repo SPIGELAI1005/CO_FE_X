@@ -19,7 +19,7 @@ The memory bank is a set of small, focused documents that capture **what the pro
 |------|------------|
 | [productContext.md](./productContext.md) | You need product vision, roles, or “what CO:FE(X) is NOT” |
 | [techContext.md](./techContext.md) | You need stack, scripts, env, folder layout |
-| [systemPatterns.md](./systemPatterns.md) | You need conventions: queries, RPCs, check-in flow, nav |
+| [systemPatterns.md](./systemPatterns.md) | You need conventions: queries, RPCs, check-in flow, nav, i18n |
 | [activeContext.md](./activeContext.md) | You need current focus, recent decisions, open questions |
 | [progress.md](./progress.md) | You need shipped vs in-progress vs deferred features |
 
@@ -56,7 +56,7 @@ The memory bank is a set of small, focused documents that capture **what the pro
 
 - **Product:** Coffee exploration marketplace (not ordering / delivery).
 - **Users:** Explorers, Partners (cafés), Admins.
-- **Stack:** TanStack Start + React 19 + Supabase + Tailwind v4.
+- **Stack:** TanStack Start + React 19 + Supabase + Tailwind v4 + i18next (EN/DE).
 - **Explorer nav:** Radar · Explore · Campaigns · Rewards↓ · Profile.
 - **Partner nav:** Dashboard · Shop · Campaigns · Submissions · Verify · Rewards · Analytics · Billing · Settings.
 - **Core explorer loop:** Discover → check-in (GPS) → sheet → challenges → passport → rank.

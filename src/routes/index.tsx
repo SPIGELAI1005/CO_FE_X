@@ -1,6 +1,8 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { MarketingFooter } from "@/components/marketing/LegalPageShell";
+import { LanguageToggle } from "@/components/app/LanguageToggle";
 import { Download as DownloadIcon, ArrowRight, ArrowLeft, Smartphone } from "lucide-react";
 import heroImage from "@/assets/hero-explorer.jpg";
 import cofexLogo from "@/assets/cofex-logo.png";
@@ -41,35 +43,40 @@ function Landing() {
 
 /* ───────────── Nav ───────────── */
 function Nav() {
+  const { t } = useTranslation();
+
   return (
-    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-[color:var(--border)]">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-        <Link to="/" className="flex items-center gap-3 font-medium leading-tight">
+    <header className="cofex-safe-top sticky top-0 z-40 border-b border-[color:var(--border)] bg-white/90 backdrop-blur">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4">
+        <Link to="/" className="flex min-w-0 items-center gap-2 font-medium leading-tight sm:gap-3">
           <img
             src={cofexLogo}
             alt="CO:FE(X) logo"
             width={40}
             height={40}
-            className="h-9 w-9 sm:h-10 sm:w-10 shrink-0"
+            className="h-8 w-8 shrink-0 sm:h-10 sm:w-10"
           />
-          <span className="flex flex-col leading-tight">
-            <span className="text-[10px] sm:text-sm md:text-base tracking-[0.12em] sm:tracking-[0.2em] md:tracking-[0.3em]">
-              CO:FE(X) // Coffee Explorer Network
+          <span className="flex min-w-0 flex-col leading-tight">
+            <span className="truncate text-[10px] tracking-[0.12em] sm:text-sm md:tracking-[0.2em]">
+              {t("header.brandLine")}
             </span>
-            <span className="text-[10px] sm:text-xs tracking-[0.12em] sm:tracking-[0.2em] opacity-70 mt-0.5">
-              Explore. Share. Earn.
+            <span className="hidden truncate text-[10px] tracking-[0.12em] opacity-70 sm:block sm:text-xs sm:tracking-[0.2em]">
+              {t("header.tagline")}
             </span>
           </span>
         </Link>
-        <div className="flex items-center gap-6 text-sm">
-          <a href="#about" className="hidden sm:inline hover:opacity-70">About</a>
-          <a href="#reviews" className="hidden sm:inline hover:opacity-70">Reviews</a>
-          <Link to="/auth" className="hidden sm:inline text-sm hover:opacity-70">Sign in</Link>
+        <div className="flex shrink-0 items-center gap-2 text-sm sm:gap-6">
+          <a href="#about" className="hidden sm:inline hover:opacity-70">{t("landing.about")}</a>
+          <a href="#reviews" className="hidden sm:inline hover:opacity-70">{t("landing.reviews")}</a>
+          <LanguageToggle />
+          <Link to="/auth" className="hidden sm:inline text-sm hover:opacity-70">{t("header.signIn")}</Link>
           <Link
             to="/auth"
-            className="inline-flex items-center gap-2 rounded-full border border-[color:var(--cofex-black)] px-4 py-2 text-sm hover:bg-[color:var(--cofex-black)] hover:text-white transition"
+            className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--cofex-black)] px-3 py-1.5 text-xs hover:bg-[color:var(--cofex-black)] hover:text-white transition sm:gap-2 sm:px-4 sm:py-2 sm:text-sm"
           >
-            Get started <DownloadIcon className="h-4 w-4" />
+            <span className="hidden min-[400px]:inline">{t("landing.getStarted")}</span>
+            <span className="min-[400px]:hidden">Go</span>
+            <DownloadIcon className="h-4 w-4 shrink-0" />
           </Link>
         </div>
       </nav>
@@ -79,34 +86,36 @@ function Nav() {
 
 /* ───────────── Hero ───────────── */
 function Hero() {
+  const { t } = useTranslation();
+
   return (
     <section
       data-parallax
       className="relative mx-auto max-w-6xl px-5 pt-16 pb-12 text-center isolate"
     >
       <h1
-        className="font-bold tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
+        className="font-bold tracking-tight leading-[0.95] text-[clamp(2rem,14vw,6.875rem)] cofex-shine"
         style={{
           backgroundImage:
             "linear-gradient(90deg, var(--cofex-cyan), #5cd3ff, var(--cofex-cyan))",
         }}
       >
-        (X)plore Cafés
+        {t("landingExtended.exploreCafes")}
       </h1>
       <div className="my-6 flex justify-center cofex-float-sm">
         <span className="rounded-full bg-[color:var(--cofex-black)] text-white px-5 py-2 text-sm font-medium shadow-lg">
-          Coming September 28, 2026
+          {t("landing.comingSoon")}
         </span>
       </div>
       <h2
-        className="font-bold tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
+        className="font-bold tracking-tight leading-[0.95] text-[clamp(2rem,14vw,6.875rem)] cofex-shine"
         style={{
           backgroundImage:
             "linear-gradient(90deg, var(--cofex-coffee), #b88259, var(--cofex-coffee))",
           animationDelay: "-2s",
         }}
       >
-        (€)arn Coffees
+        {t("landingExtended.earnCoffees")}
       </h2>
 
 
@@ -118,7 +127,7 @@ function Hero() {
             className="absolute -left-2 sm:-left-16 top-24 z-10 cofex-px"
             style={{ ["--depth-x" as any]: "18px", ["--depth-y" as any]: "12px", ["--depth-s" as any]: "20px" }}
           >
-            <div className="rounded-full bg-white shadow-xl px-5 py-3 text-base font-semibold whitespace-nowrap cofex-float-pill">
+            <div className="rounded-full bg-white px-3 py-2 text-sm font-semibold shadow-xl cofex-float-pill max-sm:max-w-[11rem] sm:px-5 sm:py-3 sm:text-base">
               1 <span style={{ color: "var(--cofex-cyan)" }}>Post</span> = 1{" "}
               <span style={{ color: "var(--cofex-coffee)" }}>Coffee</span>
             </div>
@@ -146,7 +155,7 @@ function Hero() {
                   <img
                     src={heroImage}
                     alt="CO:FE(X) Explorer holding phone with free coffee reward"
-                    className="w-full h-[520px] object-cover"
+                    className="h-[380px] w-full object-cover sm:h-[520px]"
                   />
                   <div className="p-6 text-left">
                     <h3 className="text-2xl font-extrabold leading-tight">
@@ -404,11 +413,11 @@ function Testimonial() {
               key={t.author}
               data-cofex-testimonial-slide
               aria-hidden={i !== 0}
-              className={`col-start-1 row-start-1 w-full relative rounded-3xl bg-white p-10 sm:p-16 shadow-sm cofex-reveal is-visible cofex-px${i !== 0 ? " invisible pointer-events-none" : ""}`}
+              className={`col-start-1 row-start-1 w-full relative rounded-3xl bg-white p-6 shadow-sm cofex-reveal is-visible cofex-px sm:p-10 md:p-16${i !== 0 ? " invisible pointer-events-none" : ""}`}
               style={{ ["--depth-x" as any]: "8px", ["--depth-y" as any]: "6px", ["--depth-s" as any]: "20px" }}
             >
               <span
-                className="absolute -top-4 left-10 rounded-full px-5 py-2 text-sm font-bold cofex-float-pill"
+                className="absolute -top-4 left-6 right-6 max-w-[calc(100%-3rem)] truncate rounded-full px-4 py-2 text-xs font-bold cofex-float-pill sm:left-10 sm:right-auto sm:max-w-none sm:px-5 sm:text-sm"
                 style={{
                   background: t.audience === "cafe" ? "var(--cofex-pastel-pink)" : "var(--cofex-pastel-lilac)",
                   color: t.audience === "cafe" ? "var(--cofex-coffee-deep)" : undefined,
@@ -416,7 +425,7 @@ function Testimonial() {
               >
                 {t.audience === "cafe" ? "What Cafés are saying…" : "What Explorers are saying…"}
               </span>
-              <p className="text-2xl sm:text-3xl font-extrabold leading-snug text-center whitespace-pre-line">
+              <p className="text-xl font-extrabold leading-snug text-center whitespace-pre-line sm:text-2xl md:text-3xl">
                 &ldquo;{t.quote}&rdquo;
               </p>
               <p className="mt-8 text-center text-sm font-medium">{t.author}</p>
@@ -463,7 +472,7 @@ function Download() {
 
   return (
     <section id="download" className="mx-auto max-w-4xl px-5 py-24 text-center">
-      <h2 className="text-5xl sm:text-7xl font-medium tracking-tight">Download CO:FE(X)</h2>
+      <h2 className="text-3xl font-medium tracking-tight sm:text-5xl md:text-7xl">Download CO:FE(X)</h2>
       <p className="mt-4 text-base">Available starting September 28, 2026, on…</p>
 
       {canInstall && engaged && (

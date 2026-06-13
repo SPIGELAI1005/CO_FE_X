@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { useEffect, useMemo, useState, lazy, Suspense } from "react";
+import { useTranslation } from "react-i18next";
 import { Map as MapIcon, List as ListIcon, Search, Locate, Columns2, Maximize2 } from "lucide-react";
 import { CoffeeShopCard, type ShopCardData } from "@/components/app/CoffeeShopCard";
 import type { MapShop } from "@/components/app/CoffeeMap";
@@ -34,7 +35,7 @@ const searchSchema = z.object({
   campaignsOnly: fallback(z.boolean(), false).default(false),
   minRating: fallback(z.number().min(0).max(5), 0).default(0),
   sort: fallback(z.enum(SORTS), "distance").default("distance"),
-  view: fallback(z.enum(VIEWS), "split").default("split"),
+  view: fallback(z.enum(VIEWS), "list").default("list"),
   radius: fallback(z.number().min(0.5).max(50), 5).default(5),
 });
 
@@ -77,12 +78,13 @@ function PanelPeek({
   onClick: () => void;
   showLabel?: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <button
       type="button"
       onClick={onClick}
       className={`cofex-explore-peek ${side === "left" ? "rounded-r-3xl rounded-l-xl" : "rounded-l-3xl rounded-r-xl"}`}
-      aria-label={`Show ${label}`}
+      aria-label={t("explore.showPanel", { label })}
     >
       <Icon className="h-5 w-5 shrink-0 text-[color:var(--cofex-cyan)]" />
       {showLabel && <span className="cofex-explore-peek-label">{label}</span>}
@@ -108,12 +110,13 @@ function PanelHeader({
   onExpand: () => void;
   onRestoreSplit: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="cofex-explore-panel-header shrink-0">
       <button
         type="button"
         onClick={onExpand}
-        className="min-w-0 text-left text-[11px] font-extrabold uppercase tracking-[0.2em] text-[color:var(--cofex-coffee-deep)]"
+        className="min-w-0 text-left text-[10px] font-extrabold uppercase tracking-[0.15em] text-[color:var(--cofex-coffee-deep)] sm:text-[11px] sm:tracking-[0.2em]"
       >
         {title}
       </button>
@@ -122,15 +125,17 @@ function PanelHeader({
           type="button"
           onClick={expanded ? onRestoreSplit : onExpand}
           className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[color:var(--border)] px-2.5 py-1 text-[10px] font-semibold text-[color:var(--cofex-coffee-deep)] transition hover:border-[color:var(--cofex-cyan)] hover:bg-[color:var(--cofex-pastel-blue)]"
-          aria-label={expanded ? "Restore split view" : "Expand panel"}
+          aria-label={expanded ? t("explore.restoreSplit") : t("explore.expandPanel")}
         >
           {expanded ? (
             <>
-              <Columns2 className="h-3 w-3" /> Split
+              <Columns2 className="h-3 w-3" />
+              <span className="hidden sm:inline">{t("explore.split")}</span>
             </>
           ) : (
             <>
-              <Maximize2 className="h-3 w-3" /> Expand
+              <Maximize2 className="h-3 w-3" />
+              <span className="hidden sm:inline">{t("explore.expandPanelShort")}</span>
             </>
           )}
         </button>
@@ -140,6 +145,7 @@ function PanelHeader({
 }
 
 function ExplorePage() {
+  const { t } = useTranslation();
   const { q, tags, amenities, free, campaignsOnly, minRating, sort, view, radius } = Route.useSearch();
   const navigate = useNavigate();
   type S = z.infer<typeof searchSchema>;
@@ -177,6 +183,13 @@ function ExplorePage() {
   useEffect(() => {
     locate();
   }, []);
+
+  useEffect(() => {
+    if (window.matchMedia("(max-width: 639px)").matches && view === "split") {
+      update({ view: "list" });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- coerce split away on phone once
+  }, [view]);
 
   const toggle = (list: string[], v: string) =>
     list.includes(v) ? list.filter((x) => x !== v) : [...list, v];
@@ -247,16 +260,16 @@ function ExplorePage() {
     (minRating > 0 ? 1 : 0);
 
   return (
-    <AppPage fullHeight className="h-[calc(100dvh-8.5rem)]">
-      <div className="mx-auto flex h-full w-full max-w-6xl flex-1 flex-col gap-3 px-4 py-4 pb-4 sm:px-5">
+    <AppPage fullHeight className="min-h-0 flex-1">
+      <div className="mx-auto flex h-full min-h-0 w-full max-w-6xl flex-1 flex-col gap-2 px-3 py-3 sm:gap-3 sm:px-5 sm:py-4">
         {/* Search panel */}
-        <div className="cofex-app-card space-y-3 p-4 sm:p-5">
+        <div className="cofex-app-card shrink-0 space-y-3 p-3 sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--cofex-cyan)]" />
               <input
                 type="search"
-                placeholder="Search cafés, neighbourhoods, vibes…"
+                placeholder={t("explore.searchPlaceholder")}
                 value={q}
                 onChange={(e) => update({ q: e.target.value })}
                 className="w-full rounded-full border border-[color:var(--border)] bg-[color:var(--cofex-cream)]/40 py-2.5 pl-10 pr-4 text-sm outline-none transition focus:border-[color:var(--cofex-cyan)] focus:bg-white"
@@ -266,12 +279,12 @@ function ExplorePage() {
               type="button"
               onClick={locate}
               className="cofex-app-chip inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-xs font-semibold"
-              title="Use my location"
+              title={t("explore.useMyLocation")}
             >
-              <Locate className="h-3.5 w-3.5 text-[color:var(--cofex-cyan)]" /> Near me
+              <Locate className="h-3.5 w-3.5 text-[color:var(--cofex-cyan)]" /> {t("explore.nearMe")}
             </button>
-            <label className="inline-flex items-center gap-2 text-xs text-[color:var(--cofex-black)]/60 sm:min-w-[210px]">
-              <span className="whitespace-nowrap font-semibold text-[color:var(--cofex-coffee-deep)]">Radius</span>
+            <label className="flex w-full items-center gap-2 text-xs text-[color:var(--cofex-black)]/60 sm:min-w-[210px] sm:w-auto">
+              <span className="whitespace-nowrap font-semibold text-[color:var(--cofex-coffee-deep)]">{t("explore.radius")}</span>
               <input
                 type="range"
                 min={0.5}
@@ -305,26 +318,28 @@ function ExplorePage() {
         {/* Sort + view */}
         <div className="flex flex-wrap items-center justify-between gap-3 px-1">
           <div className="flex items-center gap-2 text-xs">
-            <span className="font-bold text-[color:var(--cofex-coffee-deep)]">{cards.length} cafés</span>
+            <span className="font-bold text-[color:var(--cofex-coffee-deep)]">{t("explore.cafesCount", { count: cards.length })}</span>
             <span className="text-[color:var(--cofex-black)]/30">·</span>
-            <span className="text-[color:var(--cofex-black)]/55">Sort</span>
+            <span className="text-[color:var(--cofex-black)]/55">{t("explore.sort")}</span>
             <ExploreSortSelect value={sort} onChange={(next) => update({ sort: next })} />
           </div>
-          <div className="inline-flex rounded-full border border-[color:var(--border)] bg-white p-1 shadow-sm">
+          <div className="inline-flex shrink-0 rounded-full border border-[color:var(--border)] bg-white p-0.5 shadow-sm sm:p-1">
             {(["list", "split", "map"] as const).map((v) => (
               <button
                 key={v}
                 type="button"
                 onClick={() => setView(v)}
-                className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold capitalize transition ${
+                className={`items-center gap-1 rounded-full px-2.5 py-1.5 text-[11px] font-semibold transition sm:px-3 sm:text-xs ${
+                  v === "split" ? "hidden sm:inline-flex" : "inline-flex"
+                } ${
                   view === v
                     ? "text-white"
                     : "text-[color:var(--cofex-coffee-deep)] hover:bg-[color:var(--cofex-pastel-blue)]/50"
                 }`}
                 style={view === v ? { background: "var(--gradient-coffee)" } : undefined}
               >
-                {v === "map" ? <MapIcon className="h-3.5 w-3.5" /> : v === "list" ? <ListIcon className="h-3.5 w-3.5" /> : null}
-                {v}
+                {v === "map" ? <MapIcon className="h-3.5 w-3.5" /> : v === "list" ? <ListIcon className="h-3.5 w-3.5" /> : v === "split" ? <Columns2 className="h-3.5 w-3.5" /> : null}
+                <span className={v === "split" ? "inline" : "hidden min-[380px]:inline"}>{t(`explore.${v}`)}</span>
               </button>
             ))}
           </div>
@@ -337,7 +352,7 @@ function ExplorePage() {
             {panelSizes.list === "peek" ? (
               <PanelPeek
                 side="left"
-                label="List"
+                label={t("explore.list")}
                 showLabel={false}
                 Icon={ListIcon}
                 badge={cards.length}
@@ -349,7 +364,7 @@ function ExplorePage() {
             ) : (
               <div className="cofex-app-card flex min-h-0 w-full flex-1 flex-col">
                 <PanelHeader
-                  title={`Cafés · ${cards.length}`}
+                  title={t("explore.cafesCount", { count: cards.length })}
                   expanded={panelSizes.list === "expanded" && view === "split"}
                   showSplitControl={view === "split"}
                   onExpand={() => setPanelFocus("list")}
@@ -365,10 +380,8 @@ function ExplorePage() {
                   ) : cards.length === 0 ? (
                     <div className="grid h-full min-h-[240px] place-items-center p-10 text-center">
                       <div>
-                        <p className="text-lg font-extrabold text-[color:var(--cofex-coffee-deep)]">No cafés nearby</p>
-                        <p className="mt-2 text-sm text-[color:var(--cofex-black)]/60">
-                          Try widening your radius or clearing a few filters.
-                        </p>
+                        <p className="text-lg font-extrabold text-[color:var(--cofex-coffee-deep)]">{t("explore.noShops")}</p>
+                        <p className="mt-2 text-sm text-[color:var(--cofex-black)]/60">{t("explore.noShopsHint")}</p>
                       </div>
                     </div>
                   ) : (
@@ -394,7 +407,7 @@ function ExplorePage() {
             {panelSizes.map === "peek" ? (
               <PanelPeek
                 side="right"
-                label="Map"
+                label={t("explore.map")}
                 Icon={MapIcon}
                 onClick={() => {
                   if (view === "list") setView("map");
@@ -404,7 +417,7 @@ function ExplorePage() {
             ) : (
               <div className="cofex-app-card flex min-h-0 w-full flex-1 flex-col">
                 <PanelHeader
-                  title="Map"
+                  title={t("explore.map")}
                   expanded={panelSizes.map === "expanded" && view === "split"}
                   showSplitControl={view === "split"}
                   onExpand={() => setPanelFocus("map")}

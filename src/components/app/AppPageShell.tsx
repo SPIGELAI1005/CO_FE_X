@@ -26,25 +26,27 @@ export function AppPage({ children, className = "", fullHeight }: AppPageProps) 
 
 export function AppPageHeader({ eyebrow, title, subtitle, accent = "var(--cofex-cyan)", action }: AppPageHeaderProps) {
   return (
-    <div className="mx-auto flex w-full max-w-6xl items-start justify-between gap-4 px-5 pb-4 pt-6 sm:pt-8">
-      <div>
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 pb-4 pt-5 sm:flex-row sm:items-start sm:justify-between sm:px-5 sm:pt-8">
+      <div className="min-w-0 flex-1">
         {eyebrow && (
-          <p className="text-xs font-bold uppercase tracking-[0.25em]" style={{ color: accent }}>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] sm:text-xs sm:tracking-[0.25em]" style={{ color: accent }}>
             {eyebrow}
           </p>
         )}
-        <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-[color:var(--cofex-black)] sm:text-3xl">
+        <h1 className="mt-1 text-xl font-extrabold tracking-tight text-[color:var(--cofex-black)] sm:text-2xl md:text-3xl">
           {title}
         </h1>
-        {subtitle && <p className="mt-2 max-w-xl text-sm text-[color:var(--cofex-black)]/70">{subtitle}</p>}
+        {subtitle && (
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-[color:var(--cofex-black)]/70">{subtitle}</p>
+        )}
       </div>
-      {action}
+      {action ? <div className="shrink-0 self-start">{action}</div> : null}
     </div>
   );
 }
 
 export function AppPageBody({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`mx-auto w-full max-w-6xl px-5 ${className}`}>{children}</div>;
+  return <div className={`mx-auto w-full max-w-6xl px-4 sm:px-5 ${className}`}>{children}</div>;
 }
 
 interface AppPageSectionProps {
@@ -67,21 +69,21 @@ export function AppPageSection({
   children,
 }: AppPageSectionProps) {
   return (
-    <section className={`mt-8 ${className}`}>
-      <div className="mb-4 flex items-end justify-between gap-3">
-        <div>
+    <section className={`mt-6 sm:mt-8 ${className}`}>
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
           {eyebrow && (
-            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[color:var(--cofex-cyan)]">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[color:var(--cofex-cyan)] sm:tracking-[0.25em]">
               {eyebrow}
             </p>
           )}
-          <h2 className="mt-1 flex items-center gap-2 text-xl font-extrabold text-[color:var(--cofex-coffee-deep)] sm:text-2xl">
+          <h2 className="mt-1 flex items-center gap-2 text-lg font-extrabold text-[color:var(--cofex-coffee-deep)] sm:text-xl md:text-2xl">
             {icon}
-            {title}
+            <span className="min-w-0">{title}</span>
           </h2>
           {subtitle && <p className="mt-1 text-sm text-[color:var(--cofex-black)]/65">{subtitle}</p>}
         </div>
-        {action}
+        {action ? <div className="w-full shrink-0 sm:w-auto">{action}</div> : null}
       </div>
       {children}
     </section>

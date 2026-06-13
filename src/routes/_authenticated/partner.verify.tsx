@@ -1,6 +1,7 @@
 import { createFileRoute, useSearch } from "@tanstack/react-router";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useUser } from "@/hooks/use-user";
 
@@ -79,6 +80,7 @@ type AuditRow = {
 
 
 function VerifyPage() {
+  const { t } = useTranslation();
 
   const search = useSearch({ from: "/_authenticated/partner/verify" });
 
@@ -159,13 +161,9 @@ function VerifyPage() {
     <AppPage>
 
       <AppPageHeader
-
-        eyebrow="Counter tools"
-
-        title="Verify redemption code"
-
-        subtitle="Scan an explorer's reward QR or enter the code manually. Each attempt is logged."
-
+        eyebrow={t("pages.partnerVerify.eyebrow")}
+        title={t("pages.partnerVerify.title")}
+        subtitle={t("pages.partnerVerify.subtitle")}
       />
 
       <AppPageBody className="max-w-4xl pb-10">

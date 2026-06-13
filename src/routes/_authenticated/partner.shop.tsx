@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/hooks/use-user";
 import { usePartnerBilling } from "@/lib/queries/billing";
@@ -79,6 +80,7 @@ const EMPTY_SHOP = (): Shop => ({
 });
 
 function ShopProfilePage() {
+  const { t } = useTranslation();
   const { user } = useUser();
   const { data: billing } = usePartnerBilling(user?.id);
   const { data: shopList = [], isLoading: shopsLoading, refetch: refetchShops } = usePartnerShops(user?.id);
@@ -260,7 +262,7 @@ function ShopProfilePage() {
   if (loading || shopsLoading) {
     return (
       <AppPage>
-        <AppPageHeader eyebrow="Listing" title="Your café profile" />
+        <AppPageHeader eyebrow={t("pages.partnerShop.eyebrow")} title={t("pages.partnerShop.title")} />
         <AppPageBody className="pb-10">
           <div className="cofex-app-card h-64 animate-pulse bg-[color:var(--cofex-cream)]" />
         </AppPageBody>
@@ -272,9 +274,9 @@ function ShopProfilePage() {
     return (
       <AppPage>
         <AppPageHeader
-          eyebrow="Listing"
-          title="Your café profile"
-          subtitle="Tell explorers what makes your shop special."
+          eyebrow={t("pages.partnerShop.eyebrow")}
+          title={t("pages.partnerShop.title")}
+          subtitle={t("pages.partnerShop.editSubtitle")}
           action={
             canAddShop ? (
               <Button className={PARTNER_BTN} onClick={startNewShop}>
@@ -302,7 +304,7 @@ function ShopProfilePage() {
   if (!shop) {
     return (
       <AppPage>
-        <AppPageHeader eyebrow="Listing" title="Your café profile" />
+        <AppPageHeader eyebrow={t("pages.partnerShop.eyebrow")} title={t("pages.partnerShop.title")} />
         <AppPageBody className="pb-10">
           <div className="cofex-app-card h-64 animate-pulse bg-[color:var(--cofex-cream)]" />
         </AppPageBody>
@@ -315,9 +317,9 @@ function ShopProfilePage() {
   return (
     <AppPage>
       <AppPageHeader
-        eyebrow="Listing"
-        title={creatingNew ? "New location" : "Your café profile"}
-        subtitle={creatingNew ? "Add another café to your partner account." : "This is what explorers see on the map and in campaigns."}
+        eyebrow={t("pages.partnerShop.eyebrow")}
+        title={creatingNew ? t("pages.partnerShop.newLocation") : t("pages.partnerShop.title")}
+        subtitle={creatingNew ? t("pages.partnerShop.createSubtitle") : t("pages.partnerShop.viewSubtitle")}
         action={
           <div className="flex flex-wrap items-center gap-2">
             {shopList.length > 0 && !creatingNew && (

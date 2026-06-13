@@ -7,12 +7,12 @@ interface AuthFormProps {
 export function AuthForm({ next }: AuthFormProps) {
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-5 py-12"
+      className="flex min-h-screen items-center justify-center px-4 py-8 pb-[max(2rem,env(safe-area-inset-bottom))] sm:px-5 sm:py-12"
       style={{ background: "var(--cofex-cream)" }}
       data-cofex-auth-page
       data-cofex-auth-next={next?.startsWith("/") ? next : ""}
     >
-      <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl">
+      <div className="w-full max-w-md rounded-3xl bg-white p-5 shadow-xl sm:p-8">
         <div className="text-center">
           <div className="text-xs font-bold tracking-[0.3em]" style={{ color: "var(--cofex-coffee-deep)" }}>
             CO:FE(X)
@@ -57,7 +57,7 @@ export function AuthForm({ next }: AuthFormProps) {
 
         <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
           <span className="h-px flex-1 bg-border" />
-          or with email
+          <span data-cofex-auth-or-email>or with email</span>
           <span className="h-px flex-1 bg-border" />
         </div>
 

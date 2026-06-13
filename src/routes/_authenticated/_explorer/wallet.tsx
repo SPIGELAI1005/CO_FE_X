@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AppPage, AppPageBody, AppPageHeader, AppPageSection } from "@/components/app/AppPageShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -63,6 +64,7 @@ const EXPIRY_OPTIONS = [
 ];
 
 function WalletPage() {
+  const { t } = useTranslation();
   const { user } = useUser();
   const walletQuery = useWallet(user?.id);
   const [from, setFrom] = useState("");
@@ -159,9 +161,9 @@ function WalletPage() {
   return (
     <AppPage>
       <AppPageHeader
-        eyebrow="Rewards"
-        title="Wallet"
-        subtitle="Earn points from check-ins, campaigns, and referrals, then redeem rewards."
+        eyebrow={t("pages.wallet.eyebrow")}
+        title={t("pages.wallet.title")}
+        subtitle={t("pages.wallet.subtitle")}
       />
       <AppPageBody className="mx-auto max-w-3xl space-y-2 pb-8">
         <QueryBoundary query={walletQuery} loadingLabel="Loading wallet…">
@@ -201,7 +203,7 @@ function WalletPage() {
                 icon={<Hourglass className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
                 action={
                   <Select value={w.expireDays} onValueChange={updateExpiry} disabled={expiryMutation.isPending}>
-                    <SelectTrigger className="w-44 rounded-full border-[color:var(--border)]">
+                    <SelectTrigger className="w-full rounded-full border-[color:var(--border)] sm:w-44">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>

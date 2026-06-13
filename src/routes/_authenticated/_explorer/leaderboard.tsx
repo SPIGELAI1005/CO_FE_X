@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { LucideIcon } from "lucide-react";
 import { AppPage, AppPageBody, AppPageHeader } from "@/components/app/AppPageShell";
 import { QueryBoundary } from "@/components/patterns/QueryBoundary";
@@ -11,7 +12,7 @@ import {
   type LeaderboardRow,
 } from "@/lib/queries/leaderboard";
 import { useUser } from "@/hooks/use-user";
-import { levelFor } from "@/lib/explorer-levels";
+import { levelFor, levelDisplayName } from "@/lib/explorer-levels";
 import { trackExplorerEvent } from "@/lib/explorer-analytics";
 import { useProfile } from "@/lib/queries/profile";
 import { cityToSlug } from "@/lib/cities";
@@ -21,21 +22,31 @@ export const Route = createFileRoute("/_authenticated/_explorer/leaderboard")({
   component: LeaderboardPage,
 });
 
-const METRICS: {
+const METRIC_KEYS: {
   id: LeaderboardMetric;
-  label: string;
+  labelKey: string;
   Icon: LucideIcon;
   field: keyof LeaderboardRow;
   suffix?: string;
 }[] = [
-  { id: "points", label: "Explorer points", Icon: Sparkles, field: "total_points", suffix: "pts" },
-  { id: "cafes", label: "Cafés visited", Icon: Coffee, field: "cafes_visited" },
-  { id: "reviews", label: "Reviews written", Icon: MessageSquareText, field: "reviews_written" },
-  { id: "campaigns", label: "Campaigns completed", Icon: Megaphone, field: "campaigns_completed" },
-  { id: "social", label: "Social posts", Icon: Share2, field: "social_posts" },
+  { id: "points", labelKey: "leaderboardPage.metrics.points", Icon: Sparkles, field: "total_points", suffix: "pts" },
+  { id: "cafes", labelKey: "leaderboardPage.metrics.cafes", Icon: Coffee, field: "cafes_visited" },
+  { id: "reviews", labelKey: "leaderboardPage.metrics.reviews", Icon: MessageSquareText, field: "reviews_written" },
+  { id: "campaigns", labelKey: "leaderboardPage.metrics.campaigns", Icon: Megaphone, field: "campaigns_completed" },
+  { id: "social", labelKey: "leaderboardPage.metrics.social", Icon: Share2, field: "social_posts" },
 ];
 
+interface LeaderboardMetricItem {
+  id: LeaderboardMetric;
+  label: string;
+  labelKey: string;
+  Icon: LucideIcon;
+  field: keyof LeaderboardRow;
+  suffix?: string;
+}
+
 function LeaderboardPage() {
+  const { t } = useTranslation();
   const [metric, setMetric] = useState<LeaderboardMetric>("points");
   const [scope, setScope] = useState<"global" | "city">("global");
   const { user } = useUser();
@@ -43,7 +54,11 @@ function LeaderboardPage() {
   const citySlug = scope === "city" && profile?.city ? cityToSlug(profile.city) : null;
   const leaderboardQuery = useLeaderboard(metric, citySlug);
   const myRankQuery = useMyLeaderboardRank(metric, user?.id, citySlug);
-  const activeMetric = METRICS.find((m) => m.id === metric)!;
+  const metrics = useMemo(
+    () => METRIC_KEYS.map((m) => ({ ...m, label: t(m.labelKey) })),
+    [t],
+  );
+  const activeMetric = metrics.find((m) => m.id === metric)!;
 
   useEffect(() => {
     trackExplorerEvent("leaderboard_opened", { metric });
@@ -51,9 +66,9 @@ function LeaderboardPage() {
 
   return (    <AppPage>
       <AppPageHeader
-        eyebrow="Compete"
-        title="The Coffee Leaderboard"
-        subtitle="Hunters, nomads & legends across the network."
+        eyebrow={t("pages.leaderboard.eyebrow")}
+        title={t("pages.leaderboard.title")}
+        subtitle={t("pages.leaderboard.subtitle")}
       />
       <AppPageBody className="max-w-4xl pb-8">
         <div className="mb-4 flex gap-2 pt-1">
@@ -62,7 +77,7 @@ function LeaderboardPage() {
             onClick={() => setScope("global")}
             className={`cofex-app-chip rounded-full px-3.5 py-1.5 text-xs font-medium ${scope === "global" ? "cofex-app-chip-active" : ""}`}
           >
-            Global
+            {t("leaderboardPage.global")}
           </button>
           {profile?.city && (
             <button
@@ -75,7 +90,7 @@ function LeaderboardPage() {
           )}
         </div>
         <div className="cofex-chip-scroll-row mb-6">
-          {METRICS.map((m) => (
+          {metrics.map((m) => (
             <button
               key={m.id}
               type="button"
@@ -89,7 +104,7 @@ function LeaderboardPage() {
           ))}
         </div>
 
-        <QueryBoundary query={leaderboardQuery} loadingLabel="Loading explorers…">
+        <QueryBoundary query={leaderboardQuery} loadingLabel={t("leaderboardPage.loading")}>
           {(rows) => {
             const meInList = rows.find((r) => r.user_id === user?.id);
             const me =
@@ -102,7 +117,7 @@ function LeaderboardPage() {
             if (rows.length === 0) {
               return (
                 <div className="cofex-app-card-dashed cofex-app-card py-16 text-center text-sm text-[color:var(--cofex-black)]/60">
-                  No explorers yet. Be the first.
+                  {t("leaderboardPage.empty")}
                 </div>
               );
             }
@@ -151,10 +166,11 @@ function MyCard({
   outsideTop50,
 }: {
   row: LeaderboardRow;
-  metric: (typeof METRICS)[number];
+  metric: LeaderboardMetricItem;
   totalExplorers?: number;
   outsideTop50?: boolean;
 }) {
+  const { t } = useTranslation();
   const value = row[metric.field] as number;
   const { level, next, progress, idx } = levelFor(row.total_points);
   const LevelIcon = level.Icon;
@@ -166,12 +182,14 @@ function MyCard({
         <Avatar url={row.avatar_url} name={row.display_name} size={56} ring />
         <div className="min-w-0 flex-1">
           <div className="text-[10px] tracking-widest uppercase opacity-80">
-            You · Rank #{row.rank}
-            {totalExplorers ? ` of ${totalExplorers.toLocaleString()}` : ""}
-            {outsideTop50 ? " · outside top 50" : ""}
-          </div>          <div className="truncate text-lg font-bold">{row.display_name ?? "Explorer"}</div>
+            {t("leaderboardPage.youRank", { rank: row.rank })}
+            {totalExplorers ? ` · ${totalExplorers.toLocaleString()}` : ""}
+            {outsideTop50 ? ` · ${t("leaderboardPage.outsideTop50")}` : ""}
+          </div>
+          <div className="truncate text-lg font-bold">{row.display_name ?? t("pages.profile.titleFallback")}</div>
           <div className="inline-flex items-center gap-1 text-xs opacity-90">
-            <LevelIcon className="h-3.5 w-3.5" /> Level {idx + 1} · {level.name}
+            <LevelIcon className="h-3.5 w-3.5" />{" "}
+            {t("levels.levelN", { n: idx + 1, name: levelDisplayName(level, t) })}
           </div>
         </div>
         <div className="text-right">
@@ -184,7 +202,7 @@ function MyCard({
           <div className="mb-1 flex items-center justify-between text-[11px] opacity-90">
             <span>{row.total_points.toLocaleString()} pts</span>
             <span>
-              {next.min.toLocaleString()} pts → {next.name}
+              {next.min.toLocaleString()} pts → {levelDisplayName(next, t)}
             </span>
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-white/25">
@@ -202,9 +220,10 @@ function PodiumCard({
   place,
 }: {
   row: LeaderboardRow;
-  metric: (typeof METRICS)[number];
+  metric: LeaderboardMetricItem;
   place: 1 | 2 | 3;
 }) {
+  const { t } = useTranslation();
   const value = row[metric.field] as number;
   const { level } = levelFor(row.total_points);
   const LevelIcon = level.Icon;
@@ -228,9 +247,9 @@ function PodiumCard({
       <div className="mt-2 flex flex-col items-center gap-2">
         <Avatar url={row.avatar_url} name={row.display_name} size={place === 1 ? 64 : 52} ring />
         <div className="w-full min-w-0">
-          <div className="truncate text-sm font-bold">{row.display_name ?? "Explorer"}</div>
+          <div className="truncate text-sm font-bold">{row.display_name ?? t("pages.profile.titleFallback")}</div>
           <div className="inline-flex items-center gap-1 truncate text-[10px] opacity-80">
-            <LevelIcon className="h-3 w-3" /> {level.name}
+            <LevelIcon className="h-3 w-3" /> {levelDisplayName(level, t)}
           </div>
         </div>
         <div className="rounded-full bg-white/60 px-3 py-1 backdrop-blur">
@@ -250,9 +269,10 @@ function RankRow({
   highlight,
 }: {
   row: LeaderboardRow;
-  metric: (typeof METRICS)[number];
+  metric: LeaderboardMetricItem;
   highlight?: boolean;
 }) {
+  const { t } = useTranslation();
   const value = row[metric.field] as number;
   const { level } = levelFor(row.total_points);
   const LevelIcon = level.Icon;
@@ -267,12 +287,12 @@ function RankRow({
       <Avatar url={row.avatar_url} name={row.display_name} size={40} />
       <div className="min-w-0 flex-1">
         <div className="truncate text-sm font-semibold text-[color:var(--cofex-coffee-deep)]">
-          {row.display_name ?? "Explorer"}
+          {row.display_name ?? t("pages.profile.titleFallback")}
           {row.city ? <span className="font-normal text-[color:var(--cofex-black)]/45"> · {row.city}</span> : null}
         </div>
         <div className="mt-0.5 inline-flex items-center gap-2 text-[11px] text-[color:var(--cofex-black)]/55">
           <span className="inline-flex items-center gap-0.5">
-            <LevelIcon className="h-3 w-3" /> {level.name}
+            <LevelIcon className="h-3 w-3" /> {levelDisplayName(level, t)}
           </span>
           <span className="inline-flex items-center gap-0.5">
             <Coffee className="h-3 w-3" /> {row.cafes_visited}

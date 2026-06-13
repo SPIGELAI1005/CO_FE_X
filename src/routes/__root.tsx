@@ -8,16 +8,22 @@ import {
   ClientOnly,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
 import { NotFoundPage } from "@/components/app/NotFoundPage";
 import { PwaBootstrap } from "@/components/app/PwaBootstrap";
 import { CofexMotionBootstrap } from "@/components/app/CofexMotionBootstrap";
+import { I18nProvider } from "@/components/app/I18nProvider";
 import { reportAppError } from "../lib/error-reporting";
 
 function NotFoundComponent() {
-  return <NotFoundPage />;
+  return (
+    <I18nProvider>
+      <NotFoundPage />
+    </I18nProvider>
+  );
 }
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
@@ -28,14 +34,30 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   }, [error]);
 
   return (
+    <I18nProvider>
+      <ErrorComponentInner error={error} reset={reset} router={router} />
+    </I18nProvider>
+  );
+}
+
+function ErrorComponentInner({
+  error: _error,
+  reset,
+  router,
+}: {
+  error: Error;
+  reset: () => void;
+  router: ReturnType<typeof useRouter>;
+}) {
+  const { t } = useTranslation();
+  void _error;
+  return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
+          {t("errors.pageLoadTitle")}
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">{t("errors.pageLoadBody")}</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
@@ -44,13 +66,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Try again
+            {t("errors.tryAgain")}
           </button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Go home
+            {t("errors.goHome")}
           </a>
         </div>
       </div>
@@ -62,7 +84,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { name: "theme-color", content: "#3d2417" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { title: "CO:FE(X) · (X)plore Cafés · (€)arn Coffees" },
@@ -123,13 +145,15 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <PwaBootstrap />
-      <ClientOnly fallback={null}>
-        <CofexMotionBootstrap />
-      </ClientOnly>
-      <Outlet />
-      <Toaster richColors position="top-center" />
-    </QueryClientProvider>
+    <I18nProvider>
+      <QueryClientProvider client={queryClient}>
+        <PwaBootstrap />
+        <ClientOnly fallback={null}>
+          <CofexMotionBootstrap />
+        </ClientOnly>
+        <Outlet />
+        <Toaster richColors position="top-center" />
+      </QueryClientProvider>
+    </I18nProvider>
   );
 }

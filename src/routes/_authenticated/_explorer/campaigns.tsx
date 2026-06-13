@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { Gift, Users, Calendar, Hash, MapPin } from "lucide-react";
 import { AppPage, AppPageBody, AppPageHeader } from "@/components/app/AppPageShell";
 import { EmptyState } from "@/components/patterns/EmptyState";
@@ -12,23 +13,24 @@ export const Route = createFileRoute("/_authenticated/_explorer/campaigns")({
 });
 
 function ExplorerCampaignsPage() {
+  const { t } = useTranslation();
   const campaignsQuery = useActiveCampaigns();
 
   return (
     <AppPage>
       <AppPageHeader
-        eyebrow="EEFFOC Campaigns"
-        title="We Give EEFFOC"
-        subtitle="Active campaigns from cafés near you. Join, post, redeem."
+        eyebrow={t("pages.campaigns.eyebrow")}
+        title={t("pages.campaigns.title")}
+        subtitle={t("pages.campaigns.subtitle")}
       />
       <AppPageBody className="pb-8">
         <QueryBoundary
           query={campaignsQuery}
-          loadingLabel="Loading campaigns…"
+          loadingLabel={t("campaignsPage.loading")}
           isEmpty={(items) => items.length === 0}
-          emptyTitle="No active campaigns right now"
-          emptyDescription="Explore cafés near you. New EEFFOC drops land every week."
-          emptyActionLabel="Explore cafés"
+          emptyTitle={t("campaignsPage.emptyTitle")}
+          emptyDescription={t("campaignsPage.emptyDescription")}
+          emptyActionLabel={t("campaignsPage.emptyAction")}
           emptyActionTo="/explore"
         >
           {(items) => (

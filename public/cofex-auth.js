@@ -80,6 +80,10 @@
 
   function setAuthMode(form, mode) {
     form.setAttribute('data-cofex-auth-mode', mode);
+    var copy =
+      typeof window !== 'undefined' && window.cofexAuthStrings
+        ? window.cofexAuthStrings(mode)
+        : null;
     var title = document.querySelector('[data-cofex-auth-title]');
     var subtitle = document.querySelector('[data-cofex-auth-subtitle]');
     var nameField = document.querySelector('[data-cofex-auth-name-field]');
@@ -87,16 +91,23 @@
     var submit = document.querySelector('[data-cofex-auth-submit]');
     var toggle = document.querySelector('[data-cofex-auth-toggle]');
     var nameInput = nameField && nameField.querySelector('input');
-    if (title) title.textContent = mode === 'signin' ? 'Welcome back' : 'Join the network';
-    if (subtitle)
-      subtitle.textContent = mode === 'signin' ? 'Sign in to keep exploring.' : 'Snap, share, earn coffees.';
+    if (copy) {
+      if (title) title.textContent = copy.title;
+      if (subtitle) subtitle.textContent = copy.subtitle;
+      if (submit) submit.textContent = copy.submit;
+      if (toggle) toggle.textContent = copy.toggle;
+    } else {
+      if (title) title.textContent = mode === 'signin' ? 'Welcome back' : 'Join the network';
+      if (subtitle)
+        subtitle.textContent = mode === 'signin' ? 'Sign in to keep exploring.' : 'Snap, share, earn coffees.';
+      if (submit) submit.textContent = mode === 'signin' ? 'Sign in' : 'Create account';
+      if (toggle)
+        toggle.textContent =
+          mode === 'signin' ? "Don't have an account? Sign up" : 'Already have an account? Sign in';
+    }
     if (nameField) nameField.classList.toggle('hidden', mode === 'signin');
     if (nameInput) nameInput.required = mode === 'signup';
     if (forgot) forgot.classList.toggle('hidden', mode === 'signup');
-    if (submit) submit.textContent = mode === 'signin' ? 'Sign in' : 'Create account';
-    if (toggle)
-      toggle.textContent =
-        mode === 'signin' ? "Don't have an account? Sign up" : 'Already have an account? Sign in';
   }
 
   function handleOAuthCallback() {

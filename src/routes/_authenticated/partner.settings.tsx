@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useUser } from "@/hooks/use-user";
 import { AppPage, AppPageBody, AppPageHeader, AppPageSection } from "@/components/app/AppPageShell";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/_authenticated/partner/settings")({
 });
 
 function PartnerSettingsPage() {
+  const { t } = useTranslation();
   const { user } = useUser();
   const keysQuery = usePartnerApiKeys(user?.id);
   const referralsQuery = usePartnerReferrals(user?.id);
@@ -62,9 +64,9 @@ function PartnerSettingsPage() {
   return (
     <AppPage>
       <AppPageHeader
-        eyebrow="Partner settings"
-        title="Integrations & referrals"
-        subtitle="API keys for your systems and referral links to grow the partner network."
+        eyebrow={t("pages.partnerSettings.eyebrow")}
+        title={t("pages.partnerSettings.title")}
+        subtitle={t("pages.partnerSettings.subtitle")}
       />
       <AppPageBody className="max-w-3xl space-y-8 pb-10">
         <AppPageSection eyebrow="API" title="API keys" subtitle="Requires Growth or Pro plan with API access.">

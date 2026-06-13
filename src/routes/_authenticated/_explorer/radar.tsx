@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { AppPage, AppPageBody, AppPageSection } from "@/components/app/AppPageShell";
 import {
@@ -33,6 +34,7 @@ type Shop = RadarShop;
 type Campaign = RadarCampaign;
 
 function RadarPage() {
+  const { t } = useTranslation();
   const { user } = useUser();
   const [center, setCenter] = useState<[number, number] | null>(null);
   const [locating, setLocating] = useState(false);
@@ -66,10 +68,10 @@ function RadarPage() {
 
   const greeting = useMemo(() => {
     const h = now.getHours();
-    if (h < 11) return "Good morning";
-    if (h < 17) return "Good afternoon";
-    return "Good evening";
-  }, [now]);
+    if (h < 11) return t("radar.goodMorning");
+    if (h < 17) return t("radar.goodAfternoon");
+    return t("radar.goodEvening");
+  }, [now, t]);
 
   const challenges = defsQuery.data ?? EXPLORER_CHALLENGES;
 
@@ -94,7 +96,7 @@ function RadarPage() {
         {claimableCount > 0 && !nudgeDismissed && (
           <div className="mb-4 flex items-center justify-between gap-3 rounded-2xl bg-[color:var(--cofex-pastel-lilac)] px-4 py-3">
             <p className="text-sm font-semibold text-[color:var(--cofex-coffee-deep)]">
-              {claimableCount} reward{claimableCount === 1 ? "" : "s"} ready to claim!
+              {t("radar.rewardsReady", { count: claimableCount })}
             </p>
             <button
               type="button"
@@ -104,19 +106,19 @@ function RadarPage() {
                 localStorage.setItem(`radar-claim-nudge-${new Date().toDateString()}`, "1");
               }}
             >
-              Dismiss
+              {t("radar.dismiss")}
             </button>
           </div>
         )}
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--cofex-cyan)]/30 bg-[color:var(--cofex-pastel-blue)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-[color:var(--cofex-coffee-deep)]">
-              <RadioTower className="h-3 w-3 animate-pulse text-[color:var(--cofex-cyan)]" /> Coffee Radar™ · Live
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-[color:var(--cofex-cyan)]/30 bg-[color:var(--cofex-pastel-blue)] px-3 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-[color:var(--cofex-coffee-deep)] sm:text-[10px] sm:tracking-[0.3em]">
+              <RadioTower className="h-3 w-3 shrink-0 animate-pulse text-[color:var(--cofex-cyan)]" /> {t("radar.liveBadge")}
             </div>
-            <h1 className="mt-3 text-4xl font-extrabold leading-[1.05] text-[color:var(--cofex-coffee-deep)] md:text-5xl">
+            <h1 className="mt-3 text-3xl font-extrabold leading-[1.05] text-[color:var(--cofex-coffee-deep)] sm:text-4xl md:text-5xl">
               {greeting}.<br />
               <span className="bg-gradient-to-r from-[color:var(--cofex-cyan)] via-[color:var(--cofex-coffee-deep)] to-[color:var(--cofex-accent-gold)] bg-clip-text text-transparent">
-                Here's your coffee pulse.
+                {t("radar.pulse")}
               </span>
             </h1>
             <p className="mt-2 max-w-md text-sm text-[color:var(--cofex-black)]/65">
@@ -128,7 +130,7 @@ function RadarPage() {
         </div>
 
         {/* Stat strip */}
-        <div className="cofex-app-card mt-6 grid grid-cols-4 gap-2 p-3">
+        <div className="cofex-app-card mt-6 grid grid-cols-2 gap-2 p-3 sm:grid-cols-4">
           <Stat icon={<Zap className="h-4 w-4" />} label="Streak" value={`${data?.stats.streak_days ?? 0}d`} accent="from-amber-400 to-orange-500" />
           <Stat icon={<Coffee className="h-4 w-4" />} label="This week" value={data?.stats.visits_this_week ?? 0} accent="from-rose-400 to-pink-500" />
           <Stat icon={<MapPin className="h-4 w-4" />} label="Cities" value={data?.stats.cities_explored ?? 0} accent="from-emerald-400 to-teal-500" />
@@ -136,7 +138,7 @@ function RadarPage() {
         </div>
 
         {/* Location chip */}
-        <div className="mt-5 flex items-center justify-between text-xs text-[color:var(--cofex-black)]/60">
+        <div className="mt-5 flex flex-col gap-2 text-xs text-[color:var(--cofex-black)]/60 sm:flex-row sm:items-center sm:justify-between">
           <span className="inline-flex items-center gap-1.5">
             <MapPin className="h-3.5 w-3.5 text-[color:var(--cofex-cyan)]" />
             Radius 5 km · {center ? "Your location" : "Lisbon (default)"}
@@ -330,10 +332,11 @@ function Stat({ icon, label, value, accent }: { icon: React.ReactNode; label: st
   return (
     <div className="relative overflow-hidden rounded-xl bg-[color:var(--cofex-cream)]/60 px-3 py-2">
       <div className={`absolute -right-4 -top-4 h-12 w-12 rounded-full bg-gradient-to-br ${accent} opacity-25 blur-xl`} />
-      <div className="relative flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[color:var(--cofex-black)]/50">
-        {icon} {label}
+      <div className="relative flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wide text-[color:var(--cofex-black)]/50 sm:text-[10px] sm:tracking-widest">
+        <span className="shrink-0">{icon}</span>
+        <span className="truncate">{label}</span>
       </div>
-      <div className="relative mt-0.5 text-xl font-extrabold text-[color:var(--cofex-coffee-deep)]">{value}</div>
+      <div className="relative mt-0.5 text-lg font-extrabold text-[color:var(--cofex-coffee-deep)] sm:text-xl">{value}</div>
     </div>
   );
 }

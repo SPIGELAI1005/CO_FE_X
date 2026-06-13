@@ -165,10 +165,24 @@
     border-color: var(--color-border);
   }
 
+  html {
+    overflow-x: clip;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    -webkit-text-size-adjust: 100%;
   }
+}
+
+/* Safe-area helpers for notched phones / PWA */
+.cofex-safe-top {
+  padding-top: max(0px, env(safe-area-inset-top));
+}
+
+.cofex-app-chrome-pb {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
 }
 
 /* ───────────── CO:FE(X) motion ───────────── */
@@ -397,6 +411,29 @@ html[data-cofex-auth-busy] body::before {
 .cofex-explore-panel-peek {
   flex: 0 0 3.25rem;
   width: 3.25rem;
+}
+
+@media (max-width: 639px) {
+  .cofex-explore-panels {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .cofex-explore-panel-peek {
+    flex: 0 0 auto;
+    width: 100%;
+    min-height: 3rem;
+  }
+
+  .cofex-explore-peek {
+    min-height: 3rem;
+    flex-direction: row;
+    padding: 0.5rem 1rem;
+  }
+
+  .cofex-explore-panel-header {
+    padding: 0.5rem 0.75rem;
+  }
 }
 
 .cofex-explore-peek {

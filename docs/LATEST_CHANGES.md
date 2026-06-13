@@ -1,22 +1,61 @@
 # Latest Changes — CO:FE(X)
 
 **Last updated:** June 11, 2026  
-**Status:** Partner Next Steps sprint + explorer engagement/gaps shipped in working tree; ready for commit to [CO_FE_X](https://github.com/SPIGELAI1005/CO_FE_X).
+**Status:** i18n (EN/DE) + mobile phone pass shipped; committed to [CO_FE_X](https://github.com/SPIGELAI1005/CO_FE_X).
 
 This document summarizes the most recent product and engineering work. For sprint-level detail, see [SPRINT_EXPLORER_ENGAGEMENT.md](./SPRINT_EXPLORER_ENGAGEMENT.md), [PLAN_EXPLORER_GAPS.md](./PLAN_EXPLORER_GAPS.md), and [PLAN_PARTNER_NEXT_STEPS.md](./PLAN_PARTNER_NEXT_STEPS.md). For a full system review, see [AUDIT.md](./AUDIT.md).
 
 ---
 
-## Summary (June 2026)
+## Summary (June 2026 — latest)
 
 | Batch | Scope |
 |-------|--------|
+| **i18n (EN / DE)** | `i18next` + `react-i18next`; locale files; `LanguageToggle` (EN/DE) in headers; auth bridge for `cofex-auth.js`; page headers, nav, explore filters/sort, passport, radar, partner routes |
+| **Mobile / phone pass** | Safe-area insets, viewport-fit, explore default list view, radar 2×2 stats, responsive page shells, partner nav icon-only labels, landing/auth sizing |
 | **Partner Next Steps** | QR verify scanner, multi-shop, campaign lifecycle, settings (API keys/referrals), printable QR PDF, auto-approve social, catalog verify UI, shop delete |
 | **Partner UI refresh** | `AppPage` shell, `PartnerHeader`, `PartnerBottomNav`, all 8 partner routes aligned with explorer design language |
 | **Explorer Engagement** | Leaderboard in Rewards menu, challenge claims, post-check-in sheet, analytics hooks |
 | **Explorer Gaps** | City collections, badge moments, seasonal challenges, KPI persistence, discovery polish |
 | **EEFFOC social flow** | Participation QR, social proof submissions, hybrid fulfillment |
 | **Legal & polish** | 9 public legal routes, em-dash cleanup in user-facing copy, filter chip scroll-row fix |
+
+---
+
+## Internationalization (EN / DE)
+
+**Libraries:** `i18next`, `react-i18next`  
+**Locale storage:** `localStorage` key `cofex-locale` (`en` \| `de`); synced to `<html lang>`
+
+| Item | Files |
+|------|-------|
+| Init + provider | `src/lib/i18n/index.ts`, `src/components/app/I18nProvider.tsx` |
+| Locale JSON | `src/lib/i18n/locales/en.json`, `de.json` |
+| Language toggle | `src/components/app/LanguageToggle.tsx` — **EN** / **DE** label in `AppHeader`, `PartnerHeader`, landing nav, 404 |
+| Filter/sort labels | `src/lib/i18n/use-filter-labels.ts`; wired in `ExploreFilters.tsx`, `ExploreSortSelect.tsx` |
+| Auth (vanilla JS) | `AuthLocaleBridge.tsx` + `public/cofex-auth.js` uses `window.cofexAuthStrings` |
+| Explorer levels | `explorer-levels.ts` keys + `levelDisplayName()` for localized rank/profile |
+| Query defaults | `QueryBoundary.tsx` uses `query.*` keys |
+
+**Wired routes/components:** Explorer (explore, radar, campaigns, passport, wallet, profile, leaderboard), all partner page headers, landing nav/hero, auth, bottom nav, notifications, notFound, error boundary.
+
+**Partial / follow-up:** Wallet body copy, partner dashboard KPIs, landing Features/Testimonials sections, campaign wizard toasts — keys exist or remain English in deep UI.
+
+---
+
+## Mobile / phone responsiveness
+
+| Item | Detail |
+|------|--------|
+| Viewport | `viewport-fit=cover` in root meta for notched devices / PWA |
+| Safe areas | `cofex-safe-top`, `cofex-app-chrome-pb` (bottom nav + home indicator) in `styles.css` |
+| Explore | Default view **list** on phones; split hidden `< sm`; flex layout replaces fixed `100dvh` calc; tighter padding |
+| Page shell | `AppPageHeader` / `AppPageSection` stack on mobile; smaller heading scale |
+| Radar | Stats `grid-cols-2 sm:grid-cols-4`; hero stacks on narrow screens |
+| Partner nav | Icon-only inactive labels below 360px (matches explorer `BottomNav`) |
+| Landing | Fluid hero type (`clamp`), compact nav CTA, testimonial padding, shorter mockup on mobile |
+| Auth | `p-5 sm:p-8`, safe-area bottom padding |
+| Notifications | Popover width `min(20rem, calc(100vw - 2rem))` |
 
 ---
 
@@ -240,15 +279,19 @@ Run `npm run db:push` then `npm run db:types` after pulling.
 ## New / notable files
 
 ```
+src/lib/i18n/
+  index.ts, locales/en.json, locales/de.json, use-filter-labels.ts
+src/components/app/
+  I18nProvider.tsx, LanguageToggle.tsx
+src/components/auth/
+  AuthLocaleBridge.tsx
+
 src/components/app/partner/
   VerifyQrScanner.tsx, PartnerShopSelect.tsx, PartnerShell.tsx, …
 
 src/lib/
   parse-verify-code.ts, participation-qr-pdf.ts, partner-campaign-edit.ts
   campaign-fulfillment.ts, queries/partner.ts
-
-src/routes/_authenticated/
-  partner.settings.tsx (+ refreshed partner.* routes)
 
 e2e/
   partner.auth.setup.ts, partner-routes.spec.ts, partner-guest.spec.ts

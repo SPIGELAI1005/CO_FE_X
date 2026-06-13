@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/hooks/use-user";
 import { usePartnerBilling, billingLimitsForShop } from "@/lib/queries/billing";
@@ -58,6 +59,7 @@ function dateToInput(s: string) {
 }
 
 function PartnerAnalyticsPage() {
+  const { t } = useTranslation();
   const { user } = useUser();
   const { data: billing } = usePartnerBilling(user?.id);
   const primaryShopId = billing?.shops[0]?.coffee_shop_id;
@@ -233,9 +235,9 @@ function PartnerAnalyticsPage() {
   return (
     <AppPage>
       <AppPageHeader
-        eyebrow="Analytics"
-        title="Campaign performance"
-        subtitle="Participants, visits, and reward utilisation across your EEFFOC drops."
+        eyebrow={t("pages.partnerAnalytics.eyebrow")}
+        title={t("pages.partnerAnalytics.title")}
+        subtitle={t("pages.partnerAnalytics.subtitle")}
         action={
           <Button onClick={exportCSV} variant="outline" disabled={!rows.length} className="rounded-full">
             <Download className="mr-1 h-4 w-4" /> Export CSV

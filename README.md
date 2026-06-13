@@ -5,6 +5,7 @@ Mobile-first platform for discovering independent coffee shops, joining campaign
 ## Stack
 
 - **Frontend:** TanStack Start, React 19, TanStack Router, TanStack Query, Tailwind CSS v4, shadcn/ui
+- **i18n:** i18next + react-i18next (English + German; toggle in app header)
 - **Backend:** Supabase (Postgres + RLS + RPC functions)
 - **Maps:** Leaflet + OpenStreetMap
 
@@ -52,6 +53,7 @@ src/
   components/app/   Product UI (maps, nav, wizards)
   components/ui/    shadcn primitives
   lib/queries/      React Query hooks
+  lib/i18n/         i18next locales (en.json, de.json)
   lib/geo.ts        Check-in distance helpers
   integrations/supabase/
 supabase/migrations/ Postgres schema, RLS, RPC functions
@@ -67,7 +69,7 @@ See **[docs/DEVELOPMENT_PLAN.md](./docs/DEVELOPMENT_PLAN.md)** for the full 12-w
 | Doc | Purpose |
 | --- | --- |
 | [docs/PROJECT_CONTEXT.md](./docs/PROJECT_CONTEXT.md) | Product vision, roles, development principles |
-| [docs/LATEST_CHANGES.md](./docs/LATEST_CHANGES.md) | Recent sprint changelog (explorer + partner + EEFFOC) |
+| [docs/LATEST_CHANGES.md](./docs/LATEST_CHANGES.md) | Recent changelog (i18n, mobile, partner, EEFFOC) |
 | [docs/AUDIT.md](./docs/AUDIT.md) | Comprehensive app audit (product, security, compliance, ops) |
 | [docs/memory-bank/](./docs/memory-bank/) | Agent/team memory bank (active context, patterns, progress) |
 | [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | Production architecture and scale targets |

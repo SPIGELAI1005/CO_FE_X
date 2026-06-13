@@ -20,6 +20,24 @@
 - [x] Admin console (partners, campaigns, users, analytics, revenue)
 - [x] PWA manifest + service worker
 
+### Internationalization
+
+- [x] **English + German** via `i18next` / `react-i18next`
+- [x] Locale persistence (`cofex-locale` in localStorage)
+- [x] **EN / DE toggle** in explorer + partner headers (next to notifications)
+- [x] Localized nav, page headers, explore filters/sort, auth form (bridge + `cofex-auth.js`)
+- [x] Explorer level names localized; `QueryBoundary` default strings
+
+### Mobile / phone UX
+
+- [x] Safe-area top/bottom (notch + home indicator)
+- [x] `viewport-fit=cover` for PWA
+- [x] Explore: list-first on phones, split hidden on small screens
+- [x] Responsive `AppPageShell` (stacked headers on mobile)
+- [x] Radar stat grid 2×2 on phones
+- [x] Partner bottom nav icon-only pattern on narrow screens
+- [x] Landing + auth sizing pass
+
 ### Partner portal
 
 - [x] Partner UI refresh (AppPage shell, header, bottom nav, 8 routes)
@@ -74,6 +92,7 @@
 
 ## In progress / follow-up
 
+- [ ] **i18n depth** — wallet ledger, partner dashboard KPIs, landing Features/Testimonials, campaign wizard toasts
 - [ ] CI: add `SUPABASE_SERVICE_ROLE_KEY` for partner E2E in GitHub Actions
 - [ ] `DEVELOPMENT_PLAN.md` refresh (some sections stale vs shipped features)
 - [ ] Partner dashboard full React Query migration (`partner.index.tsx` still uses `useEffect`)
@@ -90,6 +109,7 @@
 - [ ] European expansion tooling
 - [ ] Premium membership billing (Stripe production hardening)
 - [ ] CO:FE(X) token, ordering, reservations
+- [ ] Additional locales beyond EN/DE
 
 ### Engineering debt
 

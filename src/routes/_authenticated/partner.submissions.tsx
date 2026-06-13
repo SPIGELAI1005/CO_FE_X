@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { AppPage, AppPageBody, AppPageHeader } from "@/components/app/AppPageShell";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,7 @@ type Submission = {
 };
 
 function SubmissionsPage() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<Submission[]>([]);
   const [tab, setTab] = useState<"pending" | "approved" | "rejected">("pending");
   const [loading, setLoading] = useState(true);
@@ -89,20 +91,20 @@ function SubmissionsPage() {
   return (
     <AppPage>
       <AppPageHeader
-        eyebrow="Social proof"
-        title="Social submissions"
-        subtitle="Approve explorer posts to unlock their campaign reward and generate a redemption code."
+        eyebrow={t("pages.partnerSubmissions.eyebrow")}
+        title={t("pages.partnerSubmissions.title")}
+        subtitle={t("pages.partnerSubmissions.subtitle")}
       />
       <AppPageBody className="max-w-5xl pb-10">
         <div className="mb-6 flex flex-wrap gap-2">
-          {(["pending", "approved", "rejected"] as const).map((t) => (
+          {(["pending", "approved", "rejected"] as const).map((status) => (
             <button
-              key={t}
+              key={status}
               type="button"
-              onClick={() => setTab(t)}
-              className={tab === t ? PARTNER_CHIP_ACTIVE : PARTNER_CHIP}
+              onClick={() => setTab(status)}
+              className={tab === status ? PARTNER_CHIP_ACTIVE : PARTNER_CHIP}
             >
-              {t.charAt(0).toUpperCase() + t.slice(1)}
+              {t(`submissionsPage.${status}`)}
             </button>
           ))}
         </div>

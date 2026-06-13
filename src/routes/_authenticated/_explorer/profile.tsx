@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useUser } from "@/hooks/use-user";
 import {
   useProfile,
@@ -20,7 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { usePassport } from "@/lib/queries/passport";
 import { Camera, Coffee, Sparkles, Loader2, Trophy, ChevronRight, Award } from "lucide-react";
-import { levelFor } from "@/lib/explorer-levels";
+import { levelFor, levelDisplayName } from "@/lib/explorer-levels";
 
 export const Route = createFileRoute("/_authenticated/_explorer/profile")({
   head: () => ({ meta: [{ title: "Profile · CO:FE(X)" }] }),
@@ -28,6 +29,7 @@ export const Route = createFileRoute("/_authenticated/_explorer/profile")({
 });
 
 function ProfilePage() {
+  const { t } = useTranslation();
   const { user, isPartner, isAdmin, loading: authLoading } = useUser();
   const { data: profile, isLoading } = useProfile(user?.id);
   const { data: application } = usePartnerApplication(user?.id);
@@ -123,8 +125,8 @@ function ProfilePage() {
   return (
     <AppPage>
       <AppPageHeader
-        eyebrow="You"
-        title={profile?.display_name ?? "Explorer"}
+        eyebrow={t("pages.profile.eyebrow")}
+        title={profile?.display_name ?? t("pages.profile.titleFallback")}
         subtitle={user?.email ?? undefined}
         action={
           <button
@@ -155,16 +157,16 @@ function ProfilePage() {
         <div className="cofex-app-card p-5">
           <div className="flex items-center gap-2 text-sm font-semibold text-[color:var(--cofex-coffee-deep)]">
             <Sparkles className="h-4 w-4 text-[color:var(--cofex-accent-gold)]" />
-            {level.name}
+            {levelDisplayName(level, t)}
           </div>
           <div className="mt-2 flex items-baseline justify-between text-xs text-[color:var(--cofex-black)]/55">
-            <span>{points.toLocaleString()} points</span>
-            <span>{profile?.total_check_ins ?? 0} check-ins</span>
+            <span>{t("profilePage.points", { count: points.toLocaleString() })}</span>
+            <span>{t("profilePage.checkIns", { count: profile?.total_check_ins ?? 0 })}</span>
           </div>
           <Progress value={progress} className="mt-2 h-2" />
           {next && (
             <p className="mt-2 text-xs text-[color:var(--cofex-black)]/55">
-              {next.min - points} pts to {next.name}
+              {t("levels.pointsToNext", { points: next.min - points, name: levelDisplayName(next, t) })}
             </p>
           )}
         </div>

@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { useUser } from "@/hooks/use-user";
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/_authenticated/partner/billing")({
 const stripeEnabled = import.meta.env.VITE_FEATURE_STRIPE === "true";
 
 function PartnerBillingPage() {
+  const { t } = useTranslation();
   const { user } = useUser();
   const { checkout } = Route.useSearch();
   const navigate = useNavigate({ from: "/partner/billing" });
@@ -68,9 +70,9 @@ function PartnerBillingPage() {
   return (
     <AppPage>
       <AppPageHeader
-        eyebrow="Partner billing"
-        title="Plans & subscriptions"
-        subtitle="Upgrade for more campaigns, multi-location listings, and promoted discover placement."
+        eyebrow={t("pages.partnerBilling.eyebrow")}
+        title={t("pages.partnerBilling.title")}
+        subtitle={t("pages.partnerBilling.subtitle")}
       />
       <AppPageBody className="max-w-4xl pb-10">
         {!stripeEnabled && (

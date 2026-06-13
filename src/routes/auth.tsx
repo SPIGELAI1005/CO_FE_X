@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { AuthForm } from "@/components/auth/AuthForm";
+import { AuthLocaleBridge } from "@/components/auth/AuthLocaleBridge";
 
 const searchSchema = z.object({
   next: z.string().optional(),
@@ -20,5 +21,10 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const { next } = Route.useSearch();
-  return <AuthForm next={next} />;
+  return (
+    <>
+      <AuthLocaleBridge />
+      <AuthForm next={next} />
+    </>
+  );
 }

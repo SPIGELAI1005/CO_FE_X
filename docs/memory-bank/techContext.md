@@ -10,6 +10,7 @@
 | Routing | TanStack Router (file-based, `src/routes/`) |
 | Data fetching | TanStack Query v5 |
 | Styling | Tailwind CSS v4, shadcn/ui, Radix primitives |
+| i18n | i18next + react-i18next (`src/lib/i18n/`, locales `en` / `de`) |
 | Backend | Supabase Postgres 15 + Auth + Storage |
 | Maps | Leaflet + OpenStreetMap (`react-leaflet`) |
 | Payments | Stripe (partner billing, partial) |
@@ -59,6 +60,7 @@ src/
   components/ui/             # shadcn primitives
   components/marketing/      # Legal shell, footer
   lib/queries/               # React Query hooks (one file per domain)
+  lib/i18n/                  # i18next init, en/de JSON, filter label hooks
   lib/rpc/                   # Supabase RPC wrappers
   integrations/supabase/     # Client + generated types
 supabase/migrations/         # SQL migrations (apply in order)
@@ -95,6 +97,18 @@ CSS variables in `src/styles.css`:
 
 - `--cofex-cyan`, `--cofex-coffee-deep`, `--cofex-pastel-blue`, etc.
 - Utility classes: `cofex-app-page`, `cofex-app-card`, `cofex-app-chip`, `cofex-chip-scroll-row`
+- Mobile: `cofex-safe-top`, `cofex-app-chrome-pb`, explore panel `@media (max-width: 639px)` rules
+
+---
+
+## Internationalization
+
+- **Library:** `i18next` + `react-i18next`
+- **Provider:** `I18nProvider` wraps app in `__root.tsx`
+- **Locales:** `src/lib/i18n/locales/en.json`, `de.json`
+- **Persistence:** `localStorage` key `cofex-locale`; `setAppLocale()` updates `document.documentElement.lang`
+- **Auth:** `AuthLocaleBridge` exposes `window.cofexAuthStrings` for `public/cofex-auth.js`
+- **Usage:** `useTranslation()` + `t('key')` in components; filter options via `useExploreFilterLabels()`
 
 ---
 

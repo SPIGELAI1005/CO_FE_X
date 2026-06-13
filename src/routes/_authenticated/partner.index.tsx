@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Users,
@@ -52,6 +53,7 @@ function lastNDays(n: number) {
 }
 
 function PartnerDashboard() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [shopName, setShopName] = useState<string>("");
   const [shopCount, setShopCount] = useState(0);
@@ -268,7 +270,7 @@ function PartnerDashboard() {
   if (loading) {
     return (
       <AppPage>
-        <AppPageHeader eyebrow="Host dashboard" title="Loading your café data…" />
+        <AppPageHeader eyebrow={t("pages.partnerDashboard.eyebrow")} title={t("pages.partnerDashboard.loading")} />
         <AppPageBody className="pb-10">
           <PartnerLoadingGrid />
         </AppPageBody>
@@ -280,9 +282,9 @@ function PartnerDashboard() {
     return (
       <AppPage>
         <AppPageHeader
-          eyebrow="Get started"
-          title="Welcome to Partner"
-          subtitle="Set up your café profile, then launch your first EEFFOC campaign."
+          eyebrow={t("pages.partnerDashboard.getStartedEyebrow")}
+          title={t("pages.partnerDashboard.welcome")}
+          subtitle={t("pages.partnerDashboard.welcomeSubtitle")}
         />
         <AppPageBody className="max-w-2xl pb-10">
           <PartnerEmptyState
@@ -323,9 +325,9 @@ function PartnerDashboard() {
   return (
     <AppPage>
       <AppPageHeader
-        eyebrow="Host dashboard"
-        title={`Welcome back, ${shopName}`}
-        subtitle="Here's what's happening across your café this month."
+        eyebrow={t("pages.partnerDashboard.eyebrow")}
+        title={t("pages.partnerDashboard.welcomeBack", { name: shopName })}
+        subtitle={t("pages.partnerDashboard.dashboardSubtitle")}
         action={
           <div className="flex flex-wrap gap-2">
             <Button asChild className={PARTNER_BTN}>

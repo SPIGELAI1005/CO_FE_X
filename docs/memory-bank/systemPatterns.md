@@ -85,8 +85,22 @@ Admin reads funnel via `get_explorer_funnel_kpis` in `admin.analytics.tsx`.
 
 - Explorer layout: `src/routes/_authenticated/_explorer/route.tsx`
   - `AppHeader`, `BottomNav`, onboarding redirect, email verification banner
-- Page shell: `AppPage` + `AppPageHeader` + `AppPageBody` + `AppPageSection`
+  - `LanguageToggle` (EN/DE) in header next to notifications
+- Page shell: `AppPage` + `AppPageHeader` + `AppPageBody` + `AppPageSection` — stacks on mobile
 - Rewards dropdown: `BottomNav.tsx` — Passport, Rank, Wallet
+
+---
+
+## Internationalization
+
+- **Init:** `src/lib/i18n/index.ts` — `getInitialLocale()`, `setAppLocale()`, `<html lang>` sync
+- **Provider:** `I18nProvider` in `__root.tsx` wraps routes (incl. error/404 boundaries using `t()`)
+- **Locales:** `src/lib/i18n/locales/en.json`, `de.json` — nested keys by page/domain
+- **Components:** `useTranslation()` → `t('key')`; explore filters via `useExploreFilterLabels()`
+- **Auth:** `AuthLocaleBridge` on `/auth` sets `window.cofexAuthStrings` for vanilla `cofex-auth.js`
+- **Levels:** `levelDisplayName(level, t)` in `explorer-levels.ts`
+
+Do not hardcode user-facing English in new UI — add keys to both locale files.
 
 ---
 

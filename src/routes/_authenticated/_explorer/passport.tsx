@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Award,
   Coffee,
@@ -79,12 +80,13 @@ function progressFor(
 }
 
 function PassportPage() {
+  const { t } = useTranslation();
   const { user } = useUser();
   const passportQuery = usePassport(user?.id);
   const collectionsQuery = useUserCityCollections(user?.id);
 
   return (
-    <QueryBoundary query={passportQuery} loadingLabel="Loading passport…">
+    <QueryBoundary query={passportQuery} loadingLabel={t("passportPage.loading")}>
       {(data) => <PassportContent data={data} collections={collectionsQuery.data ?? []} />}
     </QueryBoundary>
   );
@@ -97,6 +99,7 @@ function PassportContent({
   data: NonNullable<ReturnType<typeof usePassport>["data"]>;
   collections: UserCityCollection[];
 }) {
+  const { t } = useTranslation();
   const { profile, badges, earnedBadgeIds: earned, earnedBadges, checkIns } = data;
 
   const stats = useMemo(() => {
@@ -164,9 +167,9 @@ function PassportContent({
   return (
     <AppPage>
       <AppPageHeader
-        eyebrow="Coffee Passport"
-        title={profile?.display_name ?? "Explorer"}
-        subtitle="Every visit is a stamp. Every stamp tells a story. Travel, sip, collect."
+        eyebrow={t("pages.passport.eyebrow")}
+        title={profile?.display_name ?? t("pages.profile.titleFallback")}
+        subtitle={t("pages.passport.subtitle")}
       />
       <AppPageBody className="space-y-2 pb-8">
         <div className="cofex-app-card relative overflow-hidden text-white" style={{ background: "var(--gradient-coffee)" }}>
@@ -175,13 +178,13 @@ function PassportContent({
           <div className="relative flex flex-col gap-6 p-6 md:flex-row md:items-end md:p-8">
             <div className="flex-1">
               <div className="inline-flex items-center gap-2 text-xs tracking-[0.25em] uppercase text-amber-200/80">
-                <StampIcon className="h-3.5 w-3.5" /> Your journey
+                <StampIcon className="h-3.5 w-3.5" /> {t("passportPage.yourJourney")}
               </div>
               <div className="mt-5 flex flex-wrap gap-3">
-                <HeroStat label="Stamps" value={stats.totalCheckIns} />
-                <HeroStat label="Unique cafés" value={stats.uniqueShops} />
-                <HeroStat label="Cities" value={cityGroups.length} />
-                <HeroStat label="Countries" value={countryGroups.length} />
+                <HeroStat label={t("passportPage.stamps")} value={stats.totalCheckIns} />
+                <HeroStat label={t("passportPage.uniqueCafes")} value={stats.uniqueShops} />
+                <HeroStat label={t("passportPage.cities")} value={cityGroups.length} />
+                <HeroStat label={t("passportPage.countries")} value={countryGroups.length} />
                 <HeroStat label="Points" value={profile?.total_points ?? 0} accent />
               </div>
             </div>
@@ -197,7 +200,7 @@ function PassportContent({
         {recentBadges.length > 0 && (
           <div className="cofex-app-card flex flex-wrap gap-2 p-4">
             <span className="w-full text-[10px] font-bold tracking-widest text-[color:var(--cofex-cyan)] uppercase">
-              Recently unlocked
+              {t("passportPage.recentlyUnlocked")}
             </span>
             {recentBadges.map((b) => (
               <span
@@ -210,7 +213,7 @@ function PassportContent({
           </div>
         )}
 
-        <AppPageSection eyebrow="Collect them all" title="Achievements" icon={<Award className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}>
+        <AppPageSection eyebrow={t("passportPage.collectAll")} title={t("passportPage.achievements")} icon={<Award className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {badges
               .sort((a, b) => Number(earned.has(b.id)) - Number(earned.has(a.id)))
@@ -263,16 +266,16 @@ function PassportContent({
         </AppPageSection>
 
         <AppPageSection
-          eyebrow="Stamps grouped by city"
-          title="City collections"
+          eyebrow={t("passportPage.cityCollectionsSubtitle")}
+          title={t("passportPage.cityCollections")}
           icon={<MapPin className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
         >
           {cityGroups.length === 0 ? (
             <EmptyState
               icon={MapPin}
-              title="No city stamps yet"
-              description="Check in at cafés to start collecting stamps."
-              actionLabel="Explore cafés"
+              title={t("passportPage.noCityStamps")}
+              description={t("passportPage.noCityStampsHint")}
+              actionLabel={t("campaignsPage.emptyAction")}
               actionTo="/explore"
             />
           ) : (

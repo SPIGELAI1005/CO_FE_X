@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { AppPage, AppPageBody, AppPageHeader } from "@/components/app/AppPageShell";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ type Reward = {
 };
 
 function RewardsPage() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [shops, setShops] = useState<{ id: string; name: string }[]>([]);
   const [shopId, setShopId] = useState<string>("");
@@ -79,9 +81,9 @@ function RewardsPage() {
   return (
     <AppPage>
       <AppPageHeader
-        eyebrow="Rewards"
-        title="Reward catalog"
-        subtitle="Set what explorers can redeem with CO:FE(X) points at your café."
+        eyebrow={t("pages.partnerRewards.eyebrow")}
+        title={t("pages.partnerRewards.title")}
+        subtitle={t("pages.partnerRewards.subtitle")}
         action={
           <div className="flex items-center gap-2">
             {shops.length > 1 && (

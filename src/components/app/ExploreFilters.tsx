@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   Check,
   Coffee,
@@ -18,6 +19,7 @@ import {
   EXPLORE_TAG_FILTERS,
   type ExploreFilterOption,
 } from "@/lib/explore-filters";
+import { useExploreFilterLabels } from "@/lib/i18n/use-filter-labels";
 
 export interface ExploreFilterState {
   free: boolean;
@@ -177,27 +179,29 @@ export function ExploreFilters({
   onSetMinRating,
   onClear,
 }: ExploreFiltersProps) {
+  const { t } = useTranslation();
+  const { rewardFilters, tagFilters, amenityFilters, ratingFilters } = useExploreFilterLabels();
   const extraChips: { key: string; label: string; Icon: LucideIcon; onRemove: () => void }[] = [];
 
   if (filters.campaignsOnly) {
     extraChips.push({
       key: "campaigns",
-      label: "Campaigns",
-      Icon: EXPLORE_REWARD_FILTERS[1].Icon,
+      label: t("filters.campaignsChip"),
+      Icon: rewardFilters[1].Icon,
       onRemove: onToggleCampaigns,
     });
   }
   if (filters.minRating > 0) {
     extraChips.push({
       key: "rating",
-      label: `${filters.minRating}+ stars`,
+      label: t("filters.starsChip", { rating: filters.minRating }),
       Icon: Star,
       onRemove: () => onSetMinRating(0),
     });
   }
   for (const tag of filters.tags) {
     if (tag === "Espresso" || tag === "Matcha") continue;
-    const meta = EXPLORE_TAG_FILTERS.find((t) => t.id === tag);
+    const meta = tagFilters.find((item) => item.id === tag);
     extraChips.push({
       key: `tag-${tag}`,
       label: meta?.label ?? tag,
@@ -206,7 +210,7 @@ export function ExploreFilters({
     });
   }
   for (const amenity of filters.amenities) {
-    const meta = EXPLORE_AMENITY_FILTERS.find((a) => a.id === amenity);
+    const meta = amenityFilters.find((a) => a.id === amenity);
     extraChips.push({
       key: `amenity-${amenity}`,
       label: meta?.label ?? amenity,
@@ -214,6 +218,11 @@ export function ExploreFilters({
       onRemove: () => onToggleAmenity(amenity),
     });
   }
+
+  const cafeResultLabel =
+    resultCount === 1
+      ? t("explore.cafesCountShort", { count: resultCount })
+      : t("explore.cafesCountShort_plural", { count: resultCount });
 
   return (
     <div className="cofex-chip-scroll-row items-center">
@@ -226,7 +235,7 @@ export function ExploreFilters({
             }`}
           >
             <SlidersHorizontal className="h-3.5 w-3.5 text-[color:var(--cofex-cyan)]" />
-            Filters{filterCount > 0 ? ` · ${filterCount}` : ""}
+            {filterCount > 0 ? t("filters.triggerCount", { count: filterCount }) : t("filters.trigger")}
           </button>
         </PopoverTrigger>
         <PopoverContent
@@ -237,27 +246,27 @@ export function ExploreFilters({
           <div className="cofex-filters-panel overflow-hidden rounded-3xl">
             <div className="cofex-filters-panel-header px-5 pb-4 pt-5">
               <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[color:var(--cofex-cyan)]">
-                Explore filters
+                {t("filters.title")}
               </p>
               <h2 className="mt-1 text-lg font-extrabold tracking-tight text-[color:var(--cofex-coffee-deep)]">
-                Refine your search
+                {t("filters.subtitle")}
               </h2>
               <p className="mt-3 text-xs leading-relaxed text-[color:var(--cofex-black)]/65">
-                Pick rewards, ratings, coffee styles, and café vibes near you.
+                {t("filters.description")}
               </p>
             </div>
 
             <div className="cofex-filters-panel-body max-h-[min(58vh,26rem)] space-y-5 overflow-y-auto px-5 py-4">
-              <FilterSection title="Rewards & offers" accent="var(--cofex-coffee-deep)">
+              <FilterSection title={t("filters.rewardsSection")} accent="var(--cofex-coffee-deep)">
                 <div className="space-y-2">
                   <RewardOption
-                    option={EXPLORE_REWARD_FILTERS[0]}
+                    option={rewardFilters[0]}
                     active={filters.free}
                     onClick={onToggleFree}
                     pastelBg="var(--cofex-pastel-pink)"
                   />
                   <RewardOption
-                    option={EXPLORE_REWARD_FILTERS[1]}
+                    option={rewardFilters[1]}
                     active={filters.campaignsOnly}
                     onClick={onToggleCampaigns}
                     pastelBg="var(--cofex-cream-warm)"
@@ -265,9 +274,9 @@ export function ExploreFilters({
                 </div>
               </FilterSection>
 
-              <FilterSection title="Minimum rating">
+              <FilterSection title={t("filters.ratingSection")}>
                 <div className="flex flex-wrap gap-2">
-                  {EXPLORE_RATING_FILTERS.map(({ value, label, Icon }) => {
+                  {ratingFilters.map(({ value, label, Icon }) => {
                     const active = filters.minRating === value;
                     return (
                       <button
@@ -296,9 +305,9 @@ export function ExploreFilters({
                 </div>
               </FilterSection>
 
-              <FilterSection title="Coffee & drinks" accent="var(--cofex-coffee-deep)">
+              <FilterSection title={t("filters.tagsSection")} accent="var(--cofex-coffee-deep)">
                 <div className="grid grid-cols-2 gap-2">
-                  {EXPLORE_TAG_FILTERS.map((option) => {
+                  {tagFilters.map((option) => {
                     const active = filters.tags.includes(option.id);
                     const Icon = option.Icon;
                     return (
@@ -322,9 +331,9 @@ export function ExploreFilters({
                 </div>
               </FilterSection>
 
-              <FilterSection title="Café vibe" accent="var(--cofex-coffee-deep)">
+              <FilterSection title={t("filters.amenitiesSection")} accent="var(--cofex-coffee-deep)">
                 <div className="space-y-2">
-                  {EXPLORE_AMENITY_FILTERS.map((option) => (
+                  {amenityFilters.map((option) => (
                     <AmenityOption
                       key={option.id}
                       option={option}
@@ -343,24 +352,22 @@ export function ExploreFilters({
                 disabled={filterCount === 0}
                 className="cofex-onboarding-back inline-flex items-center gap-1.5 rounded-full border border-[color:var(--cofex-black)] px-4 py-2 text-xs font-semibold text-[color:var(--cofex-coffee-deep)] disabled:cursor-not-allowed disabled:opacity-40"
               >
-                Clear all
+                {t("filters.clearAll")}
               </button>
-              <span className="cofex-filters-result-pill tabular-nums">
-                {resultCount} café{resultCount === 1 ? "" : "s"}
-              </span>
+              <span className="cofex-filters-result-pill tabular-nums">{cafeResultLabel}</span>
             </div>
           </div>
         </PopoverContent>
       </Popover>
 
       <FilterChip active={filters.free} onClick={onToggleFree} Icon={Gift}>
-        Free coffee
+        {t("filters.freeCoffeeChip")}
       </FilterChip>
       <FilterChip active={filters.tags.includes("Espresso")} onClick={() => onToggleTag("Espresso")} Icon={Coffee}>
-        Espresso
+        {t("filters.tags.Espresso")}
       </FilterChip>
       <FilterChip active={filters.tags.includes("Matcha")} onClick={() => onToggleTag("Matcha")} Icon={Leaf}>
-        Matcha
+        {t("filters.tags.Matcha")}
       </FilterChip>
 
       {extraChips.map((chip) => (

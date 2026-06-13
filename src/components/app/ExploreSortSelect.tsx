@@ -1,33 +1,15 @@
 import { useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Check, ChevronDown, Gift, MapPin, Star, TrendingUp } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useExploreSortLabels } from "@/lib/i18n/use-filter-labels";
 
 export const EXPLORE_SORT_OPTIONS = [
-  {
-    value: "distance",
-    label: "Distance",
-    description: "Closest cafés first",
-    Icon: MapPin,
-  },
-  {
-    value: "rating",
-    label: "Rating",
-    description: "Highest rated spots",
-    Icon: Star,
-  },
-  {
-    value: "popularity",
-    label: "Popularity",
-    description: "Most visited by explorers",
-    Icon: TrendingUp,
-  },
-  {
-    value: "free",
-    label: "Free coffee first",
-    description: "Offers with free coffee on top",
-    Icon: Gift,
-  },
+  { value: "distance", Icon: MapPin },
+  { value: "rating", Icon: Star },
+  { value: "popularity", Icon: TrendingUp },
+  { value: "free", Icon: Gift },
 ] as const;
 
 export type ExploreSortValue = (typeof EXPLORE_SORT_OPTIONS)[number]["value"];
@@ -82,8 +64,10 @@ function SortOption({
 }
 
 export function ExploreSortSelect({ value, onChange }: ExploreSortSelectProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const current = EXPLORE_SORT_OPTIONS.find((o) => o.value === value) ?? EXPLORE_SORT_OPTIONS[0];
+  const options = useExploreSortLabels();
+  const current = options.find((o) => o.value === value) ?? options[0];
   const CurrentIcon = current.Icon;
 
   return (
@@ -106,14 +90,12 @@ export function ExploreSortSelect({ value, onChange }: ExploreSortSelectProps) {
         <div className="cofex-filters-panel overflow-hidden rounded-3xl">
           <div className="cofex-filters-panel-header px-4 py-3">
             <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[color:var(--cofex-cyan)]">
-              Sort by
+              {t("sort.title")}
             </p>
-            <p className="mt-1 text-sm font-extrabold text-[color:var(--cofex-coffee-deep)]">
-              Order your café list
-            </p>
+            <p className="mt-1 text-sm font-extrabold text-[color:var(--cofex-coffee-deep)]">{t("sort.subtitle")}</p>
           </div>
           <div className="cofex-filters-panel-body space-y-2 px-3 py-3">
-            {EXPLORE_SORT_OPTIONS.map((option) => (
+            {options.map((option) => (
               <SortOption
                 key={option.value}
                 label={option.label}
