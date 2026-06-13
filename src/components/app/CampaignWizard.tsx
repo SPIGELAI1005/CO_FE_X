@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
+import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/hooks/use-user";
+import { billingLimitsForShop, usePartnerBilling } from "@/lib/queries/billing";
 import { EEFFOC_TEMPLATES, type EeffocTemplate } from "@/lib/eeffoc-templates";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -54,6 +57,12 @@ export function CampaignWizard({
   });
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { user } = useUser();
+  const { data: billing } = usePartnerBilling(user?.id);
+  const shopLimits = useMemo(
+    () => (shopId ? billingLimitsForShop(billing, shopId) : null),
+    [billing, shopId],
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -111,6 +120,10 @@ export function CampaignWizard({
       return;
     }
     if (!shopId) { toast.error("Pick a coffee shop"); return; }
+    if (shopLimits && !shopLimits.canAddCampaign) {
+      toast.error("Active campaign limit reached for your plan. Upgrade at Billing.");
+      return;
+    }
     setSaving(true);
     const hashtag = form.hashtag.startsWith("#") ? form.hashtag : `#${form.hashtag}`;
     const { error } = await supabase.from("campaigns").insert({
@@ -221,6 +234,17 @@ export function CampaignWizard({
         {step === 3 && (
           <div className="space-y-4">
             <h3 className="font-semibold flex items-center gap-2"><Calendar className="h-4 w-4" /> Review & test</h3>
+            {shopLimits && !shopLimits.canAddCampaign && (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                Your {shopLimits.plan} plan allows{" "}
+                {shopLimits.limits.maxActiveCampaigns ?? "unlimited"} active campaign
+                {shopLimits.limits.maxActiveCampaigns === 1 ? "" : "s"}.{" "}
+                <Link to="/partner/billing" className="underline font-medium">
+                  Upgrade billing
+                </Link>{" "}
+                to publish another.
+              </div>
+            )}
             <div className="rounded-2xl border bg-gradient-to-br from-amber-50 to-orange-100 p-5">
               <div className="text-3xl">{template?.emoji}</div>
               <div className="mt-1 text-xl font-bold">{form.title}</div>
@@ -285,7 +309,7 @@ export function CampaignWizard({
               Next <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           ) : (
-            <Button onClick={submit} disabled={saving} className="bg-amber-700 hover:bg-amber-800">
+            <Button onClick={submit} disabled={saving || (shopLimits !== null && !shopLimits.canAddCampaign)} className="bg-amber-700 hover:bg-amber-800">
               {saving ? "Publishing…" : (<><Check className="h-4 w-4 mr-1" /> Publish</>)}
             </Button>
           )}

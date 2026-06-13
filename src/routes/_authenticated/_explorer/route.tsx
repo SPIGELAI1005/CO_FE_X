@@ -1,19 +1,50 @@
-import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useNavigate, redirect, useRouterState } from "@tanstack/react-router";
 import { LogOut } from "lucide-react";
 import { BottomNav } from "@/components/app/BottomNav";
 import { NotificationsBell } from "@/components/app/NotificationsBell";
+import { EmailVerificationBanner } from "@/components/app/EmailVerificationBanner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuthSessionGuard } from "@/hooks/use-auth-session";
 
 export const Route = createFileRoute("/_authenticated/_explorer")({
+  beforeLoad: async ({ location }) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const onOnboarding = location.pathname === "/onboarding";
+
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("onboarding_completed_at")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (error) return;
+
+    const completed = !!profile?.onboarding_completed_at;
+
+    if (!completed && !onOnboarding) {
+      throw redirect({ to: "/onboarding" });
+    }
+    if (completed && onOnboarding) {
+      throw redirect({ to: "/explore" });
+    }
+  },
   component: ExplorerLayout,
 });
 
 function ExplorerLayout() {
   const navigate = useNavigate();
+  useAuthSessionGuard();
+  const onOnboarding = useRouterState({ select: (s) => s.location.pathname === "/onboarding" });
+
   const signOut = async () => {
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   };
+
   return (
     <div className="min-h-screen bg-white pb-20" style={{ fontFamily: "'Nunito Sans', system-ui, sans-serif" }}>
       <header
@@ -24,7 +55,7 @@ function ExplorerLayout() {
           CO:FE(X)
         </Link>
         <div className="flex items-center gap-1">
-          <NotificationsBell />
+          {!onOnboarding && <NotificationsBell />}
           <button
             onClick={signOut}
             className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 px-2"
@@ -34,10 +65,11 @@ function ExplorerLayout() {
           </button>
         </div>
       </header>
+      {!onOnboarding && <EmailVerificationBanner />}
       <main>
         <Outlet />
       </main>
-      <BottomNav />
+      {!onOnboarding && <BottomNav />}
     </div>
   );
 }

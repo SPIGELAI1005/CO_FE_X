@@ -1,6 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/hooks/use-user";
+import { usePartnerBilling } from "@/lib/queries/billing";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -37,6 +39,10 @@ type Shop = {
 const SIGNED_TTL = 60 * 60 * 24 * 365; // 1 year
 
 function ShopProfilePage() {
+  const { user } = useUser();
+  const { data: billing } = usePartnerBilling(user?.id);
+  const canAddShop = billing?.hasProPlan || !billing?.totalShops;
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [shop, setShop] = useState<Shop | null>(null);
@@ -71,6 +77,11 @@ function ShopProfilePage() {
       const { error } = await supabase.from("coffee_shops").update(patch).eq("id", shop.id);
       if (error) { toast.error(error.message); setSaving(false); return; }
     } else {
+      if (!canAddShop) {
+        toast.error("Free plan allows 1 listing. Upgrade to Pro for multiple locations.");
+        setSaving(false);
+        return;
+      }
       const slug = (shop.name || "shop").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + "-" + Math.random().toString(36).slice(2, 6);
       const { data, error } = await supabase.from("coffee_shops").insert({ ...patch, slug, partner_id: userId, status: "pending" }).select("*").single();
       if (error) { toast.error(error.message); setSaving(false); return; }

@@ -1,46 +1,22 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { supabase } from "@/integrations/supabase/client";
-import { Bell, Check } from "lucide-react";
+import { Bell, Check, Loader2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-
-type N = { id: string; type: string; title: string; body: string | null; link: string | null; read_at: string | null; created_at: string };
+import { useUser } from "@/hooks/use-user";
+import {
+  useNotifications,
+  useMarkNotificationRead,
+  useMarkAllNotificationsRead,
+} from "@/lib/queries/notifications";
 
 export function NotificationsBell() {
-  const [items, setItems] = useState<N[]>([]);
+  const { user } = useUser();
+  const { data: items = [], isLoading } = useNotifications(user?.id);
+  const markRead = useMarkNotificationRead(user?.id);
+  const markAllRead = useMarkAllNotificationsRead(user?.id);
   const [open, setOpen] = useState(false);
 
-  async function load() {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const { data } = await supabase
-      .from("notifications")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(20);
-    setItems(data ?? []);
-  }
-
-  useEffect(() => {
-    load();
-    const t = setInterval(load, 30000);
-    return () => clearInterval(t);
-  }, []);
-
   const unread = items.filter((i) => !i.read_at).length;
-
-  async function markAllRead() {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("user_id", user.id).is("read_at", null);
-    load();
-  }
-
-  async function markRead(id: string) {
-    await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", id);
-    load();
-  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -56,13 +32,21 @@ export function NotificationsBell() {
         <div className="flex items-center justify-between px-4 py-2 border-b">
           <span className="text-sm font-semibold">Notifications</span>
           {unread > 0 && (
-            <button onClick={markAllRead} className="text-xs text-amber-700 inline-flex items-center gap-1 hover:underline">
+            <button
+              onClick={() => markAllRead.mutate()}
+              disabled={markAllRead.isPending}
+              className="text-xs text-amber-700 inline-flex items-center gap-1 hover:underline disabled:opacity-50"
+            >
               <Check className="h-3 w-3" /> Mark all read
             </button>
           )}
         </div>
         <div className="max-h-[60vh] overflow-y-auto">
-          {items.length === 0 ? (
+          {isLoading ? (
+            <div className="flex justify-center py-10">
+              <Loader2 className="h-5 w-5 animate-spin text-zinc-400" />
+            </div>
+          ) : items.length === 0 ? (
             <div className="px-4 py-10 text-center text-sm text-zinc-500">No notifications yet.</div>
           ) : (
             items.map((n) => {
@@ -77,11 +61,23 @@ export function NotificationsBell() {
                 </>
               );
               return n.link ? (
-                <Link key={n.id} to={n.link as any} onClick={() => { markRead(n.id); setOpen(false); }} className="block px-4 py-3 border-b last:border-0 hover:bg-zinc-50">
+                <Link
+                  key={n.id}
+                  to={n.link as "/explore"}
+                  onClick={() => {
+                    markRead.mutate(n.id);
+                    setOpen(false);
+                  }}
+                  className="block px-4 py-3 border-b last:border-0 hover:bg-zinc-50"
+                >
                   {body}
                 </Link>
               ) : (
-                <button key={n.id} onClick={() => markRead(n.id)} className="text-left w-full px-4 py-3 border-b last:border-0 hover:bg-zinc-50">
+                <button
+                  key={n.id}
+                  onClick={() => markRead.mutate(n.id)}
+                  className="text-left w-full px-4 py-3 border-b last:border-0 hover:bg-zinc-50"
+                >
                   {body}
                 </button>
               );

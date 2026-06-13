@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useMemo } from "react";
 import {
   Award,
   Coffee,
@@ -15,35 +14,17 @@ import {
   Crown,
   Compass,
 } from "lucide-react";
-
+import { EmptyState } from "@/components/patterns/EmptyState";
+import { QueryBoundary } from "@/components/patterns/QueryBoundary";
+import { useUser } from "@/hooks/use-user";
+import { usePassport, type PassportBadge, type PassportCheckIn } from "@/lib/queries/passport";
 export const Route = createFileRoute("/_authenticated/_explorer/passport")({
   head: () => ({ meta: [{ title: "Passport — CO:FE(X)" }] }),
   component: PassportPage,
 });
 
-type Badge = {
-  id: string;
-  slug: string;
-  name: string;
-  description: string | null;
-  criteria: any;
-};
-
-type CheckIn = {
-  id: string;
-  created_at: string;
-  coffee_shop_id: string;
-  coffee_shops: {
-    id: string;
-    name: string;
-    slug: string;
-    city: string | null;
-    country: string | null;
-    cover_image_url: string | null;
-    logo_url: string | null;
-    tags: string[] | null;
-  } | null;
-};
+type Badge = PassportBadge;
+type CheckIn = PassportCheckIn;
 
 const BADGE_ICONS: Record<string, { Icon: any; from: string; to: string }> = {
   "first-sip": { Icon: Coffee, from: "from-amber-400", to: "to-orange-600" },
@@ -83,36 +64,24 @@ function progressFor(b: Badge, stats: {
 }
 
 function PassportPage() {
-  const [loading, setLoading] = useState(true);
-  const [badges, setBadges] = useState<Badge[]>([]);
-  const [earned, setEarned] = useState<Set<string>>(new Set());
-  const [checkIns, setCheckIns] = useState<CheckIn[]>([]);
-  const [profile, setProfile] = useState<{ display_name: string | null; total_points: number; total_check_ins: number; avatar_url: string | null } | null>(null);
+  const { user } = useUser();
+  const passportQuery = usePassport(user?.id);
 
-  useEffect(() => {
-    (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const [{ data: bs }, { data: ubs }, { data: cis }, { data: prof }] = await Promise.all([
-        supabase.from("badges").select("id, slug, name, description, criteria"),
-        supabase.from("user_badges").select("badge_id").eq("user_id", user.id),
-        supabase
-          .from("check_ins")
-          .select("id, created_at, coffee_shop_id, coffee_shops(id, name, slug, city, country, cover_image_url, logo_url, tags)")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false }),
-        supabase.from("profiles").select("display_name, total_points, total_check_ins, avatar_url").eq("id", user.id).single(),
-      ]);
-      setBadges((bs as Badge[]) ?? []);
-      setEarned(new Set((ubs ?? []).map((r: any) => r.badge_id)));
-      setCheckIns((cis as any) ?? []);
-      setProfile(prof as any);
-      setLoading(false);
-    })();
-  }, []);
+  return (
+    <QueryBoundary query={passportQuery} loadingLabel="Loading passport…">
+      {(data) => <PassportContent data={data} />}
+    </QueryBoundary>
+  );
+}
 
-  const stats = useMemo(() => {
-    const tagCounts: Record<string, number> = {};
+function PassportContent({
+  data,
+}: {
+  data: NonNullable<ReturnType<typeof usePassport>["data"]>;
+}) {
+  const { profile, badges, earnedBadgeIds: earned, checkIns } = data;
+
+  const stats = useMemo(() => {    const tagCounts: Record<string, number> = {};
     const cityCounts: Record<string, number> = {};
     const countriesVisited = new Set<string>();
     const uniqueShopIds = new Set<string>();
@@ -159,23 +128,9 @@ function PassportPage() {
     return Array.from(m.entries()).sort((a, b) => b[1] - a[1]);
   }, [checkIns]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-amber-50 via-orange-50 to-rose-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 p-6 animate-pulse">
-        <div className="h-48 rounded-3xl bg-amber-100 dark:bg-zinc-800 mb-6" />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-44 rounded-2xl bg-amber-100 dark:bg-zinc-800" />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   const earnedBadges = badges.filter((b) => earned.has(b.id));
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 via-orange-50 to-rose-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-black">
+  return (    <div className="min-h-screen bg-gradient-to-b from-amber-50 via-orange-50 to-rose-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-black">
       {/* Hero passport card */}
       <div className="p-4 md:p-8">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-900 via-orange-800 to-red-900 text-amber-50 shadow-2xl">
@@ -274,7 +229,13 @@ function PassportPage() {
       <section className="px-4 md:px-8 mt-10">
         <SectionHeader icon={<MapPin className="h-5 w-5" />} title="City collections" subtitle="Stamps grouped by city" />
         {cityGroups.length === 0 ? (
-          <EmptyState text="No city stamps yet. Check in to start collecting." />
+          <EmptyState
+            icon={MapPin}
+            title="No city stamps yet"
+            description="Check in at cafés to start collecting stamps."
+            actionLabel="Explore cafés"
+            actionTo="/explore"
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {cityGroups.map((g) => (
@@ -322,7 +283,13 @@ function PassportPage() {
       <section className="px-4 md:px-8 mt-10 pb-24">
         <SectionHeader icon={<Globe2 className="h-5 w-5" />} title="Country collections" subtitle="The world, one cup at a time" />
         {countryGroups.length === 0 ? (
-          <EmptyState text="No country stamps yet." />
+          <EmptyState
+            icon={Globe2}
+            title="No country stamps yet"
+            description="Visit cafés in new countries to fill your passport."
+            actionLabel="Explore cafés"
+            actionTo="/explore"
+          />
         ) : (
           <div className="flex flex-wrap gap-3">
             {countryGroups.map(([country, count]) => (
@@ -365,15 +332,6 @@ function SectionHeader({ icon, title, subtitle }: { icon: React.ReactNode; title
         </div>
         <p className="text-sm text-zinc-500 dark:text-zinc-400">{subtitle}</p>
       </div>
-    </div>
-  );
-}
-
-function EmptyState({ text }: { text: string }) {
-  return (
-    <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 p-8 text-center text-zinc-500">
-      <Coffee className="h-8 w-8 mx-auto mb-2 opacity-50" />
-      {text}
     </div>
   );
 }

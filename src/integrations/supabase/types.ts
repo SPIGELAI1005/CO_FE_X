@@ -486,6 +486,8 @@ export type Database = {
           total_points: number
           updated_at: string
           x_handle: string | null
+          onboarding_completed_at: string | null
+          preferences: Json | null
         }
         Insert: {
           avatar_url?: string | null
@@ -503,6 +505,8 @@ export type Database = {
           total_points?: number
           updated_at?: string
           x_handle?: string | null
+          onboarding_completed_at?: string | null
+          preferences?: Json | null
         }
         Update: {
           avatar_url?: string | null
@@ -520,8 +524,54 @@ export type Database = {
           total_points?: number
           updated_at?: string
           x_handle?: string | null
+          onboarding_completed_at?: string | null
+          preferences?: Json | null
         }
         Relationships: []
+      }
+      shop_subscriptions: {
+        Row: {
+          coffee_shop_id: string
+          created_at: string
+          current_period_end: string | null
+          id: string
+          plan: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          coffee_shop_id: string
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          plan?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          coffee_shop_id?: string
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          plan?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_subscriptions_coffee_shop_id_fkey"
+            columns: ["coffee_shop_id"]
+            isOneToOne: true
+            referencedRelation: "coffee_shops"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       redemption_verifications: {
         Row: {
@@ -814,9 +864,27 @@ export type Database = {
       }
       join_campaign: { Args: { _campaign_id: string }; Returns: Json }
       partner_mark_catalog_code_used: { Args: { _code: string }; Returns: Json }
-      perform_check_in:
-        | { Args: { _shop_id: string }; Returns: Json }
-        | { Args: { _campaign_id?: string; _shop_id: string }; Returns: Json }
+      perform_check_in: {
+        Args: {
+          _shop_id: string;
+          _campaign_id?: string;
+          _latitude?: number;
+          _longitude?: number;
+        };
+        Returns: Json;
+      };
+      review_partner_application: {
+        Args: { _application_id: string; _decision: string };
+        Returns: Json;
+      };
+      admin_set_shop_status: {
+        Args: { _shop_id: string; _status: string };
+        Returns: Json;
+      };
+      admin_set_campaign_status: {
+        Args: { _campaign_id: string; _status: string };
+        Returns: Json;
+      };
       redeem_campaign: { Args: { _campaign_id: string }; Returns: Json }
       redeem_catalog_item: { Args: { _item_id: string }; Returns: Json }
       review_social_submission: {

@@ -1,6 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/hooks/use-user";
+import { usePartnerBilling, billingLimitsForShop } from "@/lib/queries/billing";
 import { CampaignWizard } from "@/components/app/CampaignWizard";
 import { Button } from "@/components/ui/button";
 import { Megaphone, Plus, Users, Gift, Calendar, Hash, Trash2 } from "lucide-react";
@@ -28,6 +30,14 @@ type Campaign = {
 };
 
 function PartnerCampaignsPage() {
+  const { user } = useUser();
+  const { data: billing } = usePartnerBilling(user?.id);
+  const primaryShopId = billing?.shops[0]?.coffee_shop_id;
+  const atCampaignLimit =
+    primaryShopId !== undefined &&
+    billing !== undefined &&
+    !billingLimitsForShop(billing, primaryShopId).canAddCampaign;
+
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,10 +86,24 @@ function PartnerCampaignsPage() {
           <h1 className="text-3xl font-serif font-bold mt-1">We Give EEFFOC</h1>
           <p className="text-sm text-muted-foreground">EEFFOC = COFFEE backwards. Launch a campaign in under a minute.</p>
         </div>
-        <Button onClick={() => setOpen(true)} className="bg-amber-700 hover:bg-amber-800">
+        <Button
+          onClick={() => setOpen(true)}
+          disabled={atCampaignLimit}
+          className="bg-amber-700 hover:bg-amber-800"
+        >
           <Plus className="h-4 w-4 mr-1" /> New campaign
         </Button>
       </div>
+
+      {atCampaignLimit && (
+        <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          You&apos;ve reached your plan&apos;s active campaign limit.{" "}
+          <Link to="/partner/billing" className="underline font-medium">
+            Upgrade billing
+          </Link>{" "}
+          to launch another EEFFOC drop.
+        </div>
+      )}
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -12,26 +12,33 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CoffeeSlugRouteImport } from './routes/coffee.$slug'
+import { Route as CityCityRouteImport } from './routes/city.$city'
+import { Route as AuthResetRouteImport } from './routes/auth.reset'
+import { Route as AuthForgotRouteImport } from './routes/auth.forgot'
 import { Route as AuthenticatedPartnerRouteImport } from './routes/_authenticated/partner'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedExplorerRouteRouteImport } from './routes/_authenticated/_explorer/route'
 import { Route as AuthenticatedPartnerIndexRouteImport } from './routes/_authenticated/partner.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe/webhook'
 import { Route as AuthenticatedPartnerVerifyRouteImport } from './routes/_authenticated/partner.verify'
 import { Route as AuthenticatedPartnerSubmissionsRouteImport } from './routes/_authenticated/partner.submissions'
 import { Route as AuthenticatedPartnerShopRouteImport } from './routes/_authenticated/partner.shop'
 import { Route as AuthenticatedPartnerRewardsRouteImport } from './routes/_authenticated/partner.rewards'
 import { Route as AuthenticatedPartnerCampaignsRouteImport } from './routes/_authenticated/partner.campaigns'
+import { Route as AuthenticatedPartnerBillingRouteImport } from './routes/_authenticated/partner.billing'
 import { Route as AuthenticatedPartnerAnalyticsRouteImport } from './routes/_authenticated/partner.analytics'
-import { Route as AuthenticatedCoffeeSlugRouteImport } from './routes/_authenticated/coffee.$slug'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedAdminRevenueRouteImport } from './routes/_authenticated/admin.revenue'
 import { Route as AuthenticatedAdminPartnersRouteImport } from './routes/_authenticated/admin.partners'
 import { Route as AuthenticatedAdminCampaignsRouteImport } from './routes/_authenticated/admin.campaigns'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
 import { Route as AuthenticatedExplorerWalletRouteImport } from './routes/_authenticated/_explorer/wallet'
+import { Route as AuthenticatedExplorerRadarRouteImport } from './routes/_authenticated/_explorer/radar'
 import { Route as AuthenticatedExplorerProfileRouteImport } from './routes/_authenticated/_explorer/profile'
 import { Route as AuthenticatedExplorerPassportRouteImport } from './routes/_authenticated/_explorer/passport'
+import { Route as AuthenticatedExplorerOnboardingRouteImport } from './routes/_authenticated/_explorer/onboarding'
 import { Route as AuthenticatedExplorerLeaderboardRouteImport } from './routes/_authenticated/_explorer/leaderboard'
 import { Route as AuthenticatedExplorerExploreRouteImport } from './routes/_authenticated/_explorer/explore'
 import { Route as AuthenticatedExplorerCampaignsRouteImport } from './routes/_authenticated/_explorer/campaigns'
@@ -50,6 +57,26 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const CoffeeSlugRoute = CoffeeSlugRouteImport.update({
+  id: '/coffee/$slug',
+  path: '/coffee/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CityCityRoute = CityCityRouteImport.update({
+  id: '/city/$city',
+  path: '/city/$city',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthResetRoute = AuthResetRouteImport.update({
+  id: '/reset',
+  path: '/reset',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthForgotRoute = AuthForgotRouteImport.update({
+  id: '/forgot',
+  path: '/forgot',
+  getParentRoute: () => AuthRoute,
 } as any)
 const AuthenticatedPartnerRoute = AuthenticatedPartnerRouteImport.update({
   id: '/partner',
@@ -76,6 +103,11 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
+  id: '/api/stripe/webhook',
+  path: '/api/stripe/webhook',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedPartnerVerifyRoute =
   AuthenticatedPartnerVerifyRouteImport.update({
@@ -107,17 +139,18 @@ const AuthenticatedPartnerCampaignsRoute =
     path: '/campaigns',
     getParentRoute: () => AuthenticatedPartnerRoute,
   } as any)
+const AuthenticatedPartnerBillingRoute =
+  AuthenticatedPartnerBillingRouteImport.update({
+    id: '/billing',
+    path: '/billing',
+    getParentRoute: () => AuthenticatedPartnerRoute,
+  } as any)
 const AuthenticatedPartnerAnalyticsRoute =
   AuthenticatedPartnerAnalyticsRouteImport.update({
     id: '/analytics',
     path: '/analytics',
     getParentRoute: () => AuthenticatedPartnerRoute,
   } as any)
-const AuthenticatedCoffeeSlugRoute = AuthenticatedCoffeeSlugRouteImport.update({
-  id: '/coffee/$slug',
-  path: '/coffee/$slug',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -153,6 +186,12 @@ const AuthenticatedExplorerWalletRoute =
     path: '/wallet',
     getParentRoute: () => AuthenticatedExplorerRouteRoute,
   } as any)
+const AuthenticatedExplorerRadarRoute =
+  AuthenticatedExplorerRadarRouteImport.update({
+    id: '/radar',
+    path: '/radar',
+    getParentRoute: () => AuthenticatedExplorerRouteRoute,
+  } as any)
 const AuthenticatedExplorerProfileRoute =
   AuthenticatedExplorerProfileRouteImport.update({
     id: '/profile',
@@ -163,6 +202,12 @@ const AuthenticatedExplorerPassportRoute =
   AuthenticatedExplorerPassportRouteImport.update({
     id: '/passport',
     path: '/passport',
+    getParentRoute: () => AuthenticatedExplorerRouteRoute,
+  } as any)
+const AuthenticatedExplorerOnboardingRoute =
+  AuthenticatedExplorerOnboardingRouteImport.update({
+    id: '/onboarding',
+    path: '/onboarding',
     getParentRoute: () => AuthenticatedExplorerRouteRoute,
   } as any)
 const AuthenticatedExplorerLeaderboardRoute =
@@ -192,52 +237,66 @@ const AuthenticatedExplorerCampaignIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/partner': typeof AuthenticatedPartnerRouteWithChildren
+  '/auth/forgot': typeof AuthForgotRoute
+  '/auth/reset': typeof AuthResetRoute
+  '/city/$city': typeof CityCityRoute
+  '/coffee/$slug': typeof CoffeeSlugRoute
   '/campaigns': typeof AuthenticatedExplorerCampaignsRoute
   '/explore': typeof AuthenticatedExplorerExploreRoute
   '/leaderboard': typeof AuthenticatedExplorerLeaderboardRoute
+  '/onboarding': typeof AuthenticatedExplorerOnboardingRoute
   '/passport': typeof AuthenticatedExplorerPassportRoute
   '/profile': typeof AuthenticatedExplorerProfileRoute
+  '/radar': typeof AuthenticatedExplorerRadarRoute
   '/wallet': typeof AuthenticatedExplorerWalletRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/campaigns': typeof AuthenticatedAdminCampaignsRoute
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/admin/revenue': typeof AuthenticatedAdminRevenueRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
-  '/coffee/$slug': typeof AuthenticatedCoffeeSlugRoute
   '/partner/analytics': typeof AuthenticatedPartnerAnalyticsRoute
+  '/partner/billing': typeof AuthenticatedPartnerBillingRoute
   '/partner/campaigns': typeof AuthenticatedPartnerCampaignsRoute
   '/partner/rewards': typeof AuthenticatedPartnerRewardsRoute
   '/partner/shop': typeof AuthenticatedPartnerShopRoute
   '/partner/submissions': typeof AuthenticatedPartnerSubmissionsRoute
   '/partner/verify': typeof AuthenticatedPartnerVerifyRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/partner/': typeof AuthenticatedPartnerIndexRoute
   '/campaign/$id': typeof AuthenticatedExplorerCampaignIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
+  '/auth/forgot': typeof AuthForgotRoute
+  '/auth/reset': typeof AuthResetRoute
+  '/city/$city': typeof CityCityRoute
+  '/coffee/$slug': typeof CoffeeSlugRoute
   '/campaigns': typeof AuthenticatedExplorerCampaignsRoute
   '/explore': typeof AuthenticatedExplorerExploreRoute
   '/leaderboard': typeof AuthenticatedExplorerLeaderboardRoute
+  '/onboarding': typeof AuthenticatedExplorerOnboardingRoute
   '/passport': typeof AuthenticatedExplorerPassportRoute
   '/profile': typeof AuthenticatedExplorerProfileRoute
+  '/radar': typeof AuthenticatedExplorerRadarRoute
   '/wallet': typeof AuthenticatedExplorerWalletRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/campaigns': typeof AuthenticatedAdminCampaignsRoute
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/admin/revenue': typeof AuthenticatedAdminRevenueRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
-  '/coffee/$slug': typeof AuthenticatedCoffeeSlugRoute
   '/partner/analytics': typeof AuthenticatedPartnerAnalyticsRoute
+  '/partner/billing': typeof AuthenticatedPartnerBillingRoute
   '/partner/campaigns': typeof AuthenticatedPartnerCampaignsRoute
   '/partner/rewards': typeof AuthenticatedPartnerRewardsRoute
   '/partner/shop': typeof AuthenticatedPartnerShopRoute
   '/partner/submissions': typeof AuthenticatedPartnerSubmissionsRoute
   '/partner/verify': typeof AuthenticatedPartnerVerifyRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/partner': typeof AuthenticatedPartnerIndexRoute
   '/campaign/$id': typeof AuthenticatedExplorerCampaignIdRoute
@@ -246,28 +305,35 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/_authenticated/_explorer': typeof AuthenticatedExplorerRouteRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/partner': typeof AuthenticatedPartnerRouteWithChildren
+  '/auth/forgot': typeof AuthForgotRoute
+  '/auth/reset': typeof AuthResetRoute
+  '/city/$city': typeof CityCityRoute
+  '/coffee/$slug': typeof CoffeeSlugRoute
   '/_authenticated/_explorer/campaigns': typeof AuthenticatedExplorerCampaignsRoute
   '/_authenticated/_explorer/explore': typeof AuthenticatedExplorerExploreRoute
   '/_authenticated/_explorer/leaderboard': typeof AuthenticatedExplorerLeaderboardRoute
+  '/_authenticated/_explorer/onboarding': typeof AuthenticatedExplorerOnboardingRoute
   '/_authenticated/_explorer/passport': typeof AuthenticatedExplorerPassportRoute
   '/_authenticated/_explorer/profile': typeof AuthenticatedExplorerProfileRoute
+  '/_authenticated/_explorer/radar': typeof AuthenticatedExplorerRadarRoute
   '/_authenticated/_explorer/wallet': typeof AuthenticatedExplorerWalletRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/campaigns': typeof AuthenticatedAdminCampaignsRoute
   '/_authenticated/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/_authenticated/admin/revenue': typeof AuthenticatedAdminRevenueRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
-  '/_authenticated/coffee/$slug': typeof AuthenticatedCoffeeSlugRoute
   '/_authenticated/partner/analytics': typeof AuthenticatedPartnerAnalyticsRoute
+  '/_authenticated/partner/billing': typeof AuthenticatedPartnerBillingRoute
   '/_authenticated/partner/campaigns': typeof AuthenticatedPartnerCampaignsRoute
   '/_authenticated/partner/rewards': typeof AuthenticatedPartnerRewardsRoute
   '/_authenticated/partner/shop': typeof AuthenticatedPartnerShopRoute
   '/_authenticated/partner/submissions': typeof AuthenticatedPartnerSubmissionsRoute
   '/_authenticated/partner/verify': typeof AuthenticatedPartnerVerifyRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/partner/': typeof AuthenticatedPartnerIndexRoute
   '/_authenticated/_explorer/campaign/$id': typeof AuthenticatedExplorerCampaignIdRoute
@@ -279,24 +345,31 @@ export interface FileRouteTypes {
     | '/auth'
     | '/admin'
     | '/partner'
+    | '/auth/forgot'
+    | '/auth/reset'
+    | '/city/$city'
+    | '/coffee/$slug'
     | '/campaigns'
     | '/explore'
     | '/leaderboard'
+    | '/onboarding'
     | '/passport'
     | '/profile'
+    | '/radar'
     | '/wallet'
     | '/admin/analytics'
     | '/admin/campaigns'
     | '/admin/partners'
     | '/admin/revenue'
     | '/admin/users'
-    | '/coffee/$slug'
     | '/partner/analytics'
+    | '/partner/billing'
     | '/partner/campaigns'
     | '/partner/rewards'
     | '/partner/shop'
     | '/partner/submissions'
     | '/partner/verify'
+    | '/api/stripe/webhook'
     | '/admin/'
     | '/partner/'
     | '/campaign/$id'
@@ -304,24 +377,31 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/auth/forgot'
+    | '/auth/reset'
+    | '/city/$city'
+    | '/coffee/$slug'
     | '/campaigns'
     | '/explore'
     | '/leaderboard'
+    | '/onboarding'
     | '/passport'
     | '/profile'
+    | '/radar'
     | '/wallet'
     | '/admin/analytics'
     | '/admin/campaigns'
     | '/admin/partners'
     | '/admin/revenue'
     | '/admin/users'
-    | '/coffee/$slug'
     | '/partner/analytics'
+    | '/partner/billing'
     | '/partner/campaigns'
     | '/partner/rewards'
     | '/partner/shop'
     | '/partner/submissions'
     | '/partner/verify'
+    | '/api/stripe/webhook'
     | '/admin'
     | '/partner'
     | '/campaign/$id'
@@ -333,24 +413,31 @@ export interface FileRouteTypes {
     | '/_authenticated/_explorer'
     | '/_authenticated/admin'
     | '/_authenticated/partner'
+    | '/auth/forgot'
+    | '/auth/reset'
+    | '/city/$city'
+    | '/coffee/$slug'
     | '/_authenticated/_explorer/campaigns'
     | '/_authenticated/_explorer/explore'
     | '/_authenticated/_explorer/leaderboard'
+    | '/_authenticated/_explorer/onboarding'
     | '/_authenticated/_explorer/passport'
     | '/_authenticated/_explorer/profile'
+    | '/_authenticated/_explorer/radar'
     | '/_authenticated/_explorer/wallet'
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/campaigns'
     | '/_authenticated/admin/partners'
     | '/_authenticated/admin/revenue'
     | '/_authenticated/admin/users'
-    | '/_authenticated/coffee/$slug'
     | '/_authenticated/partner/analytics'
+    | '/_authenticated/partner/billing'
     | '/_authenticated/partner/campaigns'
     | '/_authenticated/partner/rewards'
     | '/_authenticated/partner/shop'
     | '/_authenticated/partner/submissions'
     | '/_authenticated/partner/verify'
+    | '/api/stripe/webhook'
     | '/_authenticated/admin/'
     | '/_authenticated/partner/'
     | '/_authenticated/_explorer/campaign/$id'
@@ -359,7 +446,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AuthRoute: typeof AuthRoute
+  AuthRoute: typeof AuthRouteWithChildren
+  CityCityRoute: typeof CityCityRoute
+  CoffeeSlugRoute: typeof CoffeeSlugRoute
+  ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -384,6 +474,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/coffee/$slug': {
+      id: '/coffee/$slug'
+      path: '/coffee/$slug'
+      fullPath: '/coffee/$slug'
+      preLoaderRoute: typeof CoffeeSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/city/$city': {
+      id: '/city/$city'
+      path: '/city/$city'
+      fullPath: '/city/$city'
+      preLoaderRoute: typeof CityCityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/reset': {
+      id: '/auth/reset'
+      path: '/reset'
+      fullPath: '/auth/reset'
+      preLoaderRoute: typeof AuthResetRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/auth/forgot': {
+      id: '/auth/forgot'
+      path: '/forgot'
+      fullPath: '/auth/forgot'
+      preLoaderRoute: typeof AuthForgotRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/_authenticated/partner': {
       id: '/_authenticated/partner'
@@ -420,6 +538,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/api/stripe/webhook': {
+      id: '/api/stripe/webhook'
+      path: '/api/stripe/webhook'
+      fullPath: '/api/stripe/webhook'
+      preLoaderRoute: typeof ApiStripeWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/partner/verify': {
       id: '/_authenticated/partner/verify'
       path: '/verify'
@@ -455,19 +580,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPartnerCampaignsRouteImport
       parentRoute: typeof AuthenticatedPartnerRoute
     }
+    '/_authenticated/partner/billing': {
+      id: '/_authenticated/partner/billing'
+      path: '/billing'
+      fullPath: '/partner/billing'
+      preLoaderRoute: typeof AuthenticatedPartnerBillingRouteImport
+      parentRoute: typeof AuthenticatedPartnerRoute
+    }
     '/_authenticated/partner/analytics': {
       id: '/_authenticated/partner/analytics'
       path: '/analytics'
       fullPath: '/partner/analytics'
       preLoaderRoute: typeof AuthenticatedPartnerAnalyticsRouteImport
       parentRoute: typeof AuthenticatedPartnerRoute
-    }
-    '/_authenticated/coffee/$slug': {
-      id: '/_authenticated/coffee/$slug'
-      path: '/coffee/$slug'
-      fullPath: '/coffee/$slug'
-      preLoaderRoute: typeof AuthenticatedCoffeeSlugRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/users': {
       id: '/_authenticated/admin/users'
@@ -511,6 +636,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedExplorerWalletRouteImport
       parentRoute: typeof AuthenticatedExplorerRouteRoute
     }
+    '/_authenticated/_explorer/radar': {
+      id: '/_authenticated/_explorer/radar'
+      path: '/radar'
+      fullPath: '/radar'
+      preLoaderRoute: typeof AuthenticatedExplorerRadarRouteImport
+      parentRoute: typeof AuthenticatedExplorerRouteRoute
+    }
     '/_authenticated/_explorer/profile': {
       id: '/_authenticated/_explorer/profile'
       path: '/profile'
@@ -523,6 +655,13 @@ declare module '@tanstack/react-router' {
       path: '/passport'
       fullPath: '/passport'
       preLoaderRoute: typeof AuthenticatedExplorerPassportRouteImport
+      parentRoute: typeof AuthenticatedExplorerRouteRoute
+    }
+    '/_authenticated/_explorer/onboarding': {
+      id: '/_authenticated/_explorer/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedExplorerOnboardingRouteImport
       parentRoute: typeof AuthenticatedExplorerRouteRoute
     }
     '/_authenticated/_explorer/leaderboard': {
@@ -560,8 +699,10 @@ interface AuthenticatedExplorerRouteRouteChildren {
   AuthenticatedExplorerCampaignsRoute: typeof AuthenticatedExplorerCampaignsRoute
   AuthenticatedExplorerExploreRoute: typeof AuthenticatedExplorerExploreRoute
   AuthenticatedExplorerLeaderboardRoute: typeof AuthenticatedExplorerLeaderboardRoute
+  AuthenticatedExplorerOnboardingRoute: typeof AuthenticatedExplorerOnboardingRoute
   AuthenticatedExplorerPassportRoute: typeof AuthenticatedExplorerPassportRoute
   AuthenticatedExplorerProfileRoute: typeof AuthenticatedExplorerProfileRoute
+  AuthenticatedExplorerRadarRoute: typeof AuthenticatedExplorerRadarRoute
   AuthenticatedExplorerWalletRoute: typeof AuthenticatedExplorerWalletRoute
   AuthenticatedExplorerCampaignIdRoute: typeof AuthenticatedExplorerCampaignIdRoute
 }
@@ -572,8 +713,10 @@ const AuthenticatedExplorerRouteRouteChildren: AuthenticatedExplorerRouteRouteCh
     AuthenticatedExplorerExploreRoute: AuthenticatedExplorerExploreRoute,
     AuthenticatedExplorerLeaderboardRoute:
       AuthenticatedExplorerLeaderboardRoute,
+    AuthenticatedExplorerOnboardingRoute: AuthenticatedExplorerOnboardingRoute,
     AuthenticatedExplorerPassportRoute: AuthenticatedExplorerPassportRoute,
     AuthenticatedExplorerProfileRoute: AuthenticatedExplorerProfileRoute,
+    AuthenticatedExplorerRadarRoute: AuthenticatedExplorerRadarRoute,
     AuthenticatedExplorerWalletRoute: AuthenticatedExplorerWalletRoute,
     AuthenticatedExplorerCampaignIdRoute: AuthenticatedExplorerCampaignIdRoute,
   }
@@ -606,6 +749,7 @@ const AuthenticatedAdminRouteWithChildren =
 
 interface AuthenticatedPartnerRouteChildren {
   AuthenticatedPartnerAnalyticsRoute: typeof AuthenticatedPartnerAnalyticsRoute
+  AuthenticatedPartnerBillingRoute: typeof AuthenticatedPartnerBillingRoute
   AuthenticatedPartnerCampaignsRoute: typeof AuthenticatedPartnerCampaignsRoute
   AuthenticatedPartnerRewardsRoute: typeof AuthenticatedPartnerRewardsRoute
   AuthenticatedPartnerShopRoute: typeof AuthenticatedPartnerShopRoute
@@ -616,6 +760,7 @@ interface AuthenticatedPartnerRouteChildren {
 
 const AuthenticatedPartnerRouteChildren: AuthenticatedPartnerRouteChildren = {
   AuthenticatedPartnerAnalyticsRoute: AuthenticatedPartnerAnalyticsRoute,
+  AuthenticatedPartnerBillingRoute: AuthenticatedPartnerBillingRoute,
   AuthenticatedPartnerCampaignsRoute: AuthenticatedPartnerCampaignsRoute,
   AuthenticatedPartnerRewardsRoute: AuthenticatedPartnerRewardsRoute,
   AuthenticatedPartnerShopRoute: AuthenticatedPartnerShopRoute,
@@ -631,24 +776,47 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedExplorerRouteRoute: typeof AuthenticatedExplorerRouteRouteWithChildren
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedPartnerRoute: typeof AuthenticatedPartnerRouteWithChildren
-  AuthenticatedCoffeeSlugRoute: typeof AuthenticatedCoffeeSlugRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedExplorerRouteRoute: AuthenticatedExplorerRouteRouteWithChildren,
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedPartnerRoute: AuthenticatedPartnerRouteWithChildren,
-  AuthenticatedCoffeeSlugRoute: AuthenticatedCoffeeSlugRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface AuthRouteChildren {
+  AuthForgotRoute: typeof AuthForgotRoute
+  AuthResetRoute: typeof AuthResetRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthForgotRoute: AuthForgotRoute,
+  AuthResetRoute: AuthResetRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AuthRoute: AuthRoute,
+  AuthRoute: AuthRouteWithChildren,
+  CityCityRoute: CityCityRoute,
+  CoffeeSlugRoute: CoffeeSlugRoute,
+  ApiStripeWebhookRoute: ApiStripeWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

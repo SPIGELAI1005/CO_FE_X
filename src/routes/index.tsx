@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Download as DownloadIcon, ArrowRight, ArrowLeft, Apple, Play } from "lucide-react";
+import { Download as DownloadIcon, ArrowRight, ArrowLeft, Apple, Play, Smartphone } from "lucide-react";
 import heroImage from "@/assets/hero-explorer.jpg";
 import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 import { useParallax } from "@/hooks/use-parallax";
+import { usePwaInstall } from "@/hooks/use-pwa-install";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -322,10 +323,33 @@ function Testimonial() {
 
 /* ───────────── Download ───────────── */
 function Download() {
+  const { canInstall, install } = usePwaInstall();
+  const [engaged, setEngaged] = useState(false);
+
+  useEffect(() => {
+    const mark = () => setEngaged(true);
+    window.addEventListener("scroll", mark, { once: true, passive: true });
+    window.addEventListener("pointerdown", mark, { once: true });
+    return () => {
+      window.removeEventListener("scroll", mark);
+      window.removeEventListener("pointerdown", mark);
+    };
+  }, []);
+
   return (
     <section id="download" className="mx-auto max-w-4xl px-5 py-24 text-center">
       <h2 className="text-5xl sm:text-7xl font-medium tracking-tight">Download CO:FE(X)</h2>
       <p className="mt-4 text-base">Available starting September 28, 2025, on…</p>
+
+      {canInstall && engaged && (
+        <button
+          type="button"
+          onClick={() => install()}
+          className="mt-6 inline-flex items-center gap-2 rounded-full border-2 border-[color:var(--cofex-coffee)] px-6 py-3 text-sm font-semibold hover:bg-[color:var(--cofex-cream-warm,#f5efe6)] transition"
+        >
+          <Smartphone className="h-5 w-5" /> Install web app
+        </button>
+      )}
 
       <div className="mt-8 flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-3 sm:gap-4">
         <a href="#" className="inline-flex items-center justify-center gap-3 rounded-xl bg-[color:var(--cofex-black)] text-white px-6 py-4 sm:px-5 sm:py-3 hover:opacity-90 active:scale-[0.98] transition">

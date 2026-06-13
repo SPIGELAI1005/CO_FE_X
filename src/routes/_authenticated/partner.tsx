@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, redirect, useNavigate, Link } from "@tanstack/react-router";
-import { LogOut, LayoutDashboard, Store, Megaphone, Gift, BarChart3, Shield, Share2 } from "lucide-react";
+import { LogOut, LayoutDashboard, Store, Megaphone, Gift, BarChart3, Shield, Share2, CreditCard } from "lucide-react";
 import { SideNav } from "@/components/app/SideNav";
 import { NotificationsBell } from "@/components/app/NotificationsBell";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,6 +26,7 @@ const items = [
   { to: "/partner/submissions", label: "Submissions", Icon: Share2 },
   { to: "/partner/rewards", label: "Rewards", Icon: Gift },
   { to: "/partner/analytics", label: "Analytics", Icon: BarChart3 },
+  { to: "/partner/billing", label: "Billing", Icon: CreditCard },
 ];
 
 function PartnerLayout() {

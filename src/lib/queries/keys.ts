@@ -1,0 +1,23 @@
+export const queryKeys = {
+  profile: (userId: string) => ["profile", userId] as const,
+  partnerApplication: (userId: string) => ["partnerApplication", userId] as const,
+  coffeeShops: () => ["coffeeShops"] as const,
+  coffeeShop: (slug: string) => ["coffeeShop", slug] as const,
+  shopReviews: (shopId: string) => ["shopReviews", shopId] as const,
+  myReview: (shopId: string, userId: string) => ["myReview", shopId, userId] as const,
+  wallet: (userId: string) => ["wallet", userId] as const,
+  walletLedger: (userId: string, from: string, to: string) =>
+    ["wallet", userId, "ledger", from, to] as const,
+  passport: (userId: string) => ["passport", userId] as const,
+  activeCampaigns: () => ["campaigns", "active"] as const,
+  campaign: (id: string) => ["campaign", id] as const,
+  adminOverview: () => ["adminOverview"] as const,
+  adminPartnerApplications: () => ["adminPartnerApplications"] as const,
+  adminPendingShops: () => ["adminPendingShops"] as const,
+  adminCampaigns: () => ["adminCampaigns"] as const,
+  adminUsers: (search: string) => ["adminUsers", search] as const,
+  adminEngagement: () => ["adminEngagement"] as const,
+  notifications: (userId: string) => ["notifications", userId] as const,
+  partnerBilling: (userId: string) => ["partnerBilling", userId] as const,
+  coffeeRadar: (lat: number, lng: number) => ["coffeeRadar", lat, lng] as const,
+};

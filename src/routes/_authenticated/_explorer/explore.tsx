@@ -3,8 +3,9 @@ import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { useEffect, useMemo, useState, lazy, Suspense } from "react";
 import { Map as MapIcon, List as ListIcon, SlidersHorizontal, X, Search, Locate } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { CoffeeShopCard, type ShopCardData } from "@/components/app/CoffeeShopCard";
+import { haversineMetres } from "@/lib/geo";
+import { useCoffeeShops, useCoffeeShopCampaignCounts } from "@/lib/queries/coffee-shops";
 
 const CoffeeMap = lazy(() =>
   import("@/components/app/CoffeeMap").then((m) => ({ default: m.CoffeeMap })),
@@ -27,30 +28,8 @@ const searchSchema = z.object({
   radius: fallback(z.number().min(0.5).max(50), 5).default(5),
 });
 
-type Row = {
-  id: string;
-  slug: string;
-  name: string;
-  city: string | null;
-  latitude: number;
-  longitude: number;
-  cover_image_url: string | null;
-  rating: number;
-  rating_count: number;
-  tags: string[];
-  amenities: string[];
-  free_coffee_available: boolean;
-};
-
 function haversineKm(a: [number, number], b: [number, number]) {
-  const toRad = (x: number) => (x * Math.PI) / 180;
-  const R = 6371;
-  const dLat = toRad(b[0] - a[0]);
-  const dLon = toRad(b[1] - a[1]);
-  const lat1 = toRad(a[0]);
-  const lat2 = toRad(b[0]);
-  const h = Math.sin(dLat / 2) ** 2 + Math.sin(dLon / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
-  return 2 * R * Math.asin(Math.sqrt(h));
+  return haversineMetres(a[0], a[1], b[0], b[1]) / 1000;
 }
 
 export const Route = createFileRoute("/_authenticated/_explorer/explore")({
@@ -66,44 +45,11 @@ function ExplorePage() {
   const update = (patch: Partial<S>) =>
     navigate({ search: (prev: S) => ({ ...prev, ...patch }), replace: true });
 
-  const [rows, setRows] = useState<Row[]>([]);
-  const [counts, setCounts] = useState<Record<string, { campaigns: number; popularity: number }>>({});
-  const [loading, setLoading] = useState(true);
+  const { data: rows = [], isLoading: loading } = useCoffeeShops();
+  const shopIds = useMemo(() => rows.map((r) => r.id), [rows]);
+  const { data: counts = {} } = useCoffeeShopCampaignCounts(shopIds);
   const [hovered, setHovered] = useState<string | null>(null);
   const [center, setCenter] = useState<[number, number]>(DEFAULT_CENTER);
-
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      const { data } = await supabase
-        .from("coffee_shops")
-        .select(
-          "id, slug, name, city, latitude, longitude, cover_image_url, rating, rating_count, tags, amenities, free_coffee_available",
-        )
-        .eq("status", "approved");
-      if (!mounted) return;
-      const list = (data ?? []) as Row[];
-      setRows(list);
-      const ids = list.map((r) => r.id);
-      if (ids.length) {
-        const [{ data: camps }, { data: checks }] = await Promise.all([
-          supabase.from("campaigns").select("coffee_shop_id").in("coffee_shop_id", ids).eq("status", "active"),
-          supabase.from("check_ins").select("coffee_shop_id, user_id").in("coffee_shop_id", ids),
-        ]);
-        const tally: Record<string, { campaigns: number; popularity: number }> = {};
-        ids.forEach((id) => (tally[id] = { campaigns: 0, popularity: 0 }));
-        (camps ?? []).forEach((c: any) => tally[c.coffee_shop_id] && (tally[c.coffee_shop_id].campaigns += 1));
-        const seen: Record<string, Set<string>> = {};
-        (checks ?? []).forEach((c: any) => (seen[c.coffee_shop_id] ||= new Set()).add(c.user_id));
-        Object.entries(seen).forEach(([id, s]) => tally[id] && (tally[id].popularity = s.size));
-        if (mounted) setCounts(tally);
-      }
-      if (mounted) setLoading(false);
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   const locate = () => {
     if (!navigator.geolocation) return;

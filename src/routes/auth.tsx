@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { z } from "zod";
+import { zodValidator } from "@tanstack/zod-adapter";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
+import { friendlyAuthError } from "@/lib/auth-errors";
+
+const searchSchema = z.object({
+  next: z.string().optional(),
+});
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
       { title: "Sign in — CO:FE(X)" },
@@ -15,26 +22,37 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [err, setErr] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  function goAfterAuth() {
+    if (next && next.startsWith("/")) {
+      window.location.href = next;
+    } else {
+      navigate({ to: "/explore", replace: true });
+    }
+  }
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
-      if (data.user) navigate({ to: "/explore", replace: true });
+      if (data.user) goAfterAuth();
     });
-  }, [navigate]);
+  }, []);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr(null);
+    setInfo(null);
     setBusy(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -43,13 +61,18 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        if (data.user && !data.session) {
+          setInfo("Check your email to confirm your account, then sign in.");
+          setMode("signin");
+          return;
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
-      navigate({ to: "/explore", replace: true });
+      goAfterAuth();
     } catch (e2) {
-      setErr(e2 instanceof Error ? e2.message : "Something went wrong");
+      setErr(friendlyAuthError(e2));
     } finally {
       setBusy(false);
     }
@@ -57,15 +80,14 @@ function AuthPage() {
 
   const onGoogle = async () => {
     setErr(null);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+    const redirectTo = next
+      ? `${window.location.origin}${next.startsWith("/") ? next : "/explore"}`
+      : `${window.location.origin}/explore`;
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo },
     });
-    if (result.error) {
-      setErr(result.error instanceof Error ? result.error.message : "Google sign-in failed");
-      return;
-    }
-    if (result.redirected) return;
-    navigate({ to: "/explore", replace: true });
+    if (error) setErr(friendlyAuthError(error));
   };
 
   return (
@@ -138,6 +160,14 @@ function AuthPage() {
             className="w-full rounded-lg border px-4 py-3 text-sm focus:outline-none focus:ring-2"
             style={{ borderColor: "var(--border)" }}
           />
+          {mode === "signin" && (
+            <div className="text-right">
+              <Link to="/auth/forgot" className="text-xs text-muted-foreground hover:text-foreground underline">
+                Forgot password?
+              </Link>
+            </div>
+          )}
+          {info && <p className="text-sm text-emerald-700">{info}</p>}
           {err && <p className="text-sm text-destructive">{err}</p>}
           <button
             type="submit"
@@ -151,7 +181,7 @@ function AuthPage() {
 
         <button
           type="button"
-          onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+          onClick={() => { setMode(mode === "signin" ? "signup" : "signin"); setErr(null); setInfo(null); }}
           className="mt-4 w-full text-center text-sm text-muted-foreground hover:text-foreground"
         >
           {mode === "signin" ? "Don't have an account? Sign up" : "Already have an account? Sign in"}

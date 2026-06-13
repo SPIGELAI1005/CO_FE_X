@@ -1,0 +1,10 @@
+export const STALE = {
+  coffeeShops: 5 * 60_000,
+  coffeeShop: 5 * 60_000,
+  wallet: 0,
+  passport: 60_000,
+  notifications: 60_000,
+  profile: 60_000,
+  campaigns: 60_000,
+  radar: 2 * 60_000,
+} as const;
