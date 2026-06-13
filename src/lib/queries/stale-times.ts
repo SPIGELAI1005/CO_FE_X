@@ -7,4 +7,9 @@ export const STALE = {
   profile: 60_000,
   campaigns: 60_000,
   radar: 2 * 60_000,
+  leaderboard: 60_000,
+  myLeaderboardRank: 60_000,
+  challengeClaims: 30_000,
+  explorerChallengeDefs: 5 * 60_000,
+  cityCollection: 60_000,
 } as const;

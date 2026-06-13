@@ -5,12 +5,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/hooks/use-user";
 import { billingLimitsForShop, usePartnerBilling } from "@/lib/queries/billing";
 import { EEFFOC_TEMPLATES, type EeffocTemplate } from "@/lib/eeffoc-templates";
+import {
+  FULFILLMENT_MODE_DESCRIPTIONS,
+  FULFILLMENT_MODE_LABELS,
+  type CampaignFulfillmentMode,
+} from "@/lib/campaign-fulfillment";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, ArrowRight, Check, Megaphone, Calendar, Gift, ListChecks } from "lucide-react";
 import { toast } from "sonner";
 
@@ -36,10 +42,27 @@ export function CampaignWizard({
   open,
   onOpenChange,
   onCreated,
+  editCampaign,
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
   onCreated?: () => void;
+  editCampaign?: {
+    id: string;
+    title: string;
+    description: string | null;
+    reward_description: string | null;
+    requirements: string | null;
+    hashtag: string | null;
+    points_reward: number;
+    max_participants: number | null;
+    fulfillment_mode: CampaignFulfillmentMode;
+    auto_approve_social?: boolean;
+    starts_at: string | null;
+    ends_at: string | null;
+    participant_count?: number;
+    coffee_shop_id?: string;
+  } | null;
 }) {
   const [step, setStep] = useState(0);
   const [shops, setShops] = useState<Shop[]>([]);
@@ -54,6 +77,8 @@ export function CampaignWizard({
     points_reward: 10,
     durationDays: 14,
     max_participants: 100,
+    fulfillment_mode: "check_in" as CampaignFulfillmentMode,
+    auto_approve_social: false,
   });
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -79,11 +104,35 @@ export function CampaignWizard({
   }, [open]);
 
   useEffect(() => {
+    if (!open || !editCampaign) return;
+    const start = editCampaign.starts_at ? new Date(editCampaign.starts_at) : new Date();
+    const end = editCampaign.ends_at ? new Date(editCampaign.ends_at) : new Date();
+    const durationDays = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / 86400000));
+    setStep(1);
+    setTemplate(EEFFOC_TEMPLATES[0]);
+    setForm({
+      title: editCampaign.title,
+      description: editCampaign.description ?? "",
+      reward_description: editCampaign.reward_description ?? "",
+      requirements: editCampaign.requirements ?? "",
+      hashtag: editCampaign.hashtag ?? "#WeGiveEEFFOC",
+      points_reward: editCampaign.points_reward,
+      durationDays,
+      max_participants: editCampaign.max_participants ?? 100,
+      fulfillment_mode: editCampaign.fulfillment_mode ?? "check_in",
+      auto_approve_social: editCampaign.auto_approve_social ?? false,
+    });
+    setErrors({});
+    if (editCampaign.coffee_shop_id) setShopId(editCampaign.coffee_shop_id);
+  }, [open, editCampaign]);
+
+  useEffect(() => {
     if (!open) {
       setStep(0); setTemplate(null); setErrors({});
       setForm({
         title: "", description: "", reward_description: "", requirements: "",
         hashtag: "#WeGiveEEFFOC", points_reward: 10, durationDays: 14, max_participants: 100,
+        fulfillment_mode: "check_in", auto_approve_social: false,
       });
     }
   }, [open]);
@@ -99,6 +148,8 @@ export function CampaignWizard({
       points_reward: t.points_reward,
       durationDays: t.durationDays,
       max_participants: t.max_participants ?? 100,
+      fulfillment_mode: t.fulfillment_mode,
+      auto_approve_social: form.auto_approve_social,
     });
     setStep(1);
   }
@@ -120,12 +171,37 @@ export function CampaignWizard({
       return;
     }
     if (!shopId) { toast.error("Pick a coffee shop"); return; }
-    if (shopLimits && !shopLimits.canAddCampaign) {
+    if (!editCampaign && shopLimits && !shopLimits.canAddCampaign) {
       toast.error("Active campaign limit reached for your plan. Upgrade at Billing.");
       return;
     }
     setSaving(true);
     const hashtag = form.hashtag.startsWith("#") ? form.hashtag : `#${form.hashtag}`;
+
+    if (editCampaign) {
+      const { error } = await supabase.rpc("partner_update_campaign", {
+        _campaign_id: editCampaign.id,
+        _patch: {
+          title: form.title,
+          description: form.description,
+          reward_description: form.reward_description,
+          requirements: form.requirements || null,
+          hashtag,
+          points_reward: form.points_reward,
+          max_participants: form.max_participants,
+          ends_at: previewDates.end.toISOString(),
+          auto_approve_social: form.auto_approve_social,
+          ...(editCampaign.participant_count === 0 ? { fulfillment_mode: form.fulfillment_mode } : {}),
+        },
+      });
+      setSaving(false);
+      if (error) { toast.error(error.message.replace(/^.*?: /, "")); return; }
+      toast.success("Campaign updated");
+      onOpenChange(false);
+      onCreated?.();
+      return;
+    }
+
     const { error } = await supabase.from("campaigns").insert({
       coffee_shop_id: shopId,
       title: form.title,
@@ -136,6 +212,9 @@ export function CampaignWizard({
       points_reward: form.points_reward,
       max_participants: form.max_participants,
       campaign_type: template?.id ?? "custom",
+      fulfillment_mode: form.fulfillment_mode,
+      social_requirements: template?.social_requirements ?? {},
+      auto_approve_social: form.auto_approve_social,
       status: "active",
       starts_at: previewDates.start.toISOString(),
       ends_at: previewDates.end.toISOString(),
@@ -152,7 +231,7 @@ export function CampaignWizard({
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Megaphone className="h-5 w-5" /> EEFFOC Campaign — Step {step + 1} of 4
+            <Megaphone className="h-5 w-5" /> {editCampaign ? "Edit campaign" : "EEFFOC Campaign"} · Step {step + 1} of 4
           </DialogTitle>
           <DialogDescription>We Give EEFFOC. (That's COFFEE backwards.)</DialogDescription>
         </DialogHeader>
@@ -163,7 +242,7 @@ export function CampaignWizard({
           ))}
         </div>
 
-        {step === 0 && (
+        {step === 0 && !editCampaign && (
           <div>
             <h3 className="font-semibold mb-3">Pick a template</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -217,6 +296,26 @@ export function CampaignWizard({
             <Field label="Participation requirements" error={errors.requirements}>
               <Textarea rows={3} maxLength={400} value={form.requirements} onChange={(e) => setForm({ ...form, requirements: e.target.value })} />
             </Field>
+            <div>
+              <Label className="mb-2 block">How explorers unlock the reward</Label>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {(["check_in", "social_proof", "hybrid"] as CampaignFulfillmentMode[]).map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => setForm({ ...form, fulfillment_mode: mode })}
+                    className={`rounded-xl border p-3 text-left text-sm transition ${
+                      form.fulfillment_mode === mode
+                        ? "border-amber-600 bg-amber-50"
+                        : "border-zinc-200 hover:border-amber-300"
+                    }`}
+                  >
+                    <div className="font-semibold">{FULFILLMENT_MODE_LABELS[mode]}</div>
+                    <p className="mt-1 text-xs text-zinc-600">{FULFILLMENT_MODE_DESCRIPTIONS[mode]}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <Field label="Points reward" error={errors.points_reward}>
                 <Input type="number" min={0} max={500} value={form.points_reward} onChange={(e) => setForm({ ...form, points_reward: Number(e.target.value) })} />
@@ -225,9 +324,18 @@ export function CampaignWizard({
                 <Input type="number" min={1} max={10000} value={form.max_participants} onChange={(e) => setForm({ ...form, max_participants: Number(e.target.value) })} />
               </Field>
             </div>
-            <Field label={`Duration (days) — ends ${previewDates.end.toLocaleDateString()}`} error={errors.durationDays}>
+            <Field label={`Duration (days), ends ${previewDates.end.toLocaleDateString()}`} error={errors.durationDays}>
               <Input type="number" min={1} max={120} value={form.durationDays} onChange={(e) => setForm({ ...form, durationDays: Number(e.target.value) })} />
             </Field>
+            {(form.fulfillment_mode === "social_proof" || form.fulfillment_mode === "hybrid") && (
+              <div className="flex items-center justify-between rounded-xl border p-3">
+                <div>
+                  <div className="text-sm font-semibold">Auto-approve social posts</div>
+                  <p className="text-xs text-zinc-600">Instantly unlock rewards when explorers submit proof. Use for trusted/low-risk drops.</p>
+                </div>
+                <Switch checked={form.auto_approve_social} onCheckedChange={(v) => setForm({ ...form, auto_approve_social: v })} />
+              </div>
+            )}
           </div>
         )}
 
@@ -256,6 +364,7 @@ export function CampaignWizard({
                 <Row label="Max participants" value={String(form.max_participants)} />
                 <Row label="Starts" value={previewDates.start.toLocaleDateString()} />
                 <Row label="Ends" value={previewDates.end.toLocaleDateString()} />
+                <Row label="Unlock path" value={FULFILLMENT_MODE_LABELS[form.fulfillment_mode]} />
               </div>
               {form.requirements && (
                 <div className="mt-3 text-sm">
@@ -304,13 +413,13 @@ export function CampaignWizard({
                 if (Object.keys(errs).length > 0) { toast.error("Please fix the highlighted fields"); return; }
                 setStep((s) => Math.min(3, s + 1));
               }}
-              disabled={step === 0 && !template}
+              disabled={step === 0 && !template && !editCampaign}
             >
               Next <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           ) : (
-            <Button onClick={submit} disabled={saving || (shopLimits !== null && !shopLimits.canAddCampaign)} className="bg-amber-700 hover:bg-amber-800">
-              {saving ? "Publishing…" : (<><Check className="h-4 w-4 mr-1" /> Publish</>)}
+            <Button onClick={submit} disabled={saving || (!editCampaign && shopLimits !== null && !shopLimits.canAddCampaign)} className="bg-amber-700 hover:bg-amber-800">
+              {saving ? "Saving…" : editCampaign ? (<><Check className="h-4 w-4 mr-1" /> Save</>) : (<><Check className="h-4 w-4 mr-1" /> Publish</>)}
             </Button>
           )}
         </div>
@@ -359,12 +468,12 @@ function RulesTester({ form }: { form: RuleForm }) {
   const fillPct = Math.round((joins / cap) * 100);
 
   const warnings: { tone: "warn" | "info" | "ok"; text: string }[] = [];
-  if (form.points_reward === 0) warnings.push({ tone: "info", text: "No bonus points — explorers won't earn extra for redeeming." });
+  if (form.points_reward === 0) warnings.push({ tone: "info", text: "No bonus points. Explorers won't earn extra for redeeming." });
   if (form.points_reward > 100) warnings.push({ tone: "warn", text: "High point reward (>100). Make sure this matches the offer's value." });
-  if (form.max_participants < 10) warnings.push({ tone: "warn", text: "Very small cap — campaign may fill within hours." });
+  if (form.max_participants < 10) warnings.push({ tone: "warn", text: "Very small cap. Campaign may fill within hours." });
   if (form.max_participants > 1000) warnings.push({ tone: "warn", text: "Large cap (>1,000). Make sure staff can handle the volume." });
-  if (form.durationDays < 3) warnings.push({ tone: "warn", text: "Short window — consider 7+ days to reach more explorers." });
-  if (form.durationDays > 60) warnings.push({ tone: "info", text: "Long window — momentum may dip in the middle." });
+  if (form.durationDays < 3) warnings.push({ tone: "warn", text: "Short window. Consider 7+ days to reach more explorers." });
+  if (form.durationDays > 60) warnings.push({ tone: "info", text: "Long window. Momentum may dip in the middle." });
   if (!form.reward_description.toLowerCase().match(/free|%|off|bogo|buy/)) warnings.push({ tone: "info", text: "Reward text is vague. ‘Free X’ or ‘XX% off’ converts better." });
   if (warnings.length === 0) warnings.push({ tone: "ok", text: "Looks good. No rule warnings detected." });
 
@@ -372,7 +481,7 @@ function RulesTester({ form }: { form: RuleForm }) {
     <div className="rounded-2xl border bg-white p-5 space-y-4">
       <div className="flex items-center gap-2">
         <span className="text-xs font-semibold uppercase tracking-widest text-amber-700">Rules tester</span>
-        <span className="text-xs text-zinc-500">Simulate what an explorer would see — before publishing.</span>
+        <span className="text-xs text-zinc-500">Simulate what an explorer would see before publishing.</span>
       </div>
 
       <div className="grid grid-cols-2 gap-4">

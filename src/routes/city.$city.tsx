@@ -3,6 +3,9 @@ import { useMemo } from "react";
 import { MapPin, Megaphone, Star, Gift } from "lucide-react";
 import { cityFromSlug } from "@/lib/cities";
 import { useCoffeeShopsByCity, useCityActiveCampaigns } from "@/lib/queries/coffee-shops";
+import { useCityCollectionProgress } from "@/lib/queries/city-collections";
+import { CityCollectionCard } from "@/components/app/CityCollectionCard";
+import { useUser } from "@/hooks/use-user";
 import { CoffeeShopCard, type ShopCardData } from "@/components/app/CoffeeShopCard";
 import { QueryBoundary } from "@/components/patterns/QueryBoundary";
 import { EmptyState } from "@/components/patterns/EmptyState";
@@ -11,7 +14,7 @@ export const Route = createFileRoute("/city/$city")({
   ssr: true,
   head: ({ params }) => {
     const name = cityFromSlug(params.city);
-    const title = `Coffee in ${name} — CO:FE(X)`;
+    const title = `Coffee in ${name} · CO:FE(X)`;
     const description = `Top cafés and active EEFFOC campaigns in ${name}. Discover, check in, and earn rewards with CO:FE(X).`;
     return {
       meta: [
@@ -29,6 +32,8 @@ export const Route = createFileRoute("/city/$city")({
 function CityPage() {
   const { city } = Route.useParams();
   const cityName = cityFromSlug(city);
+  const { user } = useUser();
+  const progressQuery = useCityCollectionProgress(city, user?.id);
   const shopsQuery = useCoffeeShopsByCity(city);
   const shopIds = useMemo(() => (shopsQuery.data ?? []).map((s) => s.id), [shopsQuery.data]);
   const campaignsQuery = useCityActiveCampaigns(city, shopIds);
@@ -61,12 +66,18 @@ function CityPage() {
           Approved partner cafés and active EEFFOC campaigns near you.
         </p>
 
+        {user && progressQuery.data && (
+          <div className="mt-6">
+            <CityCollectionCard progress={progressQuery.data} />
+          </div>
+        )}
+
         <QueryBoundary
           query={shopsQuery}
           loadingLabel="Loading cafés…"
           isEmpty={(shops) => shops.length === 0}
           emptyTitle={`No cafés listed in ${cityName} yet`}
-          emptyDescription="We're expanding the network — explore all locations or list your café as a partner."
+          emptyDescription="We're expanding the network. Explore all locations or list your café as a partner."
           emptyActionLabel="Back home"
           emptyActionTo="/"
         >

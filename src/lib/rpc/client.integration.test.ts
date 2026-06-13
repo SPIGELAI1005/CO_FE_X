@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   parseCheckInResult,
+  parseClaimChallengeResult,
   parseRpcErrorMessage,
+  rpcClaimExplorerChallenge,
   rpcJoinCampaign,
   rpcPerformCheckIn,
   rpcRedeemCampaign,
@@ -73,5 +75,52 @@ describe("rpc client wrappers", () => {
     expect(client.rpc).toHaveBeenCalledWith("join_campaign", { _campaign_id: "camp-1" });
     expect(client.rpc).toHaveBeenCalledWith("redeem_campaign", { _campaign_id: "camp-1" });
     expect(redeem.data).toEqual({ points_awarded: 25 });
+  });
+
+  it("claims explorer challenge via RPC", async () => {
+    const client = mockClient((name: unknown) => {
+      if (name === "claim_explorer_challenge") {
+        return Promise.resolve({
+          data: {
+            challenge_id: "weekly",
+            period_key: "2026-W24",
+            points_awarded: 50,
+            total_points: 250,
+          },
+          error: null,
+        });
+      }
+      return Promise.resolve({ data: null, error: null });
+    });
+
+    const { data, error } = await rpcClaimExplorerChallenge(client, "weekly");
+
+    expect(error).toBeNull();
+    expect(client.rpc).toHaveBeenCalledWith("claim_explorer_challenge", { _challenge_id: "weekly" });
+    expect(parseClaimChallengeResult(data)?.points_awarded).toBe(50);
+  });
+
+  it("surfaces incomplete challenge errors from RPC", async () => {
+    const client = mockClient(() =>
+      Promise.resolve({
+        data: null,
+        error: { message: "Challenge not complete (3 / 5)" },
+      }),
+    );
+
+    const { error } = await rpcClaimExplorerChallenge(client, "weekly");
+    expect(parseRpcErrorMessage(error)).toContain("3 / 5");
+  });
+
+  it("surfaces already claimed errors from RPC", async () => {
+    const client = mockClient(() =>
+      Promise.resolve({
+        data: null,
+        error: { message: "Already claimed" },
+      }),
+    );
+
+    const { error } = await rpcClaimExplorerChallenge(client, "weekly");
+    expect(parseRpcErrorMessage(error)).toBe("Already claimed");
   });
 });

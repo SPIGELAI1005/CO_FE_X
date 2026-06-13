@@ -1,75 +1,76 @@
-import { createFileRoute, Link, Outlet, useNavigate, redirect, useRouterState } from "@tanstack/react-router";
-import { LogOut } from "lucide-react";
-import { BottomNav } from "@/components/app/BottomNav";
-import { NotificationsBell } from "@/components/app/NotificationsBell";
-import { EmailVerificationBanner } from "@/components/app/EmailVerificationBanner";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuthSessionGuard } from "@/hooks/use-auth-session";
-
-export const Route = createFileRoute("/_authenticated/_explorer")({
-  beforeLoad: async ({ location }) => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const onOnboarding = location.pathname === "/onboarding";
-
-    const { data: profile, error } = await supabase
-      .from("profiles")
-      .select("onboarding_completed_at")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    if (error) return;
-
-    const completed = !!profile?.onboarding_completed_at;
-
-    if (!completed && !onOnboarding) {
-      throw redirect({ to: "/onboarding" });
-    }
-    if (completed && onOnboarding) {
-      throw redirect({ to: "/explore" });
-    }
-  },
-  component: ExplorerLayout,
-});
-
-function ExplorerLayout() {
-  const navigate = useNavigate();
-  useAuthSessionGuard();
-  const onOnboarding = useRouterState({ select: (s) => s.location.pathname === "/onboarding" });
-
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
-  };
-
-  return (
-    <div className="min-h-screen bg-white pb-20" style={{ fontFamily: "'Nunito Sans', system-ui, sans-serif" }}>
-      <header
-        className="sticky top-0 z-30 flex items-center justify-between border-b bg-white/95 backdrop-blur px-5 py-3"
-        style={{ borderColor: "var(--border)" }}
-      >
-        <Link to="/explore" className="text-xs font-bold tracking-[0.3em]" style={{ color: "var(--cofex-coffee-deep)" }}>
-          CO:FE(X)
-        </Link>
-        <div className="flex items-center gap-1">
-          {!onOnboarding && <NotificationsBell />}
-          <button
-            onClick={signOut}
-            className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 px-2"
-            aria-label="Sign out"
-          >
-            <LogOut className="h-4 w-4" /> Sign out
-          </button>
-        </div>
-      </header>
-      {!onOnboarding && <EmailVerificationBanner />}
-      <main>
-        <Outlet />
-      </main>
-      {!onOnboarding && <BottomNav />}
-    </div>
-  );
-}
+import { createFileRoute, Outlet, useNavigate, redirect, useRouterState } from "@tanstack/react-router";
+import { AppHeader } from "@/components/app/AppHeader";
+import { BottomNav } from "@/components/app/BottomNav";
+import { EmailVerificationBanner } from "@/components/app/EmailVerificationBanner";
+import { MarketingFooter, MarketingNav } from "@/components/marketing/LegalPageShell";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuthSessionGuard } from "@/hooks/use-auth-session";
+import { LogOut } from "lucide-react";
+
+export const Route = createFileRoute("/_authenticated/_explorer")({
+  beforeLoad: async ({ location }) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const onOnboarding = location.pathname === "/onboarding";
+
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("onboarding_completed_at")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (error) return;
+
+    const completed = !!profile?.onboarding_completed_at;
+
+    if (!completed && !onOnboarding) {
+      throw redirect({ to: "/onboarding" });
+    }
+    if (completed && onOnboarding) {
+      throw redirect({ to: "/explore" });
+    }
+  },
+  component: ExplorerLayout,
+});
+
+function ExplorerLayout() {
+  const navigate = useNavigate();
+  useAuthSessionGuard();
+  const onOnboarding = useRouterState({ select: (s) => s.location.pathname === "/onboarding" });
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  };
+
+  return (
+    <div
+      className={`flex min-h-screen flex-col ${onOnboarding ? "bg-[color:var(--cofex-cream)]" : "pb-20"}`}
+      style={{ fontFamily: "'Nunito Sans', system-ui, sans-serif" }}
+    >
+      {onOnboarding ? (
+        <MarketingNav
+          trailing={
+            <button
+              type="button"
+              onClick={signOut}
+              className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--cofex-black)] px-4 py-2 text-sm hover:bg-[color:var(--cofex-black)] hover:text-white transition"
+            >
+              <LogOut className="h-4 w-4" /> Sign out
+            </button>
+          }
+        />
+      ) : (
+        <AppHeader onSignOut={signOut} />
+      )}
+      {!onOnboarding && <EmailVerificationBanner />}
+      <main className="flex min-h-0 flex-1 flex-col">
+        <Outlet />
+      </main>
+      {onOnboarding ? <MarketingFooter /> : <BottomNav />}
+    </div>
+  );
+}

@@ -1,15 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useAdminOverview, useAdminEngagement } from "@/lib/queries/admin";
-import { Loader2, TrendingUp, MapPin, Users } from "lucide-react";
+import { useState } from "react";
+import { useAdminOverview, useAdminEngagement, useExplorerFunnelKpis } from "@/lib/queries/admin";
+import { Loader2, TrendingUp, MapPin, Users, Trophy, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/analytics")({
-  head: () => ({ meta: [{ title: "Analytics — Admin" }] }),
+  head: () => ({ meta: [{ title: "Analytics · Admin" }] }),
   component: AdminAnalyticsPage,
 });
 
 function AdminAnalyticsPage() {
+  const [days, setDays] = useState(7);
   const { data, isLoading } = useAdminOverview();
   const engagementQuery = useAdminEngagement();
+  const funnelQuery = useExplorerFunnelKpis(days);
 
   const engagement =
     data && data.users > 0 ? Math.round((data.checkIns / data.users) * 10) / 10 : 0;
@@ -19,10 +22,40 @@ function AdminAnalyticsPage() {
       <h1 className="text-2xl font-bold">Network analytics</h1>
       <p className="mt-1 text-sm text-muted-foreground">High-level engagement across CO:FE(X).</p>
 
-      {isLoading || engagementQuery.isLoading ? (
+      {isLoading || engagementQuery.isLoading || funnelQuery.isLoading ? (
         <Loader2 className="mt-8 h-6 w-6 animate-spin text-muted-foreground" />
       ) : (
         <div className="mt-8 space-y-8">
+          <div className="flex gap-2">
+            {[7, 30].map((d) => (
+              <button
+                key={d}
+                type="button"
+                onClick={() => setDays(d)}
+                className={`rounded-full px-3 py-1 text-xs font-semibold ${days === d ? "bg-[color:var(--cofex-coffee-deep)] text-white" : "border"}`}
+                style={{ borderColor: "var(--border)" }}
+              >
+                {d}d
+              </button>
+            ))}
+          </div>
+
+          {funnelQuery.data && (
+            <section className="rounded-2xl border p-5" style={{ borderColor: "var(--border)" }}>
+              <h2 className="font-semibold">Explorer engagement funnel</h2>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <MetricCard label="Leaderboard opens" value={funnelQuery.data.leaderboard_opens} icon={Trophy} />
+                <MetricCard label="Post-check-in sheets" value={funnelQuery.data.post_checkin_sheets} icon={Sparkles} />
+                <MetricCard
+                  label="Post-check-in action rate"
+                  value={`${funnelQuery.data.post_checkin_action_rate}%`}
+                />
+                <MetricCard label="Challenge claims" value={funnelQuery.data.challenge_claims} icon={TrendingUp} />
+                <MetricCard label="Daily active explorers" value={funnelQuery.data.daily_active_explorers} icon={Users} />
+              </div>
+            </section>
+          )}
+
           <div className="grid gap-4 sm:grid-cols-2">
             <MetricCard label="Avg check-ins / explorer" value={engagement} icon={TrendingUp} />
             <MetricCard

@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/campaigns")({
-  head: () => ({ meta: [{ title: "Campaigns — Admin" }] }),
+  head: () => ({ meta: [{ title: "Campaigns · Admin" }] }),
   component: AdminCampaignsPage,
 });
 
@@ -46,7 +46,7 @@ function AdminCampaignsPage() {
                   <div>
                     <p className="font-semibold">{c.title}</p>
                     <p className="text-sm text-muted-foreground">
-                      {shop?.name ?? "—"} · {shop?.city ?? "—"}
+                      {shop?.name ?? "-"} · {shop?.city ?? "-"}
                     </p>
                   </div>
                   <Badge className="capitalize">{c.status}</Badge>

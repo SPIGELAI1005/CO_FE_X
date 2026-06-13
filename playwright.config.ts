@@ -4,6 +4,7 @@ import { loadEnv } from "vite";
 const port = 4173;
 const baseURL = `http://127.0.0.1:${port}`;
 const env = loadEnv("production", process.cwd(), "");
+Object.assign(process.env, env);
 
 export default defineConfig({
   testDir: "./e2e",
@@ -16,7 +17,28 @@ export default defineConfig({
     baseURL,
     trace: "on-first-retry",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    { name: "partner-setup", testMatch: /partner\.auth\.setup\.ts/ },
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+      testIgnore: [/partner\.auth\.setup\.ts/, /partner-routes\.spec\.ts/],
+    },
+    {
+      name: "partner-guest",
+      testMatch: /partner-guest\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "partner-chromium",
+      testMatch: /partner-routes\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "e2e/.auth/partner.json",
+      },
+      dependencies: ["partner-setup"],
+    },
+  ],
   webServer: {
     command: `npm run preview -- --host 127.0.0.1 --port ${port}`,
     url: baseURL,

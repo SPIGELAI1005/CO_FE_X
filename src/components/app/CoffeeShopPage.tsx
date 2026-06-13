@@ -1,19 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { ArrowLeft, MapPin, Star, Gift, Megaphone, Users, LogIn } from "lucide-react";
-import { getCurrentPosition } from "@/lib/geo";
-import { rpcPerformCheckIn, parseCheckInResult, parseRpcErrorMessage } from "@/lib/rpc/client";
-import { supabase } from "@/integrations/supabase/client";
+import { ArrowLeft, MapPin, Star, Gift, Megaphone, LogIn } from "lucide-react";
 import { useShopActiveCampaigns } from "@/lib/queries/coffee-shops";
 import { QueryBoundary } from "@/components/patterns/QueryBoundary";
 import { ReviewSection } from "@/components/app/ReviewSection";
 import { OptimizedImage } from "@/components/app/OptimizedImage";
-import { useQueryClient } from "@tanstack/react-query";
+import { ShopCheckInFlow } from "@/components/app/ShopCheckInFlow";
 import { useUser } from "@/hooks/use-user";
-import { afterCheckIn } from "@/lib/queries/invalidation";
 import type { CoffeeShopDetail } from "@/lib/queries/coffee-shops";
 import { cityToSlug } from "@/lib/cities";
-
 interface CoffeeShopPageProps {
   shop: CoffeeShopDetail;
   backTo?: string;
@@ -163,11 +157,19 @@ export function CoffeeShopPage({
 
         {user ? (
           <>
-            <CheckInButton shopId={shop.id} />
+            <ShopCheckInFlow
+              shopId={shop.id}
+              shopSlug={shop.slug}
+              shopName={shop.name}
+              shopCity={shop.city}
+              campaigns={campaignsQuery.data ?? []}
+              onWriteReview={() => {
+                document.getElementById("reviews")?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+            />
             <ReviewSection shopId={shop.id} shopName={shop.name} />
           </>
-        ) : (
-          <div className="rounded-2xl border-2 border-dashed bg-white p-6 text-center" style={{ borderColor: "var(--cofex-accent-gold, #c8a063)" }}>
+        ) : (          <div className="rounded-2xl border-2 border-dashed bg-white p-6 text-center" style={{ borderColor: "var(--cofex-accent-gold, #c8a063)" }}>
             <LogIn className="mx-auto h-8 w-8 text-amber-700" />
             <p className="mt-2 font-semibold" style={{ color: "var(--cofex-coffee-deep)" }}>
               Sign in to check in & earn points
@@ -188,95 +190,6 @@ export function CoffeeShopPage({
 
         {!user && <ReviewSection shopId={shop.id} shopName={shop.name} />}
       </div>
-    </div>
-  );
-}
-
-function CheckInButton({ shopId }: { shopId: string }) {
-  const { user } = useUser();
-  const qc = useQueryClient();
-  const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<{
-    points_awarded: number;
-    total_points: number;
-    total_check_ins: number;
-    new_badges: { slug: string; name: string }[];
-  } | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const checkIn = async () => {
-    setBusy(true);
-    setError(null);
-    try {
-      const { latitude, longitude } = await getCurrentPosition();
-      const { data, error: rpcError } = await rpcPerformCheckIn(supabase, {
-        shopId,
-        latitude,
-        longitude,
-      });
-      if (rpcError) {
-        setError(parseRpcErrorMessage(rpcError));
-        return;
-      }
-      const parsed = parseCheckInResult(data);
-      if (!parsed) {
-        setError("Check-in failed");
-        return;
-      }
-      setResult(parsed);
-      if (user) afterCheckIn(qc, user.id);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Check-in failed");
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  if (result) {
-    return (
-      <div
-        className="rounded-2xl border-2 border-dashed p-5 text-center"
-        style={{ borderColor: "var(--cofex-accent-gold, #c8a063)", background: "white" }}
-      >
-        <p className="text-2xl">☕✨</p>
-        <p className="mt-1 font-semibold" style={{ color: "var(--cofex-coffee-deep)" }}>
-          Check-in confirmed!
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          +{result.points_awarded} points · {result.total_points} total · {result.total_check_ins} visits
-        </p>
-        {result.new_badges?.length > 0 && (
-          <div className="mt-3 flex flex-wrap justify-center gap-2">
-            {result.new_badges.map((b) => (
-              <span
-                key={b.slug}
-                className="rounded-full px-3 py-1 text-xs font-semibold text-white"
-                style={{ background: "var(--cofex-accent-gold, #c8a063)" }}
-              >
-                🏅 {b.name} unlocked
-              </span>
-            ))}
-          </div>
-        )}
-        <Link to="/passport" className="mt-4 inline-block text-xs font-medium underline">
-          View passport →
-        </Link>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-2">
-      <button
-        onClick={checkIn}
-        disabled={busy}
-        className="w-full rounded-full py-3 text-sm font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5 disabled:opacity-60"
-        style={{ background: "var(--cofex-coffee-deep, #3d2417)" }}
-      >
-        <Users className="mr-2 inline h-4 w-4" />
-        {busy ? "Checking in…" : "Check in nearby & earn +10 points"}
-      </button>
-      {error && <p className="text-center text-xs text-red-600">{error}</p>}
     </div>
   );
 }

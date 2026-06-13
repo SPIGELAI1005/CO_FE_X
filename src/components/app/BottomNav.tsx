@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Map, Megaphone, BookOpen, Wallet, User, RadioTower, ChevronUp } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { Map as MapIcon, Megaphone, BookOpen, Wallet, User, RadioTower, ChevronUp, Trophy } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,12 +10,13 @@ import {
 
 const navItems = [
   { to: "/radar", label: "Radar", Icon: RadioTower },
-  { to: "/explore", label: "Explore", Icon: Map },
+  { to: "/explore", label: "Explore", Icon: MapIcon },
   { to: "/campaigns", label: "Campaigns", Icon: Megaphone },
 ] as const;
 
 const rewardsLinks = [
   { to: "/passport", label: "Passport", Icon: BookOpen },
+  { to: "/leaderboard", label: "Rank", Icon: Trophy },
   { to: "/wallet", label: "Wallet", Icon: Wallet },
 ] as const;
 
@@ -25,48 +27,69 @@ function NavLink({
 }: {
   to: string;
   label: string;
-  Icon: typeof Map;
+  Icon: LucideIcon;
 }) {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const active = pathname === to || pathname.startsWith(`${to}/`);
+
   return (
     <Link
       to={to}
-      className="flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[9px] font-medium leading-none text-muted-foreground transition-colors sm:text-[10px]"
-      activeProps={{ style: { color: "var(--cofex-coffee-deep)" } }}
+      className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl py-2 text-[9px] font-semibold leading-none transition-colors sm:text-[10px] ${
+        active ? "cofex-nav-link-active" : "text-[color:var(--cofex-black)]/45"
+      }`}
     >
       <Icon className="h-[18px] w-[18px] shrink-0 sm:h-5 sm:w-5" />
-      <span className="max-w-full truncate px-0.5">{label}</span>
+      <span className={`max-w-full truncate px-0.5 ${active ? "" : "max-[359px]:sr-only"}`}>{label}</span>
     </Link>
   );
 }
 
-function RewardsNavItem() {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+function rewardsActiveState(pathname: string) {
   const onPassport = pathname.startsWith("/passport");
   const onWallet = pathname.startsWith("/wallet");
-  const active = onPassport || onWallet;
-  const ActiveIcon = onWallet ? Wallet : BookOpen;
+  const onRank = pathname.startsWith("/leaderboard");
+  const active = onPassport || onWallet || onRank;
+  const activeLink = rewardsLinks.find(({ to }) => pathname === to || pathname.startsWith(`${to}/`));
+  const ActiveIcon = activeLink?.Icon ?? BookOpen;
+  const label = activeLink?.label ?? "Rewards";
+  return { active, ActiveIcon, label };
+}
+
+function RewardsNavItem() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { active, ActiveIcon, label } = rewardsActiveState(pathname);
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[9px] font-medium leading-none text-muted-foreground transition-colors sm:text-[10px]"
-          style={{ color: active ? "var(--cofex-coffee-deep)" : undefined }}
-          aria-label="Passport and wallet"
+          className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl py-2 text-[9px] font-semibold leading-none transition-colors sm:text-[10px] ${
+            active ? "cofex-nav-link-active" : "text-[color:var(--cofex-black)]/45"
+          }`}
+          aria-label="Passport, rank, and wallet"
         >
           <span className="relative">
             <ActiveIcon className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
             <ChevronUp className="absolute -right-2 -top-1 h-2.5 w-2.5 opacity-60" />
           </span>
-          <span className="max-w-full truncate px-0.5">{onWallet ? "Wallet" : onPassport ? "Passport" : "Rewards"}</span>
+          <span className={`max-w-full truncate px-0.5 ${active ? "" : "max-[359px]:sr-only"}`}>{label}</span>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent side="top" align="center" className="mb-2 min-w-[10rem]">
+      <DropdownMenuContent
+        side="top"
+        align="center"
+        sideOffset={12}
+        className="cofex-rewards-menu z-[1200] mb-1 min-w-[11rem] rounded-2xl border-[color:var(--border)] bg-white p-1.5 shadow-[var(--shadow-premium)]"
+      >
         {rewardsLinks.map(({ to, label, Icon }) => (
           <DropdownMenuItem key={to} asChild>
-            <Link to={to} className="flex cursor-pointer items-center gap-2">
-              <Icon className="h-4 w-4" />
+            <Link
+              to={to}
+              className="flex cursor-pointer items-center gap-2 rounded-xl px-2 py-2 font-medium transition hover:bg-[color:var(--cofex-pastel-blue)]"
+            >
+              <Icon className="h-4 w-4 text-[color:var(--cofex-cyan)]" />
               {label}
             </Link>
           </DropdownMenuItem>
@@ -77,12 +100,12 @@ function RewardsNavItem() {
 }
 
 export function BottomNav() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const profileActive = pathname === "/profile" || pathname.startsWith("/profile/");
+
   return (
-    <nav
-      className="fixed bottom-0 inset-x-0 z-50 border-t bg-white/95 backdrop-blur pb-[env(safe-area-inset-bottom)]"
-      style={{ borderColor: "var(--border)" }}
-    >
-      <ul className="mx-auto flex max-w-2xl items-stretch justify-between px-1 sm:px-2">
+    <nav className="cofex-bottom-nav fixed inset-x-0 bottom-0 z-[100] border-t pb-[env(safe-area-inset-bottom)] backdrop-blur">
+      <ul className="mx-auto flex max-w-2xl items-stretch justify-between px-1 pt-1 sm:px-2">
         {navItems.map(({ to, label, Icon }) => (
           <li key={to} className="flex min-w-0 flex-1">
             <NavLink to={to} label={label} Icon={Icon} />
@@ -92,7 +115,17 @@ export function BottomNav() {
           <RewardsNavItem />
         </li>
         <li className="flex min-w-0 flex-1">
-          <NavLink to="/profile" label="Profile" Icon={User} />
+          <Link
+            to="/profile"
+            className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl py-2 text-[9px] font-semibold leading-none transition-colors sm:text-[10px] ${
+              profileActive ? "cofex-nav-link-active" : "text-[color:var(--cofex-black)]/45"
+            }`}
+          >
+            <User className="h-[18px] w-[18px] shrink-0 sm:h-5 sm:w-5" />
+            <span className={`max-w-full truncate px-0.5 ${profileActive ? "" : "max-[359px]:sr-only"}`}>
+              Profile
+            </span>
+          </Link>
         </li>
       </ul>
     </nav>

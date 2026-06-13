@@ -23,25 +23,22 @@ export function EmptyState({
   children,
 }: EmptyStateProps) {
   return (
-    <div
-      className="rounded-2xl border border-dashed p-10 text-center"
-      style={{ borderColor: "var(--border)", background: "white" }}
-    >
+    <div className="cofex-app-card cofex-app-card-dashed px-10 py-10 text-center">
       {Icon && (
-        <Icon className="mx-auto h-10 w-10 text-muted-foreground" aria-hidden />
+        <Icon className="mx-auto h-10 w-10 text-[color:var(--cofex-cyan)]" aria-hidden />
       )}
-      <h3 className="mt-3 font-semibold text-foreground">{title}</h3>
+      <h3 className="mt-3 font-extrabold text-[color:var(--cofex-coffee-deep)]">{title}</h3>
       {description && (
-        <p className="mt-1 text-sm text-muted-foreground max-w-sm mx-auto">{description}</p>
+        <p className="mx-auto mt-1 max-w-sm text-sm text-[color:var(--cofex-black)]/65">{description}</p>
       )}
       {children}
       {actionLabel && actionTo && (
-        <Button asChild className="mt-5" size="sm">
+        <Button asChild className="mt-5 rounded-full bg-[color:var(--cofex-coffee-deep)] hover:bg-[color:var(--cofex-black)]" size="sm">
           <Link to={actionTo}>{actionLabel}</Link>
         </Button>
       )}
       {actionLabel && onAction && !actionTo && (
-        <Button className="mt-5" size="sm" onClick={onAction}>
+        <Button className="mt-5 rounded-full bg-[color:var(--cofex-coffee-deep)] hover:bg-[color:var(--cofex-black)]" size="sm" onClick={onAction}>
           {actionLabel}
         </Button>
       )}

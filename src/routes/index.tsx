@@ -1,21 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Download as DownloadIcon, ArrowRight, ArrowLeft, Apple, Play, Smartphone } from "lucide-react";
+import { MarketingFooter } from "@/components/marketing/LegalPageShell";
+import { Download as DownloadIcon, ArrowRight, ArrowLeft, Smartphone } from "lucide-react";
 import heroImage from "@/assets/hero-explorer.jpg";
-import { useScrollReveal } from "@/hooks/use-scroll-reveal";
-import { useParallax } from "@/hooks/use-parallax";
+import cofexLogo from "@/assets/cofex-logo.png";
 import { usePwaInstall } from "@/hooks/use-pwa-install";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "CO:FE(X) — (X)plore Cafés · (€)arn Coffees" },
+      { title: "CO:FE(X) · (X)plore Cafés · (€)arn Coffees" },
       {
         name: "description",
         content:
-          "Snap a pic, post it, and score a free coffee. CO:FE(X) is the Coffee Explorer Network — discover cozy cafés and earn rewards. Coming September 28, 2025.",
+          "Snap a pic, post it, and score a free coffee. CO:FE(X) is the Coffee Explorer Network. Discover cozy cafés and earn rewards. Coming September 28, 2026.",
       },
-      { property: "og:title", content: "CO:FE(X) — (X)plore Cafés · (€)arn Coffees" },
+      { property: "og:title", content: "CO:FE(X) · (X)plore Cafés · (€)arn Coffees" },
       {
         property: "og:description",
         content: "Snap. Post. Earn a free coffee. The Coffee Explorer Network.",
@@ -26,8 +26,6 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
-  useScrollReveal();
-  useParallax();
   return (
     <div className="min-h-screen bg-white text-[color:var(--cofex-black)] overflow-x-hidden" style={{ fontFamily: "'Nunito Sans', system-ui, sans-serif" }}>
       <Nav />
@@ -36,7 +34,7 @@ function Landing() {
       <Features />
       <Testimonial />
       <Download />
-      <Footer />
+      <MarketingFooter />
     </div>
   );
 }
@@ -46,11 +44,22 @@ function Nav() {
   return (
     <header className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-[color:var(--border)]">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-        <Link to="/" className="font-medium leading-tight">
-          <span className="block sm:inline text-[11px] sm:text-base tracking-[0.2em] sm:tracking-[0.3em]">CO:FE(X)</span>
-          <span className="hidden sm:inline text-base tracking-[0.3em]"> // Coffee Explorer Network // Explore. Share. Earn.</span>
-          <span className="sm:hidden block text-[10px] tracking-[0.12em] opacity-60 mt-0.5">Coffee Explorer Network</span>
-          <span className="sm:hidden block text-[10px] tracking-[0.12em] opacity-60">Explore. Share. Earn.</span>
+        <Link to="/" className="flex items-center gap-3 font-medium leading-tight">
+          <img
+            src={cofexLogo}
+            alt="CO:FE(X) logo"
+            width={40}
+            height={40}
+            className="h-9 w-9 sm:h-10 sm:w-10 shrink-0"
+          />
+          <span className="flex flex-col leading-tight">
+            <span className="text-[10px] sm:text-sm md:text-base tracking-[0.12em] sm:tracking-[0.2em] md:tracking-[0.3em]">
+              CO:FE(X) // Coffee Explorer Network
+            </span>
+            <span className="text-[10px] sm:text-xs tracking-[0.12em] sm:tracking-[0.2em] opacity-70 mt-0.5">
+              Explore. Share. Earn.
+            </span>
+          </span>
         </Link>
         <div className="flex items-center gap-6 text-sm">
           <a href="#about" className="hidden sm:inline hover:opacity-70">About</a>
@@ -76,7 +85,7 @@ function Hero() {
       className="relative mx-auto max-w-6xl px-5 pt-16 pb-12 text-center isolate"
     >
       <h1
-        className="font-medium tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
+        className="font-bold tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
         style={{
           backgroundImage:
             "linear-gradient(90deg, var(--cofex-cyan), #5cd3ff, var(--cofex-cyan))",
@@ -90,14 +99,14 @@ function Hero() {
         </span>
       </div>
       <h2
-        className="font-medium tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
+        className="font-bold tracking-tight leading-[0.95] text-[14vw] sm:text-[110px] cofex-shine"
         style={{
           backgroundImage:
             "linear-gradient(90deg, var(--cofex-coffee), #b88259, var(--cofex-coffee))",
           animationDelay: "-2s",
         }}
       >
-        (€)arn Experiences
+        (€)arn Coffees
       </h2>
 
 
@@ -143,9 +152,12 @@ function Hero() {
                     <h3 className="text-2xl font-extrabold leading-tight">
                       Hi Olga,<br />Your Next<br />Coffee Is On Us!
                     </h3>
-                    <button className="mt-5 rounded-full border border-[color:var(--cofex-black)] px-5 py-2 text-sm font-semibold hover:bg-[color:var(--cofex-black)] hover:text-white transition hover:scale-105">
+                    <Link
+                      to="/auth"
+                      className="mt-5 inline-block rounded-full border border-[color:var(--cofex-black)] px-5 py-2 text-sm font-semibold hover:bg-[color:var(--cofex-black)] hover:text-white transition hover:scale-105"
+                    >
                       Get Started
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -158,28 +170,43 @@ function Hero() {
 }
 
 /* ───────────── Share Love ───────────── */
+const shareLoveLines = [
+  { accent: "var(--cofex-red)", word: "Love", text: " coffee?" },
+  { accent: "var(--cofex-red)", word: "Love", text: " sharing?" },
+  { accent: "var(--cofex-magenta)", word: "Perfect", text: " match!" },
+  { accent: "var(--cofex-cyan)", word: "Explore", text: " cozy cafés." },
+  { accent: "var(--cofex-yellow)", word: "Share", text: " your experiences." },
+  { accent: "var(--cofex-red)", word: "Spread", text: " the love." },
+  { text: "and..." },
+  { accent: "var(--cofex-coffee)", word: "Keep", text: " your cup full, one post at a time." },
+] as const;
+
 function ShareLove() {
   return (
     <section id="about" className="mx-auto max-w-6xl px-5 py-24">
       <span
-        className="inline-block rounded-full px-5 py-2 text-sm font-semibold cofex-float-pill"
-        style={{ background: "var(--cofex-pastel-blue)" }}
+        className="cofex-reveal inline-block rounded-full px-5 py-2 text-sm font-semibold cofex-float-pill"
+        style={{ background: "var(--cofex-pastel-blue)", ["--i" as string]: 0 }}
       >
         Share your <span style={{ color: "var(--cofex-red)" }}>Love</span> for{" "}
         <span style={{ color: "var(--cofex-coffee)" }}>Coffee</span>. Get rewarded!
       </span>
 
       <div className="mt-10 space-y-3 font-black leading-[1.1] tracking-tight text-4xl sm:text-6xl">
-        {[
-          { c: "var(--cofex-red)", word: "Love", rest: " coffee?" },
-          { c: "var(--cofex-red)", word: "Love", rest: " sharing?" },
-          { c: "var(--cofex-magenta)", word: "Perfect", rest: " match!" },
-          { c: "var(--cofex-yellow)", word: "Experience", rest: " the moments, share them." },
-          { c: "var(--cofex-cyan)", word: "Explore", rest: " cozy cafés, spread the love and…" },
-          { c: "var(--cofex-coffee)", word: "Keep", rest: " your cup full, one post at a time." },
-        ].map((l, i) => (
-          <p key={i} className="cofex-reveal" style={{ ["--i" as any]: i }}>
-            <span style={{ color: l.c }}>{l.word}</span>{l.rest}
+        {shareLoveLines.map((line, i) => (
+          <p
+            key={"word" in line ? line.word + line.text : line.text}
+            className="cofex-reveal"
+            style={{ ["--i" as string]: i + 1 }}
+          >
+            {"word" in line ? (
+              <>
+                <span style={{ color: line.accent }}>{line.word}</span>
+                {line.text}
+              </>
+            ) : (
+              line.text
+            )}
           </p>
         ))}
       </div>
@@ -188,30 +215,75 @@ function ShareLove() {
 }
 
 /* ───────────── Features ───────────── */
-const features = [
+const features: {
+  title: string;
+  bg: string;
+  explorer: ReactNode;
+  cafe: ReactNode;
+}[] = [
   {
-    title: "Snap & Earn in Seconds",
+    title: "Snap & Earn",
     bg: "var(--cofex-pastel-gray)",
-    user: "Snap and share to get instant rewards, no waiting around for likes or views to pile up.",
-    cafe: "A steady stream of authentic and organic social media promotion.",
+    explorer: (
+      <>
+        Snap your cup, post it, and unlock a <span className="font-bold">free coffee instantly</span>. No likes, no
+        waiting, no catch.
+      </>
+    ),
+    cafe: (
+      <>
+        Turn every visit into authentic social content. Real posts from real customers,{" "}
+        <span className="font-bold">zero ad spend</span>.
+      </>
+    ),
   },
   {
     title: "Café Discovery Map",
     bg: "var(--cofex-pastel-blue)",
-    user: "Explore new cafés nearby or trending spots.",
-    cafe: "Get discovered by new customers who wouldn't have come otherwise.",
+    explorer: (
+      <>
+        Discover cozy cafés nearby and trending spots worth the trip. Your{" "}
+        <span className="font-bold">next favorite</span> is one tap away.
+      </>
+    ),
+    cafe: (
+      <>
+        Get on the map. Reach explorers who are actively searching for their{" "}
+        <span className="font-bold">next coffee stop</span>.
+      </>
+    ),
   },
   {
-    title: "Exclusive Perks & Loyalty Boosts",
+    title: "Perks & Loyalty",
     bg: "var(--cofex-pastel-pink)",
-    user: "Special freebies and bonus rewards for regular sharing.",
-    cafe: "Tools to build repeat visits and turn customers into promoters.",
+    explorer: (
+      <>
+        Earn free coffees, bonus rewards, and exclusive perks. The{" "}
+        <span className="font-bold">more you explore and share, the more you get</span>.
+      </>
+    ),
+    cafe: (
+      <>
+        Reward loyal guests and <span className="font-bold">turn first-time visitors into fans</span> who keep coming
+        back.
+      </>
+    ),
   },
   {
     title: "Real-Time Analytics",
     bg: "var(--cofex-pastel-lilac)",
-    user: "See your impact and how many coffees you've unlocked.",
-    cafe: "Analytics dashboard to measure reach, engagement, and visits.",
+    explorer: (
+      <>
+        Track coffees unlocked, cafés visited, and posts shared.{" "}
+        <span className="font-bold">Watch your impact grow</span> at a glance.
+      </>
+    ),
+    cafe: (
+      <>
+        Measure reach, engagement, and foot traffic live.{" "}
+        <span className="font-bold">Know exactly what&apos;s working</span>, instantly.
+      </>
+    ),
   },
 ];
 
@@ -236,13 +308,25 @@ function Features() {
               animation: `cofex-float-sm ${5.5 + i * 0.4}s ease-in-out ${i * 0.4}s infinite`,
             }}
           >
-            <h3 className="text-xl font-extrabold mb-4">{f.title}</h3>
-            <p className="text-sm font-semibold mb-3" style={{ color: "var(--cofex-cyan)" }}>
-              For users: <span className="text-[color:var(--cofex-black)] font-normal">{f.user}</span>
-            </p>
-            <p className="text-sm font-semibold" style={{ color: "var(--cofex-cyan)" }}>
-              For cafés: <span className="text-[color:var(--cofex-black)] font-normal">{f.cafe}</span>
-            </p>
+            <h3 className="text-xl font-extrabold leading-snug mb-5">{f.title}</h3>
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm font-semibold leading-none" style={{ color: "var(--cofex-cyan)" }}>
+                  For Explorer
+                </p>
+                <p className="mt-1.5 text-sm leading-relaxed text-[color:var(--cofex-black)]/85">
+                  {f.explorer}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-semibold leading-none" style={{ color: "var(--cofex-coffee-deep)" }}>
+                  For Cafés
+                </p>
+                <p className="mt-1.5 text-sm leading-relaxed text-[color:var(--cofex-black)]/85">
+                  {f.cafe}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       ))}
@@ -255,61 +339,102 @@ function Features() {
 /* ───────────── Testimonial ───────────── */
 const testimonials = [
   {
+    audience: "explorer" as const,
     quote:
       "The coffee run has never been easier.\nI discover new cafés, share a quick post, and get my free coffee right away.\nFinally, using social media comes with a real tangible reward!",
     author: "Floria N. (Entrepreneur)",
   },
   {
+    audience: "explorer" as const,
     quote:
       "I used to just scroll. Now every post turns into a real-life coffee moment in a new spot.\nIt completely changed how I explore my city.",
     author: "Marco T. (Designer)",
   },
   {
+    audience: "explorer" as const,
     quote:
-      "CO:FE(X) introduced me to three cafés I'd walked past for years.\nOne snap, one post — and suddenly the barista knows my name.",
+      "CO:FE(X) introduced me to three cafés I'd walked past for years.\nOne snap, one post, and suddenly the barista knows my name.",
     author: "Lena K. (Photographer)",
   },
   {
+    audience: "explorer" as const,
     quote:
-      "It feels less like a loyalty app and more like a tiny adventure between meetings.\nThe rewards are the cherry on top.",
-    author: "Sofía R. (Product Manager)",
+      "I open the map every weekend. Found a roastery behind a bookstore, posted once, and had a free flat white before I finished my caption.",
+    author: "Amir H. (Student)",
+  },
+  {
+    audience: "explorer" as const,
+    quote:
+      "My passport keeps growing. Free coffees, bonus perks, and spots I actually want to visit again.\nIt feels like exploring with a reward at every stop.",
+    author: "Jana W. (Marketing)",
+  },
+  {
+    audience: "cafe" as const,
+    quote:
+      "We get real stories from guests who are already in a good mood.\nNo paid ads. Just happy customers posting from our tables.",
+    author: "Klaus M. (Owner, Klein & Fein)",
+  },
+  {
+    audience: "cafe" as const,
+    quote:
+      "New faces walk in every week because we show up on the map.\nCO:FE(X) sends us explorers we never would have reached on our own.",
+    author: "Elena V. (Manager, Casa del Grano)",
+  },
+  {
+    audience: "cafe" as const,
+    quote:
+      "The dashboard shows which posts bring people through the door.\nWe doubled repeat visits in two months without changing our menu.",
+    author: "David R. (Owner, Filter House)",
+  },
+  {
+    audience: "cafe" as const,
+    quote:
+      "A stamp card never got anyone talking about us online.\nCO:FE(X) turns a cappuccino into content and a reason to come back.",
+    author: "Priya S. (Co-founder, Morning Ritual)",
   },
 ];
 
 function Testimonial() {
-  const [idx, setIdx] = useState(0);
-  const t = testimonials[idx];
-  const go = (d: number) =>
-    setIdx((i: number) => (i + d + testimonials.length) % testimonials.length);
   return (
     <section id="reviews" className="py-24" style={{ background: "var(--cofex-lime)" }} data-parallax>
       <div className="mx-auto max-w-4xl px-5">
-        <div
-          key={idx}
-          className="relative rounded-3xl bg-white p-10 sm:p-16 shadow-sm cofex-reveal is-visible cofex-px"
-          style={{ ["--depth-x" as any]: "8px", ["--depth-y" as any]: "6px", ["--depth-s" as any]: "20px" }}
-        >
-          <span
-            className="absolute -top-4 left-10 rounded-full px-5 py-2 text-sm font-bold cofex-float-pill"
-            style={{ background: "var(--cofex-pastel-lilac)" }}
-          >
-            What Coffee Lovers are saying…
-          </span>
-          <p className="text-2xl sm:text-3xl font-extrabold leading-snug text-center whitespace-pre-line">
-            "{t.quote}"
-          </p>
-          <p className="mt-8 text-center text-sm font-medium">{t.author}</p>
+        <div id="cofex-testimonial-stage" className="grid w-full">
+          {testimonials.map((t, i) => (
+            <div
+              key={t.author}
+              data-cofex-testimonial-slide
+              aria-hidden={i !== 0}
+              className={`col-start-1 row-start-1 w-full relative rounded-3xl bg-white p-10 sm:p-16 shadow-sm cofex-reveal is-visible cofex-px${i !== 0 ? " invisible pointer-events-none" : ""}`}
+              style={{ ["--depth-x" as any]: "8px", ["--depth-y" as any]: "6px", ["--depth-s" as any]: "20px" }}
+            >
+              <span
+                className="absolute -top-4 left-10 rounded-full px-5 py-2 text-sm font-bold cofex-float-pill"
+                style={{
+                  background: t.audience === "cafe" ? "var(--cofex-pastel-pink)" : "var(--cofex-pastel-lilac)",
+                  color: t.audience === "cafe" ? "var(--cofex-coffee-deep)" : undefined,
+                }}
+              >
+                {t.audience === "cafe" ? "What Cafés are saying…" : "What Explorers are saying…"}
+              </span>
+              <p className="text-2xl sm:text-3xl font-extrabold leading-snug text-center whitespace-pre-line">
+                &ldquo;{t.quote}&rdquo;
+              </p>
+              <p className="mt-8 text-center text-sm font-medium">{t.author}</p>
+            </div>
+          ))}
         </div>
         <div className="mt-8 flex justify-center gap-3">
           <button
-            onClick={() => go(-1)}
+            type="button"
+            data-cofex-testimonial-prev
             aria-label="Previous testimonial"
             className="h-12 w-12 rounded-xl bg-[color:var(--cofex-black)] text-white grid place-items-center hover:opacity-80"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
           <button
-            onClick={() => go(1)}
+            type="button"
+            data-cofex-testimonial-next
             aria-label="Next testimonial"
             className="h-12 w-12 rounded-xl bg-[color:var(--cofex-black)] text-white grid place-items-center hover:opacity-80"
           >
@@ -339,7 +464,7 @@ function Download() {
   return (
     <section id="download" className="mx-auto max-w-4xl px-5 py-24 text-center">
       <h2 className="text-5xl sm:text-7xl font-medium tracking-tight">Download CO:FE(X)</h2>
-      <p className="mt-4 text-base">Available starting September 28, 2025, on…</p>
+      <p className="mt-4 text-base">Available starting September 28, 2026, on…</p>
 
       {canInstall && engaged && (
         <button
@@ -351,20 +476,34 @@ function Download() {
         </button>
       )}
 
-      <div className="mt-8 flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-3 sm:gap-4">
-        <a href="#" className="inline-flex items-center justify-center gap-3 rounded-xl bg-[color:var(--cofex-black)] text-white px-6 py-4 sm:px-5 sm:py-3 hover:opacity-90 active:scale-[0.98] transition">
-          <Apple className="h-7 w-7" />
-          <div className="text-left leading-tight">
-            <div className="text-[10px] opacity-80">Download on the</div>
-            <div className="text-base font-medium">App Store</div>
-          </div>
+      <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4">
+        <a
+          href="#"
+          aria-label="Download on the App Store"
+          className="inline-block rounded-md hover:opacity-90 active:scale-[0.98] transition"
+        >
+          <img
+            src="/badges/app-store.svg"
+            alt="Download on the App Store"
+            width={135}
+            height={40}
+            className="h-10 w-auto"
+            loading="lazy"
+          />
         </a>
-        <a href="#" className="inline-flex items-center justify-center gap-3 rounded-xl bg-[color:var(--cofex-black)] text-white px-6 py-4 sm:px-5 sm:py-3 hover:opacity-90 active:scale-[0.98] transition">
-          <Play className="h-7 w-7" />
-          <div className="text-left leading-tight">
-            <div className="text-[10px] opacity-80">GET IT ON</div>
-            <div className="text-base font-medium">Google Play</div>
-          </div>
+        <a
+          href="#"
+          aria-label="Get it on Google Play"
+          className="inline-block rounded-md hover:opacity-90 active:scale-[0.98] transition"
+        >
+          <img
+            src="/badges/google-play.svg"
+            alt="Get it on Google Play"
+            width={135}
+            height={40}
+            className="h-10 w-auto"
+            loading="lazy"
+          />
         </a>
       </div>
 
@@ -372,7 +511,7 @@ function Download() {
         className="mt-16 text-left max-w-xl mx-auto"
         onSubmit={(e) => {
           e.preventDefault();
-          alert("Thanks — we'll keep you posted!");
+          alert("Thanks! We'll keep you posted!");
         }}
       >
         <h3 className="text-2xl font-bold mb-6">Sign Up for Early Access</h3>
@@ -397,32 +536,3 @@ function Download() {
   );
 }
 
-/* ───────────── Footer ───────────── */
-function Footer() {
-  return (
-    <footer className="bg-[color:var(--cofex-black)] text-white">
-      <div className="mx-auto max-w-6xl px-5 py-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 text-sm">
-        <div>
-          <div className="font-bold tracking-[0.3em] text-lg">CO:FE(X)</div>
-        </div>
-        <div>
-          <p>Contact@COFE-X.com</p>
-          <p className="font-bold mt-4">Contact Us</p>
-          <p className="mt-2 opacity-80">Maria-Sybilla-Merian-Str. 12<br />80999 München, Germany</p>
-        </div>
-        <div>
-          <p className="font-bold">Follow Us</p>
-          <p className="mt-2 underline">Instagram</p>
-          <p className="underline">X.com</p>
-        </div>
-        <div>
-          <p className="font-bold">Legal</p>
-          <p className="mt-2">Terms &amp; Conditions</p>
-          <p>Privacy Policy</p>
-          <p>Accessibility Statement</p>
-        </div>
-      </div>
-      <div className="px-5 pb-6 text-xs opacity-70">© {new Date().getFullYear()} by CO:FE(X)</div>
-    </footer>
-  );
-}

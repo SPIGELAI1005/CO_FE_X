@@ -3,7 +3,7 @@ import { useAdminOverview } from "@/lib/queries/admin";
 import { Users, Store, Megaphone, Coffee, ClipboardList, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
-  head: () => ({ meta: [{ title: "Admin — CO:FE(X)" }] }),
+  head: () => ({ meta: [{ title: "Admin · CO:FE(X)" }] }),
   component: AdminOverviewPage,
 });
 

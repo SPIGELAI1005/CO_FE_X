@@ -27,6 +27,11 @@ export interface PassportCheckIn {
   } | null;
 }
 
+export interface EarnedBadge {
+  badge_id: string;
+  earned_at: string;
+}
+
 export interface PassportData {
   profile: {
     display_name: string | null;
@@ -36,6 +41,7 @@ export interface PassportData {
   } | null;
   badges: PassportBadge[];
   earnedBadgeIds: Set<string>;
+  earnedBadges: EarnedBadge[];
   checkIns: PassportCheckIn[];
 }
 
@@ -47,7 +53,7 @@ export function usePassport(userId: string | undefined) {
     queryFn: async (): Promise<PassportData> => {
       const [{ data: bs }, { data: ubs }, { data: cis }, { data: prof }] = await Promise.all([
         supabase.from("badges").select("id, slug, name, description, criteria"),
-        supabase.from("user_badges").select("badge_id").eq("user_id", userId!),
+        supabase.from("user_badges").select("badge_id, earned_at").eq("user_id", userId!).order("earned_at", { ascending: false }),
         supabase
           .from("check_ins")
           .select(
@@ -66,6 +72,7 @@ export function usePassport(userId: string | undefined) {
         profile: prof,
         badges: (bs ?? []) as PassportBadge[],
         earnedBadgeIds: new Set((ubs ?? []).map((r) => r.badge_id)),
+        earnedBadges: (ubs ?? []) as EarnedBadge[],
         checkIns: (cis ?? []) as PassportCheckIn[],
       };
     },

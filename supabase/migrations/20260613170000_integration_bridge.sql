@@ -22,7 +22,10 @@ CREATE POLICY "Reviews readable for approved shops (public SEO)"
 
 -- Marketing images on public shop pages (covers / gallery)
 DROP POLICY IF EXISTS "Partners read own shop-images" ON storage.objects;
-DROP POLICY IF EXISTS "Public read shop marketing images" ON public.storage.objects;
+DROP POLICY IF EXISTS "Public read shop marketing images" ON storage.objects;
+DROP POLICY IF EXISTS "Partners upload own shop-images" ON storage.objects;
+DROP POLICY IF EXISTS "Partners update own shop-images" ON storage.objects;
+DROP POLICY IF EXISTS "Partners delete own shop-images" ON storage.objects;
 
 CREATE POLICY "Public read shop marketing images"
   ON storage.objects FOR SELECT
@@ -32,6 +35,7 @@ CREATE POLICY "Partners upload own shop-images"
   ON storage.objects FOR INSERT TO authenticated
   WITH CHECK (
     bucket_id = 'shop-images'
+    AND public.has_role(auth.uid(), 'partner'::app_role)
     AND (storage.foldername(name))[1] = auth.uid()::text
   );
 

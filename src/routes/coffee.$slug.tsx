@@ -19,7 +19,7 @@ export const Route = createFileRoute("/coffee/$slug")({
   },
   head: ({ params, loaderData }) => {
     const shop = loaderData ?? null;
-    const title = shop ? `${shop.name} — CO:FE(X)` : `${params.slug} — CO:FE(X)`;
+    const title = shop ? `${shop.name} · CO:FE(X)` : `${params.slug} · CO:FE(X)`;
     const description =
       shop?.description?.slice(0, 160) ??
       (shop

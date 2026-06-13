@@ -22,6 +22,16 @@ test.describe("Authenticated explorer flows", () => {
     await expect(page.getByRole("heading", { name: /Explore/i })).toBeVisible();
   });
 
+  test("explorer can open leaderboard from Rewards nav", async ({ page }) => {
+    if (page.url().includes("/onboarding")) {
+      test.skip(true, "Complete onboarding manually for this test account");
+    }
+    await page.goto("/explore");
+    await page.getByRole("button", { name: "Passport, rank, and wallet" }).click();
+    await page.getByRole("link", { name: "Rank" }).click();
+    await expect(page.getByRole("heading", { name: /Coffee Leaderboard/i })).toBeVisible();
+  });
+
   test("check-in button requests geolocation when near a shop", async ({ page, context }) => {
     const shopSlug = process.env.E2E_SHOP_SLUG;
     test.skip(!shopSlug, "Set E2E_SHOP_SLUG to an approved café slug");
@@ -36,8 +46,9 @@ test.describe("Authenticated explorer flows", () => {
     const checkIn = page.getByRole("button", { name: /Check in nearby/i });
     await expect(checkIn).toBeVisible({ timeout: 15_000 });
     await checkIn.click();
-    await expect(
-      page.getByText(/Check-in confirmed|200 m|cooldown|rate limit/i),
-    ).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText(/Check-in confirmed/i)).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText(/What's next/i)).toBeVisible();
+    await page.getByRole("link", { name: /View passport stamp/i }).click();
+    await expect(page).toHaveURL(/\/passport/, { timeout: 15_000 });
   });
 });

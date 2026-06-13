@@ -1,5 +1,5 @@
 const CACHE = "cofex-shell-v1";
-const SHELL = ["/", "/manifest.webmanifest", "/icons/icon.svg"];
+const SHELL = ["/", "/manifest.webmanifest", "/icons/icon.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)));

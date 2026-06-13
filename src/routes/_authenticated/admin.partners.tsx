@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/partners")({
-  head: () => ({ meta: [{ title: "Partners — Admin" }] }),
+  head: () => ({ meta: [{ title: "Partners · Admin" }] }),
   component: AdminPartnersPage,
 });
 
@@ -99,7 +99,7 @@ function AdminPartnersPage() {
               >
                 <div>
                   <p className="font-semibold">{shop.name}</p>
-                  <p className="text-sm text-muted-foreground">{shop.city ?? "—"} · {shop.slug}</p>
+                  <p className="text-sm text-muted-foreground">{shop.city ?? "-"} · {shop.slug}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge className="capitalize">{shop.status}</Badge>

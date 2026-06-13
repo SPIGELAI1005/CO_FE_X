@@ -52,6 +52,27 @@ export function useAdminEngagement() {
   });
 }
 
+export interface ExplorerFunnelKpis {
+  days: number;
+  daily_active_explorers: number;
+  leaderboard_opens: number;
+  post_checkin_sheets: number;
+  post_checkin_actions: number;
+  post_checkin_action_rate: number;
+  challenge_claims: number;
+}
+
+export function useExplorerFunnelKpis(days = 7) {
+  return useQuery({
+    queryKey: queryKeys.explorerFunnelKpis(days),
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_explorer_funnel_kpis", { _days: days });
+      if (error) throw error;
+      return (data ?? {}) as ExplorerFunnelKpis;
+    },
+  });
+}
+
 export function useAdminPartnerApplications() {
   return useQuery({
     queryKey: queryKeys.adminPartnerApplications(),

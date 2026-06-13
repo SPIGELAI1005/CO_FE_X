@@ -66,14 +66,14 @@ export function ReviewSection({ shopId, shopName }: { shopId: string; shopName: 
         existingId: myReview?.id,
       });
       setEditing(false);
-      toast.success(myReview ? "Review updated" : "Review posted — +5 points!");
+      toast.success(myReview ? "Review updated" : "Review posted. +5 points!");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not save review");
     }
   }
 
   return (
-    <section className="rounded-2xl bg-white p-5 space-y-5">
+    <section id="reviews" className="scroll-mt-24 space-y-5 rounded-2xl bg-white p-5">
       <div>
         <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
           Reviews

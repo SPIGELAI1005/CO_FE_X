@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Loader2, Search } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/users")({
-  head: () => ({ meta: [{ title: "Users — Admin" }] }),
+  head: () => ({ meta: [{ title: "Users · Admin" }] }),
   component: AdminUsersPage,
 });
 
@@ -71,7 +71,7 @@ function AdminUsersPage() {
                 <div>
                   <p className="font-semibold">{u.display_name ?? "Anonymous"}</p>
                   <p className="text-sm text-muted-foreground">
-                    {u.handle ? `@${u.handle}` : u.id.slice(0, 8)} · {u.city ?? "—"}
+                    {u.handle ? `@${u.handle}` : u.id.slice(0, 8)} · {u.city ?? "-"}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {u.total_points} pts · {u.total_check_ins} check-ins

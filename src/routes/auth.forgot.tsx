@@ -5,7 +5,7 @@ import { friendlyAuthError } from "@/lib/auth-errors";
 import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/auth/forgot")({
-  head: () => ({ meta: [{ title: "Reset password — CO:FE(X)" }] }),
+  head: () => ({ meta: [{ title: "Reset password · CO:FE(X)" }] }),
   component: ForgotPasswordPage,
 });
 

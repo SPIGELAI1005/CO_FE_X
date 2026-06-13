@@ -34,14 +34,14 @@ export function PartnerDashboardChartsInner({
   campaignBars: CampaignBar[];
 }) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
-      <div className="lg:col-span-2 rounded-2xl border bg-white p-5">
-        <div className="flex items-center justify-between mb-3">
+    <div className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <div className="cofex-app-card lg:col-span-2 p-5">
+        <div className="mb-3 flex items-center justify-between">
           <div>
-            <h3 className="font-semibold">Activity — last 30 days</h3>
-            <p className="text-xs text-muted-foreground">Visitors, new customers and redemptions per day.</p>
+            <h3 className="font-extrabold text-[color:var(--cofex-coffee-deep)]">Activity · last 30 days</h3>
+            <p className="text-xs text-[color:var(--cofex-black)]/55">Visitors, new customers and redemptions per day.</p>
           </div>
-          <Link to="/partner/analytics" className="text-xs text-amber-700 inline-flex items-center gap-1">
+          <Link to="/partner/analytics" className="inline-flex items-center gap-1 text-xs font-semibold text-[color:var(--cofex-cyan)] hover:underline">
             Open analytics →
           </Link>
         </div>
@@ -69,15 +69,15 @@ export function PartnerDashboardChartsInner({
           </ResponsiveContainer>
         </div>
       </div>
-      <div className="rounded-2xl border bg-white p-5">
-        <h3 className="font-semibold mb-1">Top campaigns</h3>
-        <p className="text-xs text-muted-foreground mb-3">Participants vs. redemptions this month.</p>
+      <div className="cofex-app-card p-5">
+        <h3 className="mb-1 font-extrabold text-[color:var(--cofex-coffee-deep)]">Top campaigns</h3>
+        <p className="mb-3 text-xs text-[color:var(--cofex-black)]/55">Participants vs. redemptions this month.</p>
         <div className="h-64">
           {campaignBars.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center text-sm text-muted-foreground">
-              <BarChart3 className="h-6 w-6 mb-2 opacity-40" />
+            <div className="flex h-full flex-col items-center justify-center text-center text-sm text-[color:var(--cofex-black)]/55">
+              <BarChart3 className="mb-2 h-6 w-6 opacity-40" />
               Launch a campaign to see data.
-              <Link to="/partner/campaigns" className="mt-2 text-amber-700 text-xs">
+              <Link to="/partner/campaigns" className="mt-2 text-xs font-semibold text-[color:var(--cofex-cyan)] hover:underline">
                 Create one →
               </Link>
             </div>

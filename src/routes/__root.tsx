@@ -1,73 +1,23 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
-  Link,
   createRootRouteWithContext,
   useRouter,
   HeadContent,
   Scripts,
+  ClientOnly,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
-import { Home, Map, BookOpen, Coffee } from "lucide-react";
 
 import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
+import { NotFoundPage } from "@/components/app/NotFoundPage";
 import { PwaBootstrap } from "@/components/app/PwaBootstrap";
+import { CofexMotionBootstrap } from "@/components/app/CofexMotionBootstrap";
 import { reportAppError } from "../lib/error-reporting";
 
 function NotFoundComponent() {
-  return (
-    <div className="flex min-h-screen items-center justify-center px-4" style={{ background: "var(--cofex-cream, #f5efe6)" }}>
-      <div className="max-w-lg text-center">
-        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full" style={{ background: "var(--cofex-coffee-deep, #3d2417)" }}>
-          <Coffee className="h-10 w-10 text-white" />
-        </div>
-        <h1 className="text-6xl font-bold tracking-tight" style={{ color: "var(--cofex-coffee-deep, #3d2417)" }}>404</h1>
-        <h2 className="mt-3 text-2xl font-semibold text-foreground">Lost in the beans?</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
-
-        <div className="mt-8">
-          <Link
-            to="/explore"
-            className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-white transition-colors hover:opacity-90"
-            style={{ background: "var(--cofex-coffee-deep, #3d2417)" }}
-          >
-            <Home className="h-4 w-4" />
-            Go home
-          </Link>
-        </div>
-
-        <div className="mt-8 grid gap-3 sm:grid-cols-3">
-          <Link
-            to="/explore"
-            className="flex flex-col items-center gap-2 rounded-2xl border bg-white p-4 transition-colors hover:bg-white/80"
-            style={{ borderColor: "var(--border)" }}
-          >
-            <Map className="h-5 w-5" style={{ color: "var(--cofex-coffee-deep, #3d2417)" }} />
-            <span className="text-xs font-semibold text-foreground">Explore</span>
-          </Link>
-          <Link
-            to="/passport"
-            className="flex flex-col items-center gap-2 rounded-2xl border bg-white p-4 transition-colors hover:bg-white/80"
-            style={{ borderColor: "var(--border)" }}
-          >
-            <BookOpen className="h-5 w-5" style={{ color: "var(--cofex-coffee-deep, #3d2417)" }} />
-            <span className="text-xs font-semibold text-foreground">Passport</span>
-          </Link>
-          <Link
-            to="/coffee/fabrica-coffee-roasters"
-            className="flex flex-col items-center gap-2 rounded-2xl border bg-white p-4 transition-colors hover:bg-white/80"
-            style={{ borderColor: "var(--border)" }}
-          >
-            <Coffee className="h-5 w-5" style={{ color: "var(--cofex-coffee-deep, #3d2417)" }} />
-            <span className="text-xs font-semibold text-foreground">Coffee shop</span>
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
+  return <NotFoundPage />;
 }
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
@@ -115,10 +65,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "theme-color", content: "#3d2417" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
-      { title: "CO:FE(X) — (X)plore Cafés · (€)arn Coffees" },
+      { title: "CO:FE(X) · (X)plore Cafés · (€)arn Coffees" },
       { name: "description", content: "Discover independent coffee shops, join campaigns, and earn rewards with CO:FE(X)." },
       { name: "author", content: "CO_FE_X" },
-      { property: "og:title", content: "CO:FE(X) — Coffee Explorer Network" },
+      { property: "og:title", content: "CO:FE(X) · Coffee Explorer Network" },
       { property: "og:description", content: "Snap. Post. Earn a free coffee. The Coffee Explorer Network." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -129,9 +79,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&display=swap",
+      },
       { rel: "manifest", href: "/manifest.webmanifest" },
-      { rel: "icon", href: "/icons/icon.svg", type: "image/svg+xml" },
-      { rel: "apple-touch-icon", href: "/icons/icon.svg" },
+      { rel: "icon", href: "/icons/icon.png", type: "image/png", sizes: "512x512" },
+      { rel: "apple-touch-icon", href: "/icons/apple-touch-icon.png", sizes: "512x512" },
     ],
   }),
   shellComponent: RootShell,
@@ -140,14 +94,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL ?? "";
+const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
+
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
         <HeadContent />
+        {supabaseUrl ? <meta name="cofex-supabase-url" content={supabaseUrl} /> : null}
+        {supabaseKey ? <meta name="cofex-supabase-key" content={supabaseKey} /> : null}
       </head>
       <body>
+        <script src="/cofex-auth.js" />
         {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var s='.cofex-reveal:not(.is-visible)';function r(){var v=innerHeight,m=v*.08;document.querySelectorAll(s).forEach(function(el){var b=el.getBoundingClientRect();if(b.top<v-m&&b.bottom>0)el.classList.add('is-visible')})}function q(){requestAnimationFrame(r)}if(matchMedia('(prefers-reduced-motion: reduce)').matches){document.querySelectorAll('.cofex-reveal').forEach(function(el){el.classList.add('is-visible')});return}addEventListener('scroll',q,{passive:true});addEventListener('resize',q,{passive:true});new MutationObserver(q).observe(document.body,{childList:true,subtree:true});requestAnimationFrame(function(){requestAnimationFrame(q)})})();(function(){function slides(){return document.querySelectorAll('[data-cofex-testimonial-slide]')}function current(){var list=slides();for(var i=0;i<list.length;i++){if(!list[i].classList.contains('invisible'))return i}return 0}function show(n){var list=slides();if(!list.length)return;var i=((n%list.length)+list.length)%list.length;list.forEach(function(el,j){if(j===i){el.classList.remove('invisible','pointer-events-none');el.removeAttribute('aria-hidden')}else{el.classList.add('invisible','pointer-events-none');el.setAttribute('aria-hidden','true')}})}document.addEventListener('click',function(e){var btn=e.target.closest('[data-cofex-testimonial-prev],[data-cofex-testimonial-next]');if(!btn)return;e.preventDefault();var idx=current();show(btn.hasAttribute('data-cofex-testimonial-prev')?idx-1:idx+1)})})();`,
+          }}
+        />
         <Scripts />
       </body>
     </html>
@@ -160,6 +125,9 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <PwaBootstrap />
+      <ClientOnly fallback={null}>
+        <CofexMotionBootstrap />
+      </ClientOnly>
       <Outlet />
       <Toaster richColors position="top-center" />
     </QueryClientProvider>

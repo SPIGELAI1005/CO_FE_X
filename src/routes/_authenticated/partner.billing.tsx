@@ -1,23 +1,24 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { zodValidator, fallback } from "@tanstack/zod-adapter";
+import { zodValidator } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { useUser } from "@/hooks/use-user";
 import { usePartnerBilling } from "@/lib/queries/billing";
-import { createStripeCheckout, createStripePortal } from "@/lib/api/stripe.billing";
 import { PLAN_CATALOG, limitsForPlan, type ShopPlan } from "@/lib/billing/plans";
+import { AppPage, AppPageBody, AppPageHeader, AppPageSection } from "@/components/app/AppPageShell";
 import { Button } from "@/components/ui/button";
 import { QueryBoundary } from "@/components/patterns/QueryBoundary";
 import { toast } from "sonner";
-import { CreditCard, Crown, Loader2, Sparkles, Zap } from "lucide-react";
+import { CreditCard, Crown, Loader2, Sparkles, Zap, Store } from "lucide-react";
+import { PARTNER_BTN, PartnerEmptyState, PartnerStatusPill } from "@/components/app/partner/PartnerShell";
 
 const searchSchema = z.object({
-  checkout: fallback(z.enum(["success", "canceled"]).optional(), undefined),
+  checkout: z.enum(["success", "canceled"]).optional(),
 });
 
 export const Route = createFileRoute("/_authenticated/partner/billing")({
   validateSearch: zodValidator(searchSchema),
-  head: () => ({ meta: [{ title: "Billing — Partner" }] }),
+  head: () => ({ meta: [{ title: "Billing · Partner" }] }),
   component: PartnerBillingPage,
 });
 
@@ -26,13 +27,13 @@ const stripeEnabled = import.meta.env.VITE_FEATURE_STRIPE === "true";
 function PartnerBillingPage() {
   const { user } = useUser();
   const { checkout } = Route.useSearch();
-  const navigate = useNavigate({ from: "/_authenticated/partner/billing" });
+  const navigate = useNavigate({ from: "/partner/billing" });
   const billingQuery = usePartnerBilling(user?.id);
   const [busyShopId, setBusyShopId] = useState<string | null>(null);
 
   useEffect(() => {
     if (checkout === "success") {
-      toast.success("Subscription updated — thanks for supporting CO:FE(X)!");
+      toast.success("Subscription updated. Thanks for supporting CO:FE(X)!");
       navigate({ search: { checkout: undefined }, replace: true });
     } else if (checkout === "canceled") {
       toast.message("Checkout canceled");
@@ -43,6 +44,7 @@ function PartnerBillingPage() {
   async function startCheckout(shopId: string, plan: "pro" | "campaign_boost") {
     setBusyShopId(shopId);
     try {
+      const { createStripeCheckout } = await import("@/lib/api/stripe.billing");
       const { url } = await createStripeCheckout({ data: { shopId, plan } });
       window.location.href = url;
     } catch (err) {
@@ -54,6 +56,7 @@ function PartnerBillingPage() {
   async function openPortal(shopId: string) {
     setBusyShopId(shopId);
     try {
+      const { createStripePortal } = await import("@/lib/api/stripe.billing");
       const { url } = await createStripePortal({ data: { shopId } });
       window.location.href = url;
     } catch (err) {
@@ -63,62 +66,57 @@ function PartnerBillingPage() {
   }
 
   return (
-    <div className="p-6 md:p-8 max-w-4xl">
-      <div className="text-xs uppercase tracking-[0.3em] text-amber-700">Partner billing</div>
-      <h1 className="text-3xl font-serif font-bold mt-1">Plans & subscriptions</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Upgrade for more campaigns, multi-location listings, and promoted discover placement.
-      </p>
+    <AppPage>
+      <AppPageHeader
+        eyebrow="Partner billing"
+        title="Plans & subscriptions"
+        subtitle="Upgrade for more campaigns, multi-location listings, and promoted discover placement."
+      />
+      <AppPageBody className="max-w-4xl pb-10">
+        {!stripeEnabled && (
+          <div className="cofex-app-card mb-6 border-amber-200 bg-amber-50/60 p-4 text-sm text-amber-900 shadow-none">
+            Stripe checkout is disabled in this environment. Set{" "}
+            <code className="text-xs">VITE_FEATURE_STRIPE=true</code> and server Stripe keys to enable payments. Plan
+            limits still apply on the free tier.
+          </div>
+        )}
 
-      {!stripeEnabled && (
-        <div
-          className="mt-6 rounded-2xl border px-4 py-3 text-sm"
-          style={{ borderColor: "var(--border)", background: "var(--cofex-cream-warm)" }}
-        >
-          Stripe checkout is disabled in this environment. Set{" "}
-          <code className="text-xs">VITE_FEATURE_STRIPE=true</code> and server Stripe keys to enable
-          payments. Plan limits still apply on the free tier.
-        </div>
-      )}
+        <QueryBoundary query={billingQuery} loadingLabel="Loading billing…">
+          {(summary) =>
+            summary.shops.length === 0 ? (
+              <PartnerEmptyState
+                Icon={Store}
+                title="Set up your shop first"
+                description="Create your shop profile, then pick a plan for that location."
+                to="/partner/shop"
+                actionLabel="Set up shop profile"
+              />
+            ) : (
+              <div className="space-y-8">
+                {summary.shops.map((shop) => (
+                  <ShopBillingCard
+                    key={shop.coffee_shop_id}
+                    shop={shop}
+                    activeCampaigns={summary.activeCampaignCounts[shop.coffee_shop_id] ?? 0}
+                    busy={busyShopId === shop.coffee_shop_id}
+                    onCheckout={startCheckout}
+                    onPortal={openPortal}
+                  />
+                ))}
 
-      <QueryBoundary query={billingQuery} loadingLabel="Loading billing…">
-        {(summary) =>
-          summary.shops.length === 0 ? (
-            <div className="mt-8 rounded-2xl border border-dashed p-10 text-center">
-              <StoreHint />
-              <p className="mt-2 text-sm text-muted-foreground">
-                Create your shop profile first, then pick a plan for that location.
-              </p>
-              <Button asChild className="mt-4 bg-amber-700 hover:bg-amber-800">
-                <Link to="/partner/shop">Set up shop profile</Link>
-              </Button>
-            </div>
-          ) : (
-            <div className="mt-8 space-y-8">
-              {summary.shops.map((shop) => (
-                <ShopBillingCard
-                  key={shop.coffee_shop_id}
-                  shop={shop}
-                  activeCampaigns={summary.activeCampaignCounts[shop.coffee_shop_id] ?? 0}
-                  busy={busyShopId === shop.coffee_shop_id}
-                  onCheckout={startCheckout}
-                  onPortal={openPortal}
-                />
-              ))}
-
-              <section>
-                <h2 className="text-lg font-semibold mb-4">Compare plans</h2>
-                <div className="grid gap-4 md:grid-cols-3">
-                  {PLAN_CATALOG.map((plan) => (
-                    <PlanCard key={plan.id} plan={plan} />
-                  ))}
-                </div>
-              </section>
-            </div>
-          )
-        }
-      </QueryBoundary>
-    </div>
+                <AppPageSection eyebrow="Compare" title="Plans" subtitle="Pick the tier that fits your café.">
+                  <div className="grid gap-4 md:grid-cols-3">
+                    {PLAN_CATALOG.map((plan) => (
+                      <PlanCard key={plan.id} plan={plan} />
+                    ))}
+                  </div>
+                </AppPageSection>
+              </div>
+            )
+          }
+        </QueryBoundary>
+      </AppPageBody>
+    </AppPage>
   );
 }
 
@@ -146,38 +144,44 @@ function ShopBillingCard({
   const campaignCap = limits.maxActiveCampaigns;
 
   return (
-    <div className="rounded-2xl border p-5" style={{ borderColor: "var(--border)" }}>
+    <div className="cofex-app-card p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="text-xs uppercase tracking-widest text-muted-foreground">Location</div>
-          <h2 className="text-xl font-semibold">{shop.coffee_shops?.name ?? "Your café"}</h2>
-          <div className="mt-2 flex flex-wrap gap-2">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[color:var(--cofex-cyan)]">Location</p>
+          <h2 className="text-xl font-extrabold text-[color:var(--cofex-coffee-deep)]">
+            {shop.coffee_shops?.name ?? "Your café"}
+          </h2>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
             <StatusBadge plan={shop.plan} status={shop.status} />
             {shop.current_period_end && (
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-[color:var(--cofex-black)]/45">
                 Renews {new Date(shop.current_period_end).toLocaleDateString()}
               </span>
             )}
           </div>
         </div>
         {shop.stripe_customer_id && stripeEnabled && (
-          <Button variant="outline" size="sm" disabled={busy} onClick={() => onPortal(shop.coffee_shop_id)}>
-            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4 mr-1" />}
+          <Button variant="outline" size="sm" disabled={busy} onClick={() => onPortal(shop.coffee_shop_id)} className="rounded-full">
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="mr-1 h-4 w-4" />}
             Manage billing
           </Button>
         )}
       </div>
 
       <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
-        <li>
+        <li className="text-[color:var(--cofex-black)]/75">
           Active campaigns:{" "}
-          <strong>
+          <strong className="text-[color:var(--cofex-coffee-deep)]">
             {activeCampaigns}
             {campaignCap !== null ? ` / ${campaignCap}` : " (unlimited)"}
           </strong>
         </li>
-        <li>Analytics export: {limits.analyticsExport ? "Included" : "Pro only"}</li>
-        <li>Promoted discover: {limits.promotedDiscover ? "Included" : "Pro only"}</li>
+        <li className="text-[color:var(--cofex-black)]/75">
+          Analytics export: {limits.analyticsExport ? "Included" : "Pro only"}
+        </li>
+        <li className="text-[color:var(--cofex-black)]/75">
+          Promoted discover: {limits.promotedDiscover ? "Included" : "Pro only"}
+        </li>
       </ul>
 
       {shop.plan !== "pro" && stripeEnabled && (
@@ -188,17 +192,13 @@ function ShopBillingCard({
               variant="outline"
               disabled={busy}
               onClick={() => onCheckout(shop.coffee_shop_id, "campaign_boost")}
+              className="rounded-full"
             >
-              <Zap className="h-4 w-4 mr-1" /> Boost campaigns
+              <Zap className="mr-1 h-4 w-4" /> Boost campaigns
             </Button>
           )}
-          <Button
-            size="sm"
-            className="bg-amber-700 hover:bg-amber-800"
-            disabled={busy}
-            onClick={() => onCheckout(shop.coffee_shop_id, "pro")}
-          >
-            <Crown className="h-4 w-4 mr-1" /> Upgrade to Pro
+          <Button size="sm" disabled={busy} onClick={() => onCheckout(shop.coffee_shop_id, "pro")} className={PARTNER_BTN}>
+            <Crown className="mr-1 h-4 w-4" /> Upgrade to Pro
           </Button>
         </div>
       )}
@@ -208,29 +208,27 @@ function ShopBillingCard({
 
 function PlanCard({ plan }: { plan: (typeof PLAN_CATALOG)[number] }) {
   const limits = limitsForPlan(plan.id);
+  const isPro = plan.id === "pro";
   return (
-    <div
-      className={`rounded-2xl border p-5 ${plan.id === "pro" ? "border-amber-400 bg-amber-50/50" : ""}`}
-      style={plan.id !== "pro" ? { borderColor: "var(--border)" } : undefined}
-    >
+    <div className={`cofex-app-card p-5 ${isPro ? "ring-2 ring-[color:var(--cofex-cyan)]/40" : ""}`}>
       <div className="flex items-center gap-2">
         {plan.id === "pro" ? (
-          <Crown className="h-4 w-4 text-amber-700" />
+          <Crown className="h-4 w-4 text-[color:var(--cofex-cyan)]" />
         ) : plan.id === "campaign_boost" ? (
-          <Zap className="h-4 w-4 text-amber-700" />
+          <Zap className="h-4 w-4 text-[color:var(--cofex-cyan)]" />
         ) : (
-          <Sparkles className="h-4 w-4 text-amber-700" />
+          <Sparkles className="h-4 w-4 text-[color:var(--cofex-cyan)]" />
         )}
-        <h3 className="font-semibold">{plan.name}</h3>
+        <h3 className="font-extrabold text-[color:var(--cofex-coffee-deep)]">{plan.name}</h3>
       </div>
-      <div className="mt-1 text-2xl font-bold">{plan.priceLabel}</div>
-      <p className="mt-2 text-sm text-muted-foreground">{plan.description}</p>
-      <ul className="mt-3 space-y-1 text-sm">
+      <div className="mt-1 text-2xl font-extrabold">{plan.priceLabel}</div>
+      <p className="mt-2 text-sm text-[color:var(--cofex-black)]/65">{plan.description}</p>
+      <ul className="mt-3 space-y-1 text-sm text-[color:var(--cofex-black)]/75">
         {plan.highlights.map((h) => (
           <li key={h}>• {h}</li>
         ))}
         {limits.maxActiveCampaigns !== null && (
-          <li className="text-xs text-muted-foreground">
+          <li className="text-xs text-[color:var(--cofex-black)]/45">
             Up to {limits.maxActiveCampaigns} active campaign{limits.maxActiveCampaigns === 1 ? "" : "s"}
           </li>
         )}
@@ -241,13 +239,5 @@ function PlanCard({ plan }: { plan: (typeof PLAN_CATALOG)[number] }) {
 
 function StatusBadge({ plan, status }: { plan: ShopPlan; status: string }) {
   const label = plan === "listing" ? "Free listing" : `${plan.replace("_", " ")} · ${status}`;
-  return (
-    <span className="inline-flex rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium capitalize">
-      {label}
-    </span>
-  );
-}
-
-function StoreHint() {
-  return <CreditCard className="h-10 w-10 mx-auto text-amber-700" />;
+  return <PartnerStatusPill tone={plan === "pro" ? "success" : "info"}>{label}</PartnerStatusPill>;
 }

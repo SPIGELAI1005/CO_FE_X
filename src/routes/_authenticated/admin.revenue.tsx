@@ -5,7 +5,7 @@ import { getStripeRevenueMetrics } from "@/lib/api/stripe.billing";
 import { DollarSign, Loader2, TrendingUp, Users, AlertCircle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/revenue")({
-  head: () => ({ meta: [{ title: "Revenue — Admin" }] }),
+  head: () => ({ meta: [{ title: "Revenue · Admin" }] }),
   component: AdminRevenuePage,
 });
 
@@ -28,7 +28,7 @@ function AdminRevenuePage() {
     <div className="p-6 max-w-4xl">
       <h1 className="text-2xl font-bold">Revenue</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Subscription MRR and partner plan mix. Stripe metrics load server-side — keys never reach the browser.
+        Subscription MRR and partner plan mix. Stripe metrics load server-side; keys never reach the browser.
       </p>
 
       {loading ? (
@@ -45,7 +45,7 @@ function AdminRevenuePage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <MetricCard
               label="MRR"
-              value={metrics ? formatEur(metrics.mrrCents) : "—"}
+              value={metrics ? formatEur(metrics.mrrCents) : "-"}
               hint={metrics?.stripeEnabled ? "From Stripe" : "Estimated from plans"}
               Icon={DollarSign}
             />

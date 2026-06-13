@@ -1,22 +1,29 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { AppPage, AppPageBody, AppPageSection } from "@/components/app/AppPageShell";
 import {
   DEFAULT_RADAR_CENTER,
+  useChallengeClaims,
+  useClaimChallenge,
   useCoffeeRadar,
+  useExplorerChallengeDefs,
   type RadarCampaign,
   type RadarShop,
-  type RadarStats,
 } from "@/lib/queries/radar";
+import { buildChallengeView, EXPLORER_CHALLENGES, weeklyResetLabel, limitedCountdownLabel } from "@/lib/explorer-challenges";
+import { trackExplorerEvent } from "@/lib/explorer-analytics";
+import { useUser } from "@/hooks/use-user";
 import {
-  Coffee, Flame, Megaphone, Trophy, MapPin, Sparkles, Locate,
-  Gift, Leaf, ArrowRight, RadioTower, Zap, Target, Crown,
+  Coffee, Flame, Megaphone, Trophy, MapPin, Sparkles, Locate, Zap,
+  Gift, Leaf, ArrowRight, RadioTower, Check,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/_explorer/radar")({
   head: () => ({
     meta: [
-      { title: "Coffee Radar™ — CO:FE(X)" },
-      { name: "description", content: "Today's free coffee, trending matcha, new campaigns and your explorer challenges — all in one daily pulse." },
+      { title: "Coffee Radar™ · CO:FE(X)" },
+      { name: "description", content: "Today's free coffee, trending matcha, new campaigns and your explorer challenges, all in one daily pulse." },
     ],
   }),
   component: RadarPage,
@@ -24,14 +31,21 @@ export const Route = createFileRoute("/_authenticated/_explorer/radar")({
 
 type Shop = RadarShop;
 type Campaign = RadarCampaign;
-type Stats = RadarStats;
-type Radar = NonNullable<ReturnType<typeof useCoffeeRadar>["data"]>;
 
 function RadarPage() {
+  const { user } = useUser();
   const [center, setCenter] = useState<[number, number] | null>(null);
   const [locating, setLocating] = useState(false);
   const [now, setNow] = useState(new Date());
   const radarQuery = useCoffeeRadar(center);
+  const claimsQuery = useChallengeClaims(user?.id);
+  const defsQuery = useExplorerChallengeDefs();
+  const claimMutation = useClaimChallenge(user?.id);
+  const [celebration, setCelebration] = useState<{ id: string; points: number } | null>(null);
+  const [nudgeDismissed, setNudgeDismissed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem(`radar-claim-nudge-${new Date().toDateString()}`) === "1";
+  });
   const data = radarQuery.data ?? null;
   const loading = radarQuery.isLoading;
 
@@ -57,31 +71,55 @@ function RadarPage() {
     return "Good evening";
   }, [now]);
 
-  const challenges = useMemo(() => buildChallenges(data?.stats), [data?.stats]);
+  const challenges = defsQuery.data ?? EXPLORER_CHALLENGES;
+
+  const challengeViews = useMemo(() => {
+    const claims = claimsQuery.data?.claims ?? [];
+    const weekPeriodKey = claimsQuery.data?.weekPeriodKey ?? "";
+    return buildChallengeView(data?.stats, claims, weekPeriodKey, challenges);
+  }, [data?.stats, claimsQuery.data, challenges]);
+
+  const { limited: limitedViews, regular: regularViews } = useMemo(() => {
+    const limited = challengeViews.filter((v) => v.challenge.period === "limited");
+    const regular = challengeViews.filter((v) => v.challenge.period !== "limited");
+    return { limited, regular };
+  }, [challengeViews]);
+
+  const claimableCount = challengeViews.filter((v) => v.claimable).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#1a0f08] via-[#2a1610] to-[#3a1a0f] pb-20 text-amber-50">
-      {/* Atmospheric glow */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden opacity-60">
-        <div className="absolute -top-40 -left-20 h-[420px] w-[420px] rounded-full bg-amber-500/20 blur-3xl" />
-        <div className="absolute top-1/3 -right-32 h-[380px] w-[380px] rounded-full bg-rose-500/15 blur-3xl" />
-        <div className="absolute bottom-0 left-1/2 h-[300px] w-[600px] -translate-x-1/2 rounded-full bg-emerald-400/10 blur-3xl" />
-      </div>
-
-      <div className="relative mx-auto max-w-5xl px-5 pt-6">
+    <AppPage>
+      <AppPageBody className="pb-8 pt-2">
         {/* Hero */}
+        {claimableCount > 0 && !nudgeDismissed && (
+          <div className="mb-4 flex items-center justify-between gap-3 rounded-2xl bg-[color:var(--cofex-pastel-lilac)] px-4 py-3">
+            <p className="text-sm font-semibold text-[color:var(--cofex-coffee-deep)]">
+              {claimableCount} reward{claimableCount === 1 ? "" : "s"} ready to claim!
+            </p>
+            <button
+              type="button"
+              className="text-xs font-semibold text-[color:var(--cofex-cyan)] underline"
+              onClick={() => {
+                setNudgeDismissed(true);
+                localStorage.setItem(`radar-claim-nudge-${new Date().toDateString()}`, "1");
+              }}
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
         <div className="flex items-start justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-amber-100/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-amber-200/90 backdrop-blur">
-              <RadioTower className="h-3 w-3 animate-pulse" /> Coffee Radar™ · Live
+            <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--cofex-cyan)]/30 bg-[color:var(--cofex-pastel-blue)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-[color:var(--cofex-coffee-deep)]">
+              <RadioTower className="h-3 w-3 animate-pulse text-[color:var(--cofex-cyan)]" /> Coffee Radar™ · Live
             </div>
-            <h1 className="mt-3 text-4xl md:text-5xl font-extrabold leading-[1.05] text-amber-50">
-              {greeting}.<br/>
-              <span className="bg-gradient-to-r from-amber-200 via-rose-200 to-orange-300 bg-clip-text text-transparent">
+            <h1 className="mt-3 text-4xl font-extrabold leading-[1.05] text-[color:var(--cofex-coffee-deep)] md:text-5xl">
+              {greeting}.<br />
+              <span className="bg-gradient-to-r from-[color:var(--cofex-cyan)] via-[color:var(--cofex-coffee-deep)] to-[color:var(--cofex-accent-gold)] bg-clip-text text-transparent">
                 Here's your coffee pulse.
               </span>
             </h1>
-            <p className="mt-2 text-sm text-amber-100/70 max-w-md">
+            <p className="mt-2 max-w-md text-sm text-[color:var(--cofex-black)]/65">
               Scanned {data?.free_today.length ?? 0} free-coffee spots, {data?.trending_matcha.length ?? 0} trending matcha bars, {data?.new_campaigns.length ?? 0} fresh campaigns within 5 km.
             </p>
           </div>
@@ -90,7 +128,7 @@ function RadarPage() {
         </div>
 
         {/* Stat strip */}
-        <div className="mt-6 grid grid-cols-4 gap-2 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-xl">
+        <div className="cofex-app-card mt-6 grid grid-cols-4 gap-2 p-3">
           <Stat icon={<Zap className="h-4 w-4" />} label="Streak" value={`${data?.stats.streak_days ?? 0}d`} accent="from-amber-400 to-orange-500" />
           <Stat icon={<Coffee className="h-4 w-4" />} label="This week" value={data?.stats.visits_this_week ?? 0} accent="from-rose-400 to-pink-500" />
           <Stat icon={<MapPin className="h-4 w-4" />} label="Cities" value={data?.stats.cities_explored ?? 0} accent="from-emerald-400 to-teal-500" />
@@ -98,90 +136,169 @@ function RadarPage() {
         </div>
 
         {/* Location chip */}
-        <div className="mt-5 flex items-center justify-between text-xs text-amber-100/70">
+        <div className="mt-5 flex items-center justify-between text-xs text-[color:var(--cofex-black)]/60">
           <span className="inline-flex items-center gap-1.5">
-            <MapPin className="h-3.5 w-3.5" />
+            <MapPin className="h-3.5 w-3.5 text-[color:var(--cofex-cyan)]" />
             Radius 5 km · {center ? "Your location" : "Lisbon (default)"}
           </span>
           <button
             onClick={useMyLocation}
             disabled={locating}
-            className="inline-flex items-center gap-1.5 rounded-full border border-amber-300/30 bg-amber-100/10 px-3 py-1 font-semibold text-amber-100 hover:bg-amber-100/20 transition disabled:opacity-50"
+            className="cofex-app-chip inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
           >
             <Locate className={`h-3.5 w-3.5 ${locating ? "animate-spin" : ""}`} />
             {locating ? "Locating…" : center ? "Update" : "Use my location"}
           </button>
         </div>
 
-        {/* Section 1 — Free coffee */}
-        <Section
-          icon={<Gift className="h-5 w-5" />}
+        <AppPageSection
           eyebrow="Today only"
           title={`${data?.free_today.length ?? 0} cafés nearby offering free coffee`}
-          accent="amber"
-          loading={loading}
-          empty={!loading && (data?.free_today.length ?? 0) === 0 ? "No free-coffee spots in your radius right now. Widen your range or check back tomorrow." : null}
+          icon={<Gift className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
         >
-          <HScroll>
-            {data?.free_today.map((s) => (
-              <FreeCard key={s.id} shop={s} />
-            ))}
-          </HScroll>
-        </Section>
+          {loading ? (
+            <SectionSkeleton />
+          ) : (data?.free_today.length ?? 0) === 0 ? (
+            <SectionEmpty message="No free-coffee spots in your radius right now. Widen your range or check back tomorrow." />
+          ) : (
+            <HScroll>
+              {data?.free_today.map((s) => (
+                <FreeCard key={s.id} shop={s} />
+              ))}
+            </HScroll>
+          )}
+        </AppPageSection>
 
-        {/* Section 2 — Trending matcha */}
-        <Section
-          icon={<Flame className="h-5 w-5" />}
+        <AppPageSection
           eyebrow="Heating up"
           title="Trending Matcha spots"
-          accent="emerald"
-          loading={loading}
-          empty={!loading && (data?.trending_matcha.length ?? 0) === 0 ? "No matcha bars trending yet — be the first to check in." : null}
+          icon={<Flame className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {data?.trending_matcha.map((s, i) => (
-              <TrendingCard key={s.id} shop={s} rank={i + 1} />
-            ))}
-          </div>
-        </Section>
+          {loading ? (
+            <SectionSkeleton grid />
+          ) : (data?.trending_matcha.length ?? 0) === 0 ? (
+            <SectionEmpty message="No matcha bars trending yet. Be the first to check in." />
+          ) : (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {data?.trending_matcha.map((s, i) => (
+                <TrendingCard key={s.id} shop={s} rank={i + 1} />
+              ))}
+            </div>
+          )}
+        </AppPageSection>
 
-        {/* Section 3 — New campaigns */}
-        <Section
-          icon={<Megaphone className="h-5 w-5" />}
+        <AppPageSection
           eyebrow="Fresh drops"
           title="New EEFFOC campaigns"
-          accent="rose"
-          loading={loading}
-          empty={!loading && (data?.new_campaigns.length ?? 0) === 0 ? "No new campaigns this week. Visit /campaigns to see active ones." : null}
+          icon={<Megaphone className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
         >
-          <HScroll>
-            {data?.new_campaigns.map((c) => (
-              <CampaignCard key={c.id} c={c} now={now} />
-            ))}
-          </HScroll>
-        </Section>
+          {loading ? (
+            <SectionSkeleton />
+          ) : (data?.new_campaigns.length ?? 0) === 0 ? (
+            <SectionEmpty message="No new campaigns this week. Visit /campaigns to see active ones." />
+          ) : (
+            <HScroll>
+              {data?.new_campaigns.map((c) => (
+                <CampaignCard key={c.id} c={c} now={now} />
+              ))}
+            </HScroll>
+          )}
+        </AppPageSection>
 
-        {/* Section 4 — Challenges */}
-        <Section
-          icon={<Trophy className="h-5 w-5" />}
+        {limitedViews.length > 0 && (
+          <AppPageSection
+            eyebrow="Limited time"
+            title="Seasonal challenges"
+            icon={<Sparkles className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
+          >
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {limitedViews.map((view) => (
+                <ChallengeCard
+                  key={view.challenge.id}
+                  view={view}
+                  weekPeriodKey={claimsQuery.data?.weekPeriodKey}
+                  celebrating={celebration?.id === view.challenge.id}
+                  celebrationPoints={celebration?.points}
+                  claiming={claimMutation.isPending && claimMutation.variables === view.challenge.id}
+                  onClaim={async () => {
+                    try {
+                      const result = await claimMutation.mutateAsync(view.challenge.id);
+                      trackExplorerEvent("challenge_claimed", {
+                        challenge_id: view.challenge.id,
+                        points: result.points_awarded,
+                      });
+                      trackExplorerEvent("seasonal_challenge_viewed", { challenge_id: view.challenge.id });
+                      setCelebration({ id: view.challenge.id, points: result.points_awarded });
+                      window.setTimeout(() => setCelebration(null), 2500);
+                      toast.success(`+${result.points_awarded} pts. Challenge claimed!`);
+                    } catch (err) {
+                      toast.error(err instanceof Error ? err.message.replace(/^.*?: /, "") : "Could not claim");
+                    }
+                  }}
+                />
+              ))}
+            </div>
+          </AppPageSection>
+        )}
+
+        <AppPageSection
           eyebrow="Earn this week"
           title="Explorer Challenges"
-          accent="violet"
-          loading={loading}
-          empty={null}
+          icon={<Trophy className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
+          action={
+            <div className="flex items-center gap-3">
+              <Link
+                to="/passport"
+                className="text-xs font-semibold text-[color:var(--cofex-coffee-deep)] underline-offset-2 hover:underline"
+              >
+                City collections →
+              </Link>
+              <Link
+                to="/leaderboard"
+                className="text-xs font-semibold text-[color:var(--cofex-coffee-deep)] underline-offset-2 hover:underline"
+              >
+                Leaderboard →
+              </Link>
+            </div>
+          }
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {challenges.map((ch) => (
-              <ChallengeCard key={ch.id} ch={ch} />
-            ))}
-          </div>
-        </Section>
+          {loading || claimsQuery.isLoading ? (
+            <SectionSkeleton grid />
+          ) : (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {regularViews.map((view) => (
+                <ChallengeCard
+                  key={view.challenge.id}
+                  view={view}
+                  weekPeriodKey={claimsQuery.data?.weekPeriodKey}
+                  celebrating={celebration?.id === view.challenge.id}
+                  celebrationPoints={celebration?.points}
+                  claiming={claimMutation.isPending && claimMutation.variables === view.challenge.id}
+                  onClaim={async () => {
+                    try {
+                      const result = await claimMutation.mutateAsync(view.challenge.id);
+                      trackExplorerEvent("challenge_claimed", {
+                        challenge_id: view.challenge.id,
+                        points: result.points_awarded,
+                      });
+                      setCelebration({ id: view.challenge.id, points: result.points_awarded });
+                      window.setTimeout(() => setCelebration(null), 2500);
+                      toast.success(`+${result.points_awarded} pts. Challenge claimed!`);
+                    } catch (err) {
+                      toast.error(err instanceof Error ? err.message.replace(/^.*?: /, "") : "Could not claim");
+                    }
+                  }}
+                />
+              ))}
+            </div>
+          )}
+        </AppPageSection>
 
-        <p className="mt-10 mb-6 text-center text-[11px] text-amber-100/40">
-          Updated {data ? new Date(data.generated_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—"} · Coffee Radar™
+        <p className="mb-6 mt-10 text-center text-[11px] text-[color:var(--cofex-black)]/40">
+          Updated {data ? new Date(data.generated_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "-"} · Coffee Radar™
         </p>
-      </div>
-    </div>
+      </AppPageBody>
+    </AppPage>
   );
 }
 
@@ -190,20 +307,20 @@ function RadarPage() {
 function RadarSweep() {
   return (
     <div className="relative h-28 w-28 shrink-0">
-      <div className="absolute inset-0 rounded-full border border-amber-300/30" />
-      <div className="absolute inset-3 rounded-full border border-amber-300/20" />
-      <div className="absolute inset-6 rounded-full border border-amber-300/10" />
+      <div className="absolute inset-0 rounded-full border border-[color:var(--cofex-cyan)]/30" />
+      <div className="absolute inset-3 rounded-full border border-[color:var(--cofex-cyan)]/20" />
+      <div className="absolute inset-6 rounded-full border border-[color:var(--cofex-cyan)]/10" />
       <div
         className="absolute inset-0 rounded-full"
         style={{
-          background: "conic-gradient(from 0deg, rgba(251,191,36,0) 0deg, rgba(251,191,36,0.5) 60deg, rgba(251,191,36,0) 90deg)",
+          background: "conic-gradient(from 0deg, rgba(0,180,200,0) 0deg, rgba(0,180,200,0.45) 60deg, rgba(0,180,200,0) 90deg)",
           animation: "radar-spin 3.5s linear infinite",
         }}
       />
       <div className="absolute inset-0 flex items-center justify-center">
-        <Coffee className="h-6 w-6 text-amber-200" />
+        <Coffee className="h-6 w-6 text-[color:var(--cofex-coffee-deep)]" />
       </div>
-      <span className="absolute -top-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-amber-300 shadow-[0_0_12px_rgba(251,191,36,0.9)]" />
+      <span className="absolute -top-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[color:var(--cofex-cyan)] shadow-[0_0_12px_color-mix(in_oklab,var(--cofex-cyan)_80%,transparent)]" />
       <style>{`@keyframes radar-spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
@@ -211,44 +328,37 @@ function RadarSweep() {
 
 function Stat({ icon, label, value, accent }: { icon: React.ReactNode; label: string; value: number | string; accent: string }) {
   return (
-    <div className="relative overflow-hidden rounded-xl bg-black/30 px-3 py-2">
-      <div className={`absolute -right-4 -top-4 h-12 w-12 rounded-full bg-gradient-to-br ${accent} opacity-30 blur-xl`} />
-      <div className="relative flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-amber-100/60">
+    <div className="relative overflow-hidden rounded-xl bg-[color:var(--cofex-cream)]/60 px-3 py-2">
+      <div className={`absolute -right-4 -top-4 h-12 w-12 rounded-full bg-gradient-to-br ${accent} opacity-25 blur-xl`} />
+      <div className="relative flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[color:var(--cofex-black)]/50">
         {icon} {label}
       </div>
-      <div className="relative mt-0.5 text-xl font-extrabold text-amber-50">{value}</div>
+      <div className="relative mt-0.5 text-xl font-extrabold text-[color:var(--cofex-coffee-deep)]">{value}</div>
     </div>
   );
 }
 
-function Section({ icon, eyebrow, title, accent, loading, empty, children }: {
-  icon: React.ReactNode; eyebrow: string; title: string;
-  accent: "amber" | "emerald" | "rose" | "violet";
-  loading: boolean; empty: string | null; children: React.ReactNode;
-}) {
-  const dot = { amber: "bg-amber-300", emerald: "bg-emerald-300", rose: "bg-rose-300", violet: "bg-violet-300" }[accent];
-  return (
-    <section className="mt-8">
-      <div className="mb-3 flex items-end justify-between gap-3">
-        <div>
-          <div className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.25em] text-amber-100/60">
-            <span className={`h-1.5 w-1.5 rounded-full ${dot} shadow-[0_0_10px_currentColor]`} />
-            {eyebrow}
-          </div>
-          <h2 className="mt-1 flex items-center gap-2 text-xl md:text-2xl font-bold text-amber-50">
-            {icon} {title}
-          </h2>
-        </div>
+function SectionSkeleton({ grid = false }: { grid?: boolean }) {
+  if (grid) {
+    return (
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {[0, 1].map((i) => (
+          <div key={i} className="cofex-app-card h-24 animate-pulse bg-[color:var(--cofex-cream)]/60" />
+        ))}
       </div>
-      {loading ? (
-        <div className="flex gap-3 overflow-hidden">
-          {[0,1,2].map((i) => <div key={i} className="h-44 w-64 shrink-0 animate-pulse rounded-2xl bg-white/5" />)}
-        </div>
-      ) : empty ? (
-        <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-6 text-center text-sm text-amber-100/60">{empty}</div>
-      ) : children}
-    </section>
+    );
+  }
+  return (
+    <div className="flex gap-3 overflow-hidden">
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="cofex-app-card h-44 w-64 shrink-0 animate-pulse bg-[color:var(--cofex-cream)]/60" />
+      ))}
+    </div>
   );
+}
+
+function SectionEmpty({ message }: { message: string }) {
+  return <div className="cofex-app-card-dashed cofex-app-card px-4 py-6 text-center text-sm text-[color:var(--cofex-black)]/60">{message}</div>;
 }
 
 function HScroll({ children }: { children: React.ReactNode }) {
@@ -264,7 +374,7 @@ function FreeCard({ shop }: { shop: Shop }) {
     <Link
       to="/coffee/$slug"
       params={{ slug: shop.slug }}
-      className="group relative w-64 shrink-0 overflow-hidden rounded-2xl border border-amber-300/20 bg-gradient-to-br from-amber-900/40 to-black/40 backdrop-blur-xl transition hover:border-amber-300/60 hover:-translate-y-0.5"
+      className="cofex-app-card group relative w-64 shrink-0 overflow-hidden transition hover:-translate-y-1"
     >
       <div className="relative h-32 overflow-hidden">
         {shop.cover_image_url ? (
@@ -273,7 +383,7 @@ function FreeCard({ shop }: { shop: Shop }) {
           <div className="h-full w-full bg-gradient-to-br from-amber-400/30 to-rose-500/20" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-        <span className="absolute top-2 left-2 inline-flex items-center gap-1 rounded-full bg-amber-300 px-2 py-0.5 text-[10px] font-extrabold text-amber-950 shadow-lg">
+        <span className="absolute top-2 left-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-extrabold text-white shadow-lg" style={{ background: "var(--gradient-coffee)" }}>
           <Gift className="h-3 w-3" /> FREE TODAY
         </span>
         {shop.distance_km != null && (
@@ -283,8 +393,8 @@ function FreeCard({ shop }: { shop: Shop }) {
         )}
       </div>
       <div className="p-3">
-        <div className="font-bold text-amber-50 truncate">{shop.name}</div>
-        <div className="mt-0.5 text-[11px] text-amber-100/60 truncate">{shop.city ?? "Nearby"} · ★ {Number(shop.rating).toFixed(1)}</div>
+        <div className="truncate font-bold text-[color:var(--cofex-coffee-deep)]">{shop.name}</div>
+        <div className="mt-0.5 truncate text-[11px] text-[color:var(--cofex-black)]/55">{shop.city ?? "Nearby"} · ★ {Number(shop.rating).toFixed(1)}</div>
       </div>
     </Link>
   );
@@ -295,7 +405,7 @@ function TrendingCard({ shop, rank }: { shop: Shop; rank: number }) {
     <Link
       to="/coffee/$slug"
       params={{ slug: shop.slug }}
-      className="group flex gap-3 overflow-hidden rounded-2xl border border-emerald-300/20 bg-gradient-to-r from-emerald-900/30 to-black/40 p-2 backdrop-blur-xl transition hover:border-emerald-300/50"
+      className="cofex-app-card group flex gap-3 overflow-hidden p-2 transition hover:-translate-y-0.5"
     >
       <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl">
         {shop.cover_image_url ? (
@@ -308,9 +418,9 @@ function TrendingCard({ shop, rank }: { shop: Shop; rank: number }) {
         <span className="absolute top-1 left-1 rounded-md bg-black/70 px-1.5 py-0.5 text-[10px] font-extrabold text-emerald-200">#{rank}</span>
       </div>
       <div className="flex-1 min-w-0 py-1 pr-2">
-        <div className="font-bold text-amber-50 truncate">{shop.name}</div>
-        <div className="text-[11px] text-amber-100/60 truncate">{shop.city ?? "—"}</div>
-        <div className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-emerald-400/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-200">
+        <div className="truncate font-bold text-[color:var(--cofex-coffee-deep)]">{shop.name}</div>
+        <div className="truncate text-[11px] text-[color:var(--cofex-black)]/55">{shop.city ?? "-"}</div>
+        <div className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
           <Flame className="h-3 w-3" /> {shop.recent_visits ?? 0} check-ins · 14d
         </div>
       </div>
@@ -324,7 +434,7 @@ function CampaignCard({ c, now }: { c: Campaign; now: Date }) {
     <Link
       to="/campaign/$id"
       params={{ id: c.id }}
-      className="group relative w-72 shrink-0 overflow-hidden rounded-2xl border border-rose-300/20 bg-gradient-to-br from-rose-900/40 to-black/50 backdrop-blur-xl transition hover:border-rose-300/60 hover:-translate-y-0.5"
+      className="cofex-app-card group relative w-72 shrink-0 overflow-hidden transition hover:-translate-y-1"
     >
       <div className="relative h-36 overflow-hidden">
         {c.cover_image_url ? (
@@ -346,63 +456,102 @@ function CampaignCard({ c, now }: { c: Campaign; now: Date }) {
           <div className="text-base font-bold text-amber-50 line-clamp-2">{c.title}</div>
         </div>
       </div>
-      <div className="flex items-center justify-between px-3 py-2 text-[11px] text-amber-100/70">
+      <div className="flex items-center justify-between px-3 py-2 text-[11px] text-[color:var(--cofex-black)]/60">
         <span className="truncate">{c.reward_description ?? "Tap to view"}</span>
-        <span className="inline-flex items-center gap-1 font-semibold text-rose-200">{c.participants} joined <ArrowRight className="h-3 w-3" /></span>
+        <span className="inline-flex shrink-0 items-center gap-1 font-semibold text-[color:var(--cofex-coffee-deep)]">{c.participants} joined <ArrowRight className="h-3 w-3" /></span>
       </div>
     </Link>
   );
 }
 
-/* ---------- Challenges (computed from stats) ---------- */
+/* ---------- Challenges ---------- */
 
-type Challenge = { id: string; icon: React.ReactNode; title: string; subtitle: string; progress: number; target: number; reward: number; accent: string; href?: string };
+function ChallengeCard({
+  view,
+  onClaim,
+  claiming,
+  weekPeriodKey,
+  celebrating,
+  celebrationPoints,
+}: {
+  view: ReturnType<typeof buildChallengeView>[number];
+  onClaim: () => void;
+  claiming: boolean;
+  weekPeriodKey?: string;
+  celebrating?: boolean;
+  celebrationPoints?: number;
+}) {
+  const { challenge, progress, pct, claimable, claimed } = view;
+  const Icon = challenge.Icon;
+  const resetCopy =
+    weeklyResetLabel(challenge, weekPeriodKey) ??
+    limitedCountdownLabel(challenge);
 
-function buildChallenges(s?: Stats): Challenge[] {
-  const stats: Stats = s ?? { total_check_ins: 0, total_points: 0, visits_this_week: 0, new_shops_this_week: 0, unique_shops: 0, cities_explored: 0, active_campaigns: 0, streak_days: 0 };
-  return [
-    { id: "weekly", icon: <Target className="h-4 w-4" />, title: "Weekly Wanderer",
-      subtitle: "Check in 5 times this week", progress: stats.visits_this_week, target: 5, reward: 50,
-      accent: "from-violet-500 to-fuchsia-600" },
-    { id: "new3", icon: <Sparkles className="h-4 w-4" />, title: "Three New Doors",
-      subtitle: "Visit 3 cafés you've never been to this week", progress: stats.new_shops_this_week, target: 3, reward: 75,
-      accent: "from-amber-500 to-orange-600" },
-    { id: "streak", icon: <Zap className="h-4 w-4" />, title: "On Fire",
-      subtitle: "Hit a 5-day check-in streak", progress: stats.streak_days, target: 5, reward: 100,
-      accent: "from-rose-500 to-red-600" },
-    { id: "cities", icon: <Crown className="h-4 w-4" />, title: "City Hopper",
-      subtitle: "Explore 3 different cities", progress: stats.cities_explored, target: 3, reward: 150,
-      accent: "from-emerald-500 to-teal-600" },
-  ];
-}
-
-function ChallengeCard({ ch }: { ch: Challenge }) {
-  const pct = Math.min(100, Math.round((ch.progress / ch.target) * 100));
-  const done = ch.progress >= ch.target;
   return (
-    <div className={`relative overflow-hidden rounded-2xl border ${done ? "border-emerald-300/40" : "border-white/10"} bg-white/5 p-4 backdrop-blur-xl`}>
-      <div className={`absolute -right-8 -top-8 h-24 w-24 rounded-full bg-gradient-to-br ${ch.accent} opacity-30 blur-2xl`} />
+    <div
+      className={`cofex-app-card relative overflow-hidden p-4 transition-transform ${
+        claimed ? "opacity-80" : claimable ? "ring-2 ring-emerald-300/70" : ""
+      } ${celebrating ? "scale-[1.02] ring-2 ring-[color:var(--cofex-accent-gold)]" : ""}`}
+    >
+      {celebrating && celebrationPoints != null && (
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-white/75 backdrop-blur-[2px]">
+          <div className="animate-bounce text-center">
+            <Sparkles className="mx-auto h-8 w-8 text-[color:var(--cofex-accent-gold)]" />
+            <div className="mt-1 text-2xl font-extrabold text-[color:var(--cofex-coffee-deep)]">
+              +{celebrationPoints} pts
+            </div>
+          </div>
+        </div>
+      )}
+      <div className={`absolute -top-8 -right-8 h-24 w-24 rounded-full bg-gradient-to-br ${challenge.accent} opacity-20 blur-2xl`} />
       <div className="relative flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <div className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-amber-100/60">
-            {ch.icon} Challenge
+          <div className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-widest text-[color:var(--cofex-cyan)] uppercase">
+            <Icon className="h-4 w-4" /> Challenge
           </div>
-          <div className="mt-1 font-bold text-amber-50">{ch.title}</div>
-          <div className="text-[12px] text-amber-100/70">{ch.subtitle}</div>
+          <div className="mt-1 font-bold text-[color:var(--cofex-coffee-deep)]">{challenge.title}</div>
+          <div className="text-[12px] text-[color:var(--cofex-black)]/60">{challenge.subtitle}</div>
+          {resetCopy ? (
+            <div className="mt-0.5 text-[10px] text-[color:var(--cofex-black)]/45">{resetCopy}</div>
+          ) : null}
         </div>
-        <div className={`shrink-0 rounded-full px-2 py-1 text-[10px] font-extrabold ${done ? "bg-emerald-300 text-emerald-950" : "bg-amber-300/90 text-amber-950"}`}>
-          +{ch.reward} pts
+        <div
+          className={`shrink-0 rounded-full px-2 py-1 text-[10px] font-extrabold ${
+            claimed
+              ? "bg-emerald-100 text-emerald-800"
+              : "bg-[color:var(--cofex-pastel-blue)] text-[color:var(--cofex-coffee-deep)]"
+          }`}
+        >
+          {claimed ? (
+            <span className="inline-flex items-center gap-0.5">
+              <Check className="h-3 w-3" /> Claimed
+            </span>
+          ) : (
+            `+${challenge.reward} pts`
+          )}
         </div>
       </div>
       <div className="relative mt-3">
-        <div className="flex items-center justify-between text-[11px] text-amber-100/70">
-          <span>{ch.progress} / {ch.target}</span>
-          <span>{done ? "Complete!" : `${pct}%`}</span>
+        <div className="flex items-center justify-between text-[11px] text-[color:var(--cofex-black)]/55">
+          <span>
+            {progress} / {challenge.target}
+          </span>
+          <span>{claimed ? "Done" : claimable ? "Ready!" : `${pct}%`}</span>
         </div>
-        <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-white/10">
-          <div className={`h-full rounded-full bg-gradient-to-r ${ch.accent} transition-all`} style={{ width: `${pct}%` }} />
+        <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[color:var(--cofex-cream)]">
+          <div className={`h-full rounded-full bg-gradient-to-r ${challenge.accent} transition-all`} style={{ width: `${pct}%` }} />
         </div>
       </div>
+      {claimable && (
+        <button
+          type="button"
+          onClick={onClaim}
+          disabled={claiming}
+          className="relative mt-3 w-full rounded-full bg-[color:var(--cofex-coffee-deep)] py-2 text-xs font-semibold text-white transition hover:bg-[color:var(--cofex-black)] disabled:opacity-60"
+        >
+          {claiming ? "Claiming…" : `Claim +${challenge.reward} pts`}
+        </button>
+      )}
     </div>
   );
 }

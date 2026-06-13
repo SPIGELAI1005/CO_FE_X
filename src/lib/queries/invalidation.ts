@@ -6,6 +6,21 @@ export function afterCheckIn(qc: QueryClient, userId: string) {
   qc.invalidateQueries({ queryKey: queryKeys.passport(userId) });
   qc.invalidateQueries({ queryKey: queryKeys.wallet(userId) });
   qc.invalidateQueries({ queryKey: queryKeys.coffeeShops() });
+  qc.invalidateQueries({ queryKey: queryKeys.challengeClaims(userId) });
+  qc.invalidateQueries({ queryKey: ["coffeeRadar"] });
+  qc.invalidateQueries({ queryKey: ["leaderboard"] });
+  qc.invalidateQueries({ queryKey: ["myLeaderboardRank"] });
+  qc.invalidateQueries({ queryKey: ["userCityCollections"] });
+  qc.invalidateQueries({ queryKey: ["cityCollection"] });
+}
+
+export function afterChallengeClaim(qc: QueryClient, userId: string) {
+  qc.invalidateQueries({ queryKey: queryKeys.challengeClaims(userId) });
+  qc.invalidateQueries({ queryKey: queryKeys.wallet(userId) });
+  qc.invalidateQueries({ queryKey: queryKeys.profile(userId) });
+  qc.invalidateQueries({ queryKey: ["coffeeRadar"] });
+  qc.invalidateQueries({ queryKey: ["leaderboard"] });
+  qc.invalidateQueries({ queryKey: ["myLeaderboardRank"] });
 }
 
 export function afterReview(qc: QueryClient, userId: string, shopId: string) {

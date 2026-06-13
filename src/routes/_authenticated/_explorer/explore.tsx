@@ -2,19 +2,27 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { useEffect, useMemo, useState, lazy, Suspense } from "react";
-import { Map as MapIcon, List as ListIcon, SlidersHorizontal, X, Search, Locate } from "lucide-react";
+import { Map as MapIcon, List as ListIcon, Search, Locate, Columns2, Maximize2 } from "lucide-react";
 import { CoffeeShopCard, type ShopCardData } from "@/components/app/CoffeeShopCard";
+import type { MapShop } from "@/components/app/CoffeeMap";
+import { ExploreFilters } from "@/components/app/ExploreFilters";
+import { ExploreSortSelect } from "@/components/app/ExploreSortSelect";
+import { AppPage } from "@/components/app/AppPageShell";
 import { haversineMetres } from "@/lib/geo";
 import { useCoffeeShops, useCoffeeShopCampaignCounts } from "@/lib/queries/coffee-shops";
 
 const CoffeeMap = lazy(() =>
   import("@/components/app/CoffeeMap").then((m) => ({ default: m.CoffeeMap })),
 );
+const MapShopSheet = lazy(() =>
+  import("@/components/app/MapShopSheet").then((m) => ({ default: m.MapShopSheet })),
+);
 
-const TAGS = ["Espresso", "Cappuccino", "Matcha", "Specialty Coffee", "Bakery"] as const;
-const AMENITIES = ["Student Friendly", "Pet Friendly", "Remote Work Friendly"] as const;
 const SORTS = ["distance", "rating", "popularity", "free"] as const;
 const VIEWS = ["split", "list", "map"] as const;
+type ViewMode = (typeof VIEWS)[number];
+type PanelFocus = "balanced" | "list" | "map";
+type PanelSize = "expanded" | "balanced" | "peek";
 
 const DEFAULT_CENTER: [number, number] = [38.7139, -9.1394]; // Lisbon
 
@@ -23,6 +31,8 @@ const searchSchema = z.object({
   tags: fallback(z.array(z.string()), []).default([]),
   amenities: fallback(z.array(z.string()), []).default([]),
   free: fallback(z.boolean(), false).default(false),
+  campaignsOnly: fallback(z.boolean(), false).default(false),
+  minRating: fallback(z.number().min(0).max(5), 0).default(0),
   sort: fallback(z.enum(SORTS), "distance").default("distance"),
   view: fallback(z.enum(VIEWS), "split").default("split"),
   radius: fallback(z.number().min(0.5).max(50), 5).default(5),
@@ -34,22 +44,127 @@ function haversineKm(a: [number, number], b: [number, number]) {
 
 export const Route = createFileRoute("/_authenticated/_explorer/explore")({
   validateSearch: zodValidator(searchSchema),
-  head: () => ({ meta: [{ title: "Explore — CO:FE(X)" }] }),
+  head: () => ({ meta: [{ title: "Explore · CO:FE(X)" }] }),
   component: ExplorePage,
 });
 
+function getPanelSizes(view: ViewMode, focus: PanelFocus): { list: PanelSize; map: PanelSize } {
+  if (view === "list") return { list: "expanded", map: "peek" };
+  if (view === "map") return { list: "peek", map: "expanded" };
+  if (focus === "list") return { list: "expanded", map: "peek" };
+  if (focus === "map") return { list: "peek", map: "expanded" };
+  return { list: "balanced", map: "balanced" };
+}
+
+function panelSizeClass(size: PanelSize) {
+  if (size === "peek") return "cofex-explore-panel-peek";
+  if (size === "expanded") return "cofex-explore-panel-expanded";
+  return "cofex-explore-panel-balanced";
+}
+
+function PanelPeek({
+  side,
+  label,
+  Icon,
+  badge,
+  onClick,
+  showLabel = true,
+}: {
+  side: "left" | "right";
+  label: string;
+  Icon: React.ComponentType<{ className?: string }>;
+  badge?: string | number;
+  onClick: () => void;
+  showLabel?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`cofex-explore-peek ${side === "left" ? "rounded-r-3xl rounded-l-xl" : "rounded-l-3xl rounded-r-xl"}`}
+      aria-label={`Show ${label}`}
+    >
+      <Icon className="h-5 w-5 shrink-0 text-[color:var(--cofex-cyan)]" />
+      {showLabel && <span className="cofex-explore-peek-label">{label}</span>}
+      {badge != null && (
+        <span className="rounded-full bg-[color:var(--cofex-coffee-deep)] px-1.5 py-0.5 text-[9px] font-bold text-white">
+          {badge}
+        </span>
+      )}
+    </button>
+  );
+}
+
+function PanelHeader({
+  title,
+  expanded,
+  showSplitControl,
+  onExpand,
+  onRestoreSplit,
+}: {
+  title: string;
+  expanded: boolean;
+  showSplitControl: boolean;
+  onExpand: () => void;
+  onRestoreSplit: () => void;
+}) {
+  return (
+    <div className="cofex-explore-panel-header shrink-0">
+      <button
+        type="button"
+        onClick={onExpand}
+        className="min-w-0 text-left text-[11px] font-extrabold uppercase tracking-[0.2em] text-[color:var(--cofex-coffee-deep)]"
+      >
+        {title}
+      </button>
+      {showSplitControl && (
+        <button
+          type="button"
+          onClick={expanded ? onRestoreSplit : onExpand}
+          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[color:var(--border)] px-2.5 py-1 text-[10px] font-semibold text-[color:var(--cofex-coffee-deep)] transition hover:border-[color:var(--cofex-cyan)] hover:bg-[color:var(--cofex-pastel-blue)]"
+          aria-label={expanded ? "Restore split view" : "Expand panel"}
+        >
+          {expanded ? (
+            <>
+              <Columns2 className="h-3 w-3" /> Split
+            </>
+          ) : (
+            <>
+              <Maximize2 className="h-3 w-3" /> Expand
+            </>
+          )}
+        </button>
+      )}
+    </div>
+  );
+}
+
 function ExplorePage() {
-  const { q, tags, amenities, free, sort, view, radius } = Route.useSearch();
-  const navigate = useNavigate({ from: "/_authenticated/_explorer/explore" });
+  const { q, tags, amenities, free, campaignsOnly, minRating, sort, view, radius } = Route.useSearch();
+  const navigate = useNavigate();
   type S = z.infer<typeof searchSchema>;
   const update = (patch: Partial<S>) =>
-    navigate({ search: (prev: S) => ({ ...prev, ...patch }), replace: true });
+    navigate({
+      to: "/explore",
+      search: (prev: S) => ({ ...prev, ...patch }),
+      replace: true,
+    });
 
   const { data: rows = [], isLoading: loading } = useCoffeeShops();
   const shopIds = useMemo(() => rows.map((r) => r.id), [rows]);
   const { data: counts = {} } = useCoffeeShopCampaignCounts(shopIds);
   const [hovered, setHovered] = useState<string | null>(null);
+  const [mapSelectedShop, setMapSelectedShop] = useState<MapShop | null>(null);
   const [center, setCenter] = useState<[number, number]>(DEFAULT_CENTER);
+  const [panelFocus, setPanelFocus] = useState<PanelFocus>("balanced");
+
+  const setView = (next: ViewMode) => {
+    setPanelFocus("balanced");
+    update({ view: next });
+  };
+
+  const panelSizes = getPanelSizes(view, panelFocus);
+  const layoutKey = `${view}-${panelFocus}`;
 
   const locate = () => {
     if (!navigator.geolocation) return;
@@ -70,6 +185,8 @@ function ExplorePage() {
     const ql = q.trim().toLowerCase();
     const list = rows
       .filter((r) => (free ? r.free_coffee_available : true))
+      .filter((r) => !campaignsOnly || (counts[r.id]?.campaigns ?? 0) > 0)
+      .filter((r) => !minRating || Number(r.rating) >= minRating)
       .filter((r) => (tags.length ? tags.every((t: string) => r.tags.includes(t)) : true))
       .filter((r) => (amenities.length ? amenities.every((a: string) => r.amenities.includes(a)) : true))
       .filter((r) =>
@@ -104,7 +221,7 @@ function ExplorePage() {
         a.distance_km - b.distance_km,
     };
     return list.sort(sorters[sort]);
-  }, [rows, counts, tags, amenities, free, q, sort, center, radius]);
+  }, [rows, counts, tags, amenities, free, campaignsOnly, minRating, q, sort, center, radius]);
 
   const mapShops = useMemo(
     () =>
@@ -122,164 +239,200 @@ function ExplorePage() {
     [cards, rows],
   );
 
-  const filterCount = tags.length + amenities.length + (free ? 1 : 0);
+  const filterCount =
+    tags.length +
+    amenities.length +
+    (free ? 1 : 0) +
+    (campaignsOnly ? 1 : 0) +
+    (minRating > 0 ? 1 : 0);
 
   return (
-    <div className="flex h-[calc(100vh-7.5rem)] flex-col" style={{ background: "var(--cofex-cream, #f5efe6)" }}>
-      {/* Search + radius bar */}
-      <div className="border-b bg-white px-4 py-3" style={{ borderColor: "var(--border)" }}>
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="search"
-              placeholder="Search cafés, neighbourhoods, vibes…"
-              value={q}
-              onChange={(e) => update({ q: e.target.value })}
-              className="w-full rounded-full border bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-foreground"
-              style={{ borderColor: "var(--border)" }}
-            />
+    <AppPage fullHeight className="h-[calc(100dvh-8.5rem)]">
+      <div className="mx-auto flex h-full w-full max-w-6xl flex-1 flex-col gap-3 px-4 py-4 pb-4 sm:px-5">
+        {/* Search panel */}
+        <div className="cofex-app-card space-y-3 p-4 sm:p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--cofex-cyan)]" />
+              <input
+                type="search"
+                placeholder="Search cafés, neighbourhoods, vibes…"
+                value={q}
+                onChange={(e) => update({ q: e.target.value })}
+                className="w-full rounded-full border border-[color:var(--border)] bg-[color:var(--cofex-cream)]/40 py-2.5 pl-10 pr-4 text-sm outline-none transition focus:border-[color:var(--cofex-cyan)] focus:bg-white"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={locate}
+              className="cofex-app-chip inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-xs font-semibold"
+              title="Use my location"
+            >
+              <Locate className="h-3.5 w-3.5 text-[color:var(--cofex-cyan)]" /> Near me
+            </button>
+            <label className="inline-flex items-center gap-2 text-xs text-[color:var(--cofex-black)]/60 sm:min-w-[210px]">
+              <span className="whitespace-nowrap font-semibold text-[color:var(--cofex-coffee-deep)]">Radius</span>
+              <input
+                type="range"
+                min={0.5}
+                max={20}
+                step={0.5}
+                value={radius}
+                onChange={(e) => update({ radius: Number(e.target.value) })}
+                className="flex-1 accent-[color:var(--cofex-coffee-deep)]"
+              />
+              <span className="w-12 text-right font-bold tabular-nums text-[color:var(--cofex-coffee-deep)]">
+                {radius} km
+              </span>
+            </label>
           </div>
-          <button
-            onClick={locate}
-            className="inline-flex items-center justify-center gap-1.5 rounded-full border px-3 py-2 text-xs font-medium"
-            style={{ borderColor: "var(--border)" }}
-            title="Use my location"
-          >
-            <Locate className="h-3.5 w-3.5" /> Near me
-          </button>
-          <label className="inline-flex items-center gap-2 text-xs text-muted-foreground sm:min-w-[200px]">
-            <span className="whitespace-nowrap">Radius</span>
-            <input
-              type="range"
-              min={0.5}
-              max={20}
-              step={0.5}
-              value={radius}
-              onChange={(e) => update({ radius: Number(e.target.value) })}
-              className="flex-1 accent-foreground"
-            />
-            <span className="w-12 text-right font-semibold tabular-nums text-foreground">{radius} km</span>
-          </label>
+
+          <ExploreFilters
+            filters={{ free, campaignsOnly, tags, amenities, minRating }}
+            filterCount={filterCount}
+            resultCount={cards.length}
+            onToggleFree={() => update({ free: !free })}
+            onToggleCampaigns={() => update({ campaignsOnly: !campaignsOnly })}
+            onToggleTag={(tag) => update({ tags: toggle(tags, tag) })}
+            onToggleAmenity={(amenity) => update({ amenities: toggle(amenities, amenity) })}
+            onSetMinRating={(rating) => update({ minRating: rating })}
+            onClear={() =>
+              update({ tags: [], amenities: [], free: false, campaignsOnly: false, minRating: 0 })
+            }
+          />
         </div>
 
-        {/* Filters & sort */}
-        <div className="mx-auto mt-3 flex max-w-6xl items-center gap-2 overflow-x-auto">
-          <span className="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-            <SlidersHorizontal className="h-3 w-3" /> Filters{filterCount > 0 && ` · ${filterCount}`}
-          </span>
-          <button
-            onClick={() => update({ free: !free })}
-            className="shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors"
-            style={{
-              background: free ? "var(--cofex-coffee-deep, #3d2417)" : "transparent",
-              color: free ? "white" : "var(--cofex-coffee-deep)",
-              border: "1px solid var(--border)",
-            }}
-          >
-            🎁 Free coffee
-          </button>
-          {[...TAGS, ...AMENITIES].map((t) => {
-            const isTag = (TAGS as readonly string[]).includes(t);
-            const active = isTag ? tags.includes(t) : amenities.includes(t);
-            return (
+        {/* Sort + view */}
+        <div className="flex flex-wrap items-center justify-between gap-3 px-1">
+          <div className="flex items-center gap-2 text-xs">
+            <span className="font-bold text-[color:var(--cofex-coffee-deep)]">{cards.length} cafés</span>
+            <span className="text-[color:var(--cofex-black)]/30">·</span>
+            <span className="text-[color:var(--cofex-black)]/55">Sort</span>
+            <ExploreSortSelect value={sort} onChange={(next) => update({ sort: next })} />
+          </div>
+          <div className="inline-flex rounded-full border border-[color:var(--border)] bg-white p-1 shadow-sm">
+            {(["list", "split", "map"] as const).map((v) => (
               <button
-                key={t}
-                onClick={() =>
-                  isTag
-                    ? update({ tags: toggle(tags, t) })
-                    : update({ amenities: toggle(amenities, t) })
-                }
-                className="shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors"
-                style={{
-                  background: active ? "var(--cofex-coffee-deep, #3d2417)" : "transparent",
-                  color: active ? "white" : "var(--cofex-coffee-deep)",
-                  border: "1px solid var(--border)",
-                }}
+                key={v}
+                type="button"
+                onClick={() => setView(v)}
+                className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold capitalize transition ${
+                  view === v
+                    ? "text-white"
+                    : "text-[color:var(--cofex-coffee-deep)] hover:bg-[color:var(--cofex-pastel-blue)]/50"
+                }`}
+                style={view === v ? { background: "var(--gradient-coffee)" } : undefined}
               >
-                {t}
+                {v === "map" ? <MapIcon className="h-3.5 w-3.5" /> : v === "list" ? <ListIcon className="h-3.5 w-3.5" /> : null}
+                {v}
               </button>
-            );
-          })}
-          {(filterCount > 0 || q) && (
-            <button
-              onClick={() => update({ tags: [], amenities: [], free: false, q: "" })}
-              className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-full px-3 py-1.5 text-xs text-muted-foreground"
-            >
-              <X className="h-3 w-3" /> Clear
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Sort + view toggle */}
-      <div className="flex items-center justify-between gap-3 px-4 py-2">
-        <div className="flex items-center gap-2 text-xs">
-          <span className="text-muted-foreground">{cards.length} cafés</span>
-          <span className="text-muted-foreground">·</span>
-          <span className="text-muted-foreground">Sort</span>
-          <select
-            value={sort}
-            onChange={(e) => update({ sort: e.target.value as typeof sort })}
-            className="rounded-full border bg-white px-2 py-1 text-xs font-medium outline-none"
-            style={{ borderColor: "var(--border)" }}
-          >
-            <option value="distance">Distance</option>
-            <option value="rating">Rating</option>
-            <option value="popularity">Popularity</option>
-            <option value="free">Free coffee first</option>
-          </select>
-        </div>
-        <div className="inline-flex rounded-full border p-0.5" style={{ borderColor: "var(--border)" }}>
-          {(["list", "split", "map"] as const).map((v) => (
-            <button
-              key={v}
-              onClick={() => update({ view: v })}
-              className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs capitalize"
-              style={{
-                background: view === v ? "var(--cofex-coffee-deep)" : "transparent",
-                color: view === v ? "white" : "inherit",
-              }}
-            >
-              {v === "map" ? <MapIcon className="h-3.5 w-3.5" /> : v === "list" ? <ListIcon className="h-3.5 w-3.5" /> : null}
-              {v}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Body */}
-      <div
-        className={`grid flex-1 gap-3 overflow-hidden p-3 ${
-          view === "split" ? "md:grid-cols-[1fr_1.1fr]" : "grid-cols-1"
-        }`}
-      >
-        <div className={`overflow-y-auto rounded-2xl ${view === "map" ? "hidden" : "block"}`}>
-          {loading ? (
-            <div className="grid gap-3 sm:grid-cols-2">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-64 animate-pulse rounded-2xl bg-white/60" />
-              ))}
-            </div>
-          ) : cards.length === 0 ? (
-            <div className="grid h-full place-items-center rounded-2xl bg-white p-10 text-center text-sm text-muted-foreground">
-              No cafés match these filters within {radius} km.
-            </div>
-          ) : (
-            <div className={`grid gap-3 ${view === "list" ? "sm:grid-cols-2 lg:grid-cols-3" : "sm:grid-cols-2"}`}>
-              {cards.map((s) => (
-                <CoffeeShopCard key={s.id} shop={s} onHover={setHovered} active={hovered === s.id} />
-              ))}
-            </div>
-          )}
+            ))}
+          </div>
         </div>
 
-        <div className={`overflow-hidden rounded-2xl ${view === "list" ? "hidden" : "block"}`}>
-          <Suspense fallback={<div className="h-full w-full animate-pulse rounded-2xl bg-white/60" />}>
-            <CoffeeMap shops={mapShops} center={center} activeId={hovered} />
-          </Suspense>
+        {/* Results — collapsible list + map */}
+        <div className="cofex-explore-panels min-h-0 flex-1">
+          {/* List panel */}
+          <div className={`cofex-explore-panel ${panelSizeClass(panelSizes.list)}`}>
+            {panelSizes.list === "peek" ? (
+              <PanelPeek
+                side="left"
+                label="List"
+                showLabel={false}
+                Icon={ListIcon}
+                badge={cards.length}
+                onClick={() => {
+                  if (view === "map") setView("list");
+                  else setPanelFocus("list");
+                }}
+              />
+            ) : (
+              <div className="cofex-app-card flex min-h-0 w-full flex-1 flex-col">
+                <PanelHeader
+                  title={`Cafés · ${cards.length}`}
+                  expanded={panelSizes.list === "expanded" && view === "split"}
+                  showSplitControl={view === "split"}
+                  onExpand={() => setPanelFocus("list")}
+                  onRestoreSplit={() => setPanelFocus("balanced")}
+                />
+                <div className="cofex-app-card-inner min-h-0 flex-1 overflow-y-auto p-3 sm:p-4">
+                  {loading ? (
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i} className="h-64 animate-pulse rounded-2xl bg-[color:var(--cofex-cream)]/60" />
+                      ))}
+                    </div>
+                  ) : cards.length === 0 ? (
+                    <div className="grid h-full min-h-[240px] place-items-center p-10 text-center">
+                      <div>
+                        <p className="text-lg font-extrabold text-[color:var(--cofex-coffee-deep)]">No cafés nearby</p>
+                        <p className="mt-2 text-sm text-[color:var(--cofex-black)]/60">
+                          Try widening your radius or clearing a few filters.
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      className={`grid gap-3 ${
+                        panelSizes.list === "expanded" && view === "list"
+                          ? "sm:grid-cols-2 lg:grid-cols-3"
+                          : "sm:grid-cols-2"
+                      }`}
+                    >
+                      {cards.map((s) => (
+                        <CoffeeShopCard key={s.id} shop={s} onHover={setHovered} active={hovered === s.id} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Map panel */}
+          <div className={`cofex-explore-panel ${panelSizeClass(panelSizes.map)}`}>
+            {panelSizes.map === "peek" ? (
+              <PanelPeek
+                side="right"
+                label="Map"
+                Icon={MapIcon}
+                onClick={() => {
+                  if (view === "list") setView("map");
+                  else setPanelFocus("map");
+                }}
+              />
+            ) : (
+              <div className="cofex-app-card flex min-h-0 w-full flex-1 flex-col">
+                <PanelHeader
+                  title="Map"
+                  expanded={panelSizes.map === "expanded" && view === "split"}
+                  showSplitControl={view === "split"}
+                  onExpand={() => setPanelFocus("map")}
+                  onRestoreSplit={() => setPanelFocus("balanced")}
+                />
+                <div className="cofex-explore-map-host cofex-app-card-inner min-h-0 flex-1">
+                  <Suspense fallback={<div className="h-full min-h-[16rem] w-full animate-pulse bg-[color:var(--cofex-cream)]/60" />}>
+                    <CoffeeMap
+                      shops={mapShops}
+                      center={center}
+                      activeId={hovered}
+                      layoutKey={layoutKey}
+                      onMarkerClick={(id) => {
+                        const shop = mapShops.find((s) => s.id === id) ?? null;
+                        setMapSelectedShop(shop);
+                        setHovered(id);
+                      }}
+                    />
+                  </Suspense>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+      <Suspense fallback={null}>
+        <MapShopSheet shop={mapSelectedShop} onClose={() => setMapSelectedShop(null)} />
+      </Suspense>
+    </AppPage>
   );
 }

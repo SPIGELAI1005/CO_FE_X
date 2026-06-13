@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { queryKeys } from "./keys";
 import { afterCampaignAction } from "./invalidation";
+import type { CampaignFulfillmentMode } from "@/lib/campaign-fulfillment";
+import { parseSocialRequirements, type CampaignSocialRequirements } from "@/lib/campaign-fulfillment";
 
 export interface CampaignListItem {
   id: string;
@@ -13,6 +15,7 @@ export interface CampaignListItem {
   points_reward: number;
   max_participants: number | null;
   campaign_type: string;
+  fulfillment_mode: CampaignFulfillmentMode;
   ends_at: string | null;
   cover_image_url: string | null;
   coffee_shops: {
@@ -35,6 +38,9 @@ export interface CampaignDetail {
   max_participants: number | null;
   required_check_ins: number;
   campaign_type: string;
+  fulfillment_mode: CampaignFulfillmentMode;
+  social_requirements: CampaignSocialRequirements;
+  participation_token: string | null;
   status: string;
   ends_at: string | null;
   coffee_shop_id: string;
@@ -48,6 +54,17 @@ export interface CampaignDetail {
   } | null;
 }
 
+export interface SocialSubmissionSummary {
+  id: string;
+  platform: string;
+  status: "pending" | "approved" | "rejected";
+  url: string | null;
+  review_notes: string | null;
+  redemption_code: string | null;
+  points_awarded: number | null;
+  created_at: string;
+}
+
 export interface CampaignUserState {
   participantCount: number;
   joined: boolean;
@@ -58,6 +75,8 @@ export interface CampaignUserState {
     used_at: string | null;
     points_awarded: number;
   } | null;
+  socialSubmissions: SocialSubmissionSummary[];
+  latestSocialStatus: "none" | "pending" | "approved" | "rejected";
 }
 
 export function useActiveCampaigns() {
@@ -67,7 +86,7 @@ export function useActiveCampaigns() {
       const { data, error } = await supabase
         .from("campaigns")
         .select(
-          "id, title, description, reward_description, requirements, hashtag, points_reward, max_participants, campaign_type, ends_at, cover_image_url, coffee_shops(name, slug, city, cover_image_url)",
+          "id, title, description, reward_description, requirements, hashtag, points_reward, max_participants, campaign_type, fulfillment_mode, ends_at, cover_image_url, coffee_shops(name, slug, city, cover_image_url)",
         )
         .eq("status", "active")
         .order("created_at", { ascending: false });
@@ -89,10 +108,17 @@ export function useActiveCampaigns() {
 
       return rows.map((r) => ({
         ...r,
+        fulfillment_mode: (r.fulfillment_mode ?? "check_in") as CampaignFulfillmentMode,
         participant_count: counts.get(r.id) ?? 0,
       })) as CampaignListItem[];
     },
   });
+}
+
+function latestSocialStatus(subs: SocialSubmissionSummary[]): CampaignUserState["latestSocialStatus"] {
+  if (!subs.length) return "none";
+  const latest = subs[0];
+  return latest.status;
 }
 
 export function useCampaignDetail(campaignId: string, userId: string | undefined) {
@@ -102,43 +128,75 @@ export function useCampaignDetail(campaignId: string, userId: string | undefined
       const { data, error } = await supabase
         .from("campaigns")
         .select(
-          "id, title, description, reward_description, requirements, hashtag, points_reward, max_participants, required_check_ins, campaign_type, status, ends_at, coffee_shop_id, cover_image_url, coffee_shops(id, name, slug, city, cover_image_url)",
+          "id, title, description, reward_description, requirements, hashtag, points_reward, max_participants, required_check_ins, campaign_type, fulfillment_mode, social_requirements, participation_token, status, ends_at, coffee_shop_id, cover_image_url, coffee_shops(id, name, slug, city, cover_image_url)",
         )
         .eq("id", campaignId)
         .maybeSingle();
       if (error) throw error;
       if (!data) return { campaign: null, user: emptyUserState() };
 
-      const campaign = data as unknown as CampaignDetail;
-      const [{ count: pcount }, { data: mine }, { count: ci }, { data: red }] = await Promise.all([
-        supabase
-          .from("campaign_participants")
-          .select("id", { count: "exact", head: true })
-          .eq("campaign_id", campaignId),
-        userId
-          ? supabase
-              .from("campaign_participants")
-              .select("id")
-              .eq("campaign_id", campaignId)
-              .eq("user_id", userId)
-              .maybeSingle()
-          : Promise.resolve({ data: null }),
-        userId
-          ? supabase
-              .from("check_ins")
-              .select("id", { count: "exact", head: true })
-              .eq("user_id", userId)
-              .eq("coffee_shop_id", campaign.coffee_shop_id)
-          : Promise.resolve({ count: 0 }),
-        userId
-          ? supabase
-              .from("campaign_redemptions")
-              .select("redemption_code, redeemed_at, used_at, points_awarded")
-              .eq("campaign_id", campaignId)
-              .eq("user_id", userId)
-              .maybeSingle()
-          : Promise.resolve({ data: null }),
-      ]);
+      const raw = data as Record<string, unknown>;
+      const campaign: CampaignDetail = {
+        ...(data as unknown as CampaignDetail),
+        fulfillment_mode: (raw.fulfillment_mode as CampaignFulfillmentMode) ?? "check_in",
+        social_requirements: parseSocialRequirements(raw.social_requirements),
+        participation_token: (raw.participation_token as string | null) ?? null,
+      };
+
+      const [{ count: pcount }, { data: mine }, { count: ci }, { data: red }, { data: subs }] =
+        await Promise.all([
+          supabase
+            .from("campaign_participants")
+            .select("id", { count: "exact", head: true })
+            .eq("campaign_id", campaignId),
+          userId
+            ? supabase
+                .from("campaign_participants")
+                .select("id")
+                .eq("campaign_id", campaignId)
+                .eq("user_id", userId)
+                .maybeSingle()
+            : Promise.resolve({ data: null }),
+          userId
+            ? supabase
+                .from("check_ins")
+                .select("id", { count: "exact", head: true })
+                .eq("user_id", userId)
+                .eq("coffee_shop_id", campaign.coffee_shop_id)
+            : Promise.resolve({ count: 0 }),
+          userId
+            ? supabase
+                .from("campaign_redemptions")
+                .select("redemption_code, redeemed_at, used_at, points_awarded")
+                .eq("campaign_id", campaignId)
+                .eq("user_id", userId)
+                .maybeSingle()
+            : Promise.resolve({ data: null }),
+          userId
+            ? supabase
+                .from("social_submissions")
+                .select(
+                  "id, platform, status, url, review_notes, redemption_code, points_awarded, created_at",
+                )
+                .eq("campaign_id", campaignId)
+                .eq("user_id", userId)
+                .order("created_at", { ascending: false })
+            : Promise.resolve({ data: [] }),
+        ]);
+
+      const socialSubmissions = (subs ?? []) as SocialSubmissionSummary[];
+      const approvedSub = socialSubmissions.find((s) => s.status === "approved" && s.redemption_code);
+
+      const redemption =
+        red ??
+        (approvedSub
+          ? {
+              redemption_code: approvedSub.redemption_code!,
+              redeemed_at: approvedSub.created_at,
+              used_at: null,
+              points_awarded: approvedSub.points_awarded ?? campaign.points_reward,
+            }
+          : null);
 
       return {
         campaign,
@@ -146,7 +204,9 @@ export function useCampaignDetail(campaignId: string, userId: string | undefined
           participantCount: pcount ?? 0,
           joined: !!mine,
           myCheckIns: ci ?? 0,
-          redemption: red,
+          redemption,
+          socialSubmissions,
+          latestSocialStatus: latestSocialStatus(socialSubmissions),
         },
       };
     },
@@ -154,17 +214,27 @@ export function useCampaignDetail(campaignId: string, userId: string | undefined
 }
 
 function emptyUserState(): CampaignUserState {
-  return { participantCount: 0, joined: false, myCheckIns: 0, redemption: null };
+  return {
+    participantCount: 0,
+    joined: false,
+    myCheckIns: 0,
+    redemption: null,
+    socialSubmissions: [],
+    latestSocialStatus: "none",
+  };
 }
 
 export function useJoinCampaign(userId: string | undefined) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (campaignId: string) => {
-      const { error } = await supabase.rpc("join_campaign", { _campaign_id: campaignId });
+    mutationFn: async ({ campaignId, source }: { campaignId: string; source?: string }) => {
+      const { error } = await supabase.rpc("join_campaign", {
+        _campaign_id: campaignId,
+        _join_source: source ?? null,
+      });
       if (error) throw error;
     },
-    onSuccess: (_data, campaignId) => {
+    onSuccess: (_data, { campaignId }) => {
       if (userId) afterCampaignAction(qc, userId, campaignId);
     },
   });
@@ -176,7 +246,7 @@ export function useRedeemCampaign(userId: string | undefined) {
     mutationFn: async (campaignId: string) => {
       const { data, error } = await supabase.rpc("redeem_campaign", { _campaign_id: campaignId });
       if (error) throw error;
-      return data as { points_awarded?: number };
+      return data as { points_awarded?: number; redemption_code?: string };
     },
     onSuccess: (_data, campaignId) => {
       if (userId) afterCampaignAction(qc, userId, campaignId);

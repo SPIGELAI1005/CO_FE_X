@@ -9,7 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as RewardsRouteImport } from './routes/rewards'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PartnersRouteImport } from './routes/partners'
+import { Route as ListRouteImport } from './routes/list'
+import { Route as ImpressumRouteImport } from './routes/impressum'
+import { Route as DataProcessingRouteImport } from './routes/data-processing'
+import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as CommunityRouteImport } from './routes/community'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AccessibilityRouteImport } from './routes/accessibility'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CoffeeSlugRouteImport } from './routes/coffee.$slug'
@@ -25,6 +35,7 @@ import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe/webhoo
 import { Route as AuthenticatedPartnerVerifyRouteImport } from './routes/_authenticated/partner.verify'
 import { Route as AuthenticatedPartnerSubmissionsRouteImport } from './routes/_authenticated/partner.submissions'
 import { Route as AuthenticatedPartnerShopRouteImport } from './routes/_authenticated/partner.shop'
+import { Route as AuthenticatedPartnerSettingsRouteImport } from './routes/_authenticated/partner.settings'
 import { Route as AuthenticatedPartnerRewardsRouteImport } from './routes/_authenticated/partner.rewards'
 import { Route as AuthenticatedPartnerCampaignsRouteImport } from './routes/_authenticated/partner.campaigns'
 import { Route as AuthenticatedPartnerBillingRouteImport } from './routes/_authenticated/partner.billing'
@@ -44,9 +55,59 @@ import { Route as AuthenticatedExplorerExploreRouteImport } from './routes/_auth
 import { Route as AuthenticatedExplorerCampaignsRouteImport } from './routes/_authenticated/_explorer/campaigns'
 import { Route as AuthenticatedExplorerCampaignIdRouteImport } from './routes/_authenticated/_explorer/campaign.$id'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RewardsRoute = RewardsRouteImport.update({
+  id: '/rewards',
+  path: '/rewards',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PartnersRoute = PartnersRouteImport.update({
+  id: '/partners',
+  path: '/partners',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ListRoute = ListRouteImport.update({
+  id: '/list',
+  path: '/list',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImpressumRoute = ImpressumRouteImport.update({
+  id: '/impressum',
+  path: '/impressum',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DataProcessingRoute = DataProcessingRouteImport.update({
+  id: '/data-processing',
+  path: '/data-processing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccessibilityRoute = AccessibilityRouteImport.update({
+  id: '/accessibility',
+  path: '/accessibility',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -125,6 +186,12 @@ const AuthenticatedPartnerShopRoute =
   AuthenticatedPartnerShopRouteImport.update({
     id: '/shop',
     path: '/shop',
+    getParentRoute: () => AuthenticatedPartnerRoute,
+  } as any)
+const AuthenticatedPartnerSettingsRoute =
+  AuthenticatedPartnerSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
     getParentRoute: () => AuthenticatedPartnerRoute,
   } as any)
 const AuthenticatedPartnerRewardsRoute =
@@ -237,7 +304,17 @@ const AuthenticatedExplorerCampaignIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/accessibility': typeof AccessibilityRoute
   '/auth': typeof AuthRouteWithChildren
+  '/community': typeof CommunityRoute
+  '/cookies': typeof CookiesRoute
+  '/data-processing': typeof DataProcessingRoute
+  '/impressum': typeof ImpressumRoute
+  '/list': typeof ListRoute
+  '/partners': typeof PartnersRoute
+  '/privacy': typeof PrivacyRoute
+  '/rewards': typeof RewardsRoute
+  '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/partner': typeof AuthenticatedPartnerRouteWithChildren
   '/auth/forgot': typeof AuthForgotRoute
@@ -261,6 +338,7 @@ export interface FileRoutesByFullPath {
   '/partner/billing': typeof AuthenticatedPartnerBillingRoute
   '/partner/campaigns': typeof AuthenticatedPartnerCampaignsRoute
   '/partner/rewards': typeof AuthenticatedPartnerRewardsRoute
+  '/partner/settings': typeof AuthenticatedPartnerSettingsRoute
   '/partner/shop': typeof AuthenticatedPartnerShopRoute
   '/partner/submissions': typeof AuthenticatedPartnerSubmissionsRoute
   '/partner/verify': typeof AuthenticatedPartnerVerifyRoute
@@ -271,7 +349,17 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/accessibility': typeof AccessibilityRoute
   '/auth': typeof AuthRouteWithChildren
+  '/community': typeof CommunityRoute
+  '/cookies': typeof CookiesRoute
+  '/data-processing': typeof DataProcessingRoute
+  '/impressum': typeof ImpressumRoute
+  '/list': typeof ListRoute
+  '/partners': typeof PartnersRoute
+  '/privacy': typeof PrivacyRoute
+  '/rewards': typeof RewardsRoute
+  '/terms': typeof TermsRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/reset': typeof AuthResetRoute
   '/city/$city': typeof CityCityRoute
@@ -293,6 +381,7 @@ export interface FileRoutesByTo {
   '/partner/billing': typeof AuthenticatedPartnerBillingRoute
   '/partner/campaigns': typeof AuthenticatedPartnerCampaignsRoute
   '/partner/rewards': typeof AuthenticatedPartnerRewardsRoute
+  '/partner/settings': typeof AuthenticatedPartnerSettingsRoute
   '/partner/shop': typeof AuthenticatedPartnerShopRoute
   '/partner/submissions': typeof AuthenticatedPartnerSubmissionsRoute
   '/partner/verify': typeof AuthenticatedPartnerVerifyRoute
@@ -305,7 +394,17 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/accessibility': typeof AccessibilityRoute
   '/auth': typeof AuthRouteWithChildren
+  '/community': typeof CommunityRoute
+  '/cookies': typeof CookiesRoute
+  '/data-processing': typeof DataProcessingRoute
+  '/impressum': typeof ImpressumRoute
+  '/list': typeof ListRoute
+  '/partners': typeof PartnersRoute
+  '/privacy': typeof PrivacyRoute
+  '/rewards': typeof RewardsRoute
+  '/terms': typeof TermsRoute
   '/_authenticated/_explorer': typeof AuthenticatedExplorerRouteRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/partner': typeof AuthenticatedPartnerRouteWithChildren
@@ -330,6 +429,7 @@ export interface FileRoutesById {
   '/_authenticated/partner/billing': typeof AuthenticatedPartnerBillingRoute
   '/_authenticated/partner/campaigns': typeof AuthenticatedPartnerCampaignsRoute
   '/_authenticated/partner/rewards': typeof AuthenticatedPartnerRewardsRoute
+  '/_authenticated/partner/settings': typeof AuthenticatedPartnerSettingsRoute
   '/_authenticated/partner/shop': typeof AuthenticatedPartnerShopRoute
   '/_authenticated/partner/submissions': typeof AuthenticatedPartnerSubmissionsRoute
   '/_authenticated/partner/verify': typeof AuthenticatedPartnerVerifyRoute
@@ -342,7 +442,17 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/accessibility'
     | '/auth'
+    | '/community'
+    | '/cookies'
+    | '/data-processing'
+    | '/impressum'
+    | '/list'
+    | '/partners'
+    | '/privacy'
+    | '/rewards'
+    | '/terms'
     | '/admin'
     | '/partner'
     | '/auth/forgot'
@@ -366,6 +476,7 @@ export interface FileRouteTypes {
     | '/partner/billing'
     | '/partner/campaigns'
     | '/partner/rewards'
+    | '/partner/settings'
     | '/partner/shop'
     | '/partner/submissions'
     | '/partner/verify'
@@ -376,7 +487,17 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/accessibility'
     | '/auth'
+    | '/community'
+    | '/cookies'
+    | '/data-processing'
+    | '/impressum'
+    | '/list'
+    | '/partners'
+    | '/privacy'
+    | '/rewards'
+    | '/terms'
     | '/auth/forgot'
     | '/auth/reset'
     | '/city/$city'
@@ -398,6 +519,7 @@ export interface FileRouteTypes {
     | '/partner/billing'
     | '/partner/campaigns'
     | '/partner/rewards'
+    | '/partner/settings'
     | '/partner/shop'
     | '/partner/submissions'
     | '/partner/verify'
@@ -409,7 +531,17 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/accessibility'
     | '/auth'
+    | '/community'
+    | '/cookies'
+    | '/data-processing'
+    | '/impressum'
+    | '/list'
+    | '/partners'
+    | '/privacy'
+    | '/rewards'
+    | '/terms'
     | '/_authenticated/_explorer'
     | '/_authenticated/admin'
     | '/_authenticated/partner'
@@ -434,6 +566,7 @@ export interface FileRouteTypes {
     | '/_authenticated/partner/billing'
     | '/_authenticated/partner/campaigns'
     | '/_authenticated/partner/rewards'
+    | '/_authenticated/partner/settings'
     | '/_authenticated/partner/shop'
     | '/_authenticated/partner/submissions'
     | '/_authenticated/partner/verify'
@@ -446,7 +579,17 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AccessibilityRoute: typeof AccessibilityRoute
   AuthRoute: typeof AuthRouteWithChildren
+  CommunityRoute: typeof CommunityRoute
+  CookiesRoute: typeof CookiesRoute
+  DataProcessingRoute: typeof DataProcessingRoute
+  ImpressumRoute: typeof ImpressumRoute
+  ListRoute: typeof ListRoute
+  PartnersRoute: typeof PartnersRoute
+  PrivacyRoute: typeof PrivacyRoute
+  RewardsRoute: typeof RewardsRoute
+  TermsRoute: typeof TermsRoute
   CityCityRoute: typeof CityCityRoute
   CoffeeSlugRoute: typeof CoffeeSlugRoute
   ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
@@ -454,11 +597,81 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rewards': {
+      id: '/rewards'
+      path: '/rewards'
+      fullPath: '/rewards'
+      preLoaderRoute: typeof RewardsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/partners': {
+      id: '/partners'
+      path: '/partners'
+      fullPath: '/partners'
+      preLoaderRoute: typeof PartnersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/list': {
+      id: '/list'
+      path: '/list'
+      fullPath: '/list'
+      preLoaderRoute: typeof ListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/impressum': {
+      id: '/impressum'
+      path: '/impressum'
+      fullPath: '/impressum'
+      preLoaderRoute: typeof ImpressumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/data-processing': {
+      id: '/data-processing'
+      path: '/data-processing'
+      fullPath: '/data-processing'
+      preLoaderRoute: typeof DataProcessingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accessibility': {
+      id: '/accessibility'
+      path: '/accessibility'
+      fullPath: '/accessibility'
+      preLoaderRoute: typeof AccessibilityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -564,6 +777,13 @@ declare module '@tanstack/react-router' {
       path: '/shop'
       fullPath: '/partner/shop'
       preLoaderRoute: typeof AuthenticatedPartnerShopRouteImport
+      parentRoute: typeof AuthenticatedPartnerRoute
+    }
+    '/_authenticated/partner/settings': {
+      id: '/_authenticated/partner/settings'
+      path: '/settings'
+      fullPath: '/partner/settings'
+      preLoaderRoute: typeof AuthenticatedPartnerSettingsRouteImport
       parentRoute: typeof AuthenticatedPartnerRoute
     }
     '/_authenticated/partner/rewards': {
@@ -752,6 +972,7 @@ interface AuthenticatedPartnerRouteChildren {
   AuthenticatedPartnerBillingRoute: typeof AuthenticatedPartnerBillingRoute
   AuthenticatedPartnerCampaignsRoute: typeof AuthenticatedPartnerCampaignsRoute
   AuthenticatedPartnerRewardsRoute: typeof AuthenticatedPartnerRewardsRoute
+  AuthenticatedPartnerSettingsRoute: typeof AuthenticatedPartnerSettingsRoute
   AuthenticatedPartnerShopRoute: typeof AuthenticatedPartnerShopRoute
   AuthenticatedPartnerSubmissionsRoute: typeof AuthenticatedPartnerSubmissionsRoute
   AuthenticatedPartnerVerifyRoute: typeof AuthenticatedPartnerVerifyRoute
@@ -763,6 +984,7 @@ const AuthenticatedPartnerRouteChildren: AuthenticatedPartnerRouteChildren = {
   AuthenticatedPartnerBillingRoute: AuthenticatedPartnerBillingRoute,
   AuthenticatedPartnerCampaignsRoute: AuthenticatedPartnerCampaignsRoute,
   AuthenticatedPartnerRewardsRoute: AuthenticatedPartnerRewardsRoute,
+  AuthenticatedPartnerSettingsRoute: AuthenticatedPartnerSettingsRoute,
   AuthenticatedPartnerShopRoute: AuthenticatedPartnerShopRoute,
   AuthenticatedPartnerSubmissionsRoute: AuthenticatedPartnerSubmissionsRoute,
   AuthenticatedPartnerVerifyRoute: AuthenticatedPartnerVerifyRoute,
@@ -802,7 +1024,17 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AccessibilityRoute: AccessibilityRoute,
   AuthRoute: AuthRouteWithChildren,
+  CommunityRoute: CommunityRoute,
+  CookiesRoute: CookiesRoute,
+  DataProcessingRoute: DataProcessingRoute,
+  ImpressumRoute: ImpressumRoute,
+  ListRoute: ListRoute,
+  PartnersRoute: PartnersRoute,
+  PrivacyRoute: PrivacyRoute,
+  RewardsRoute: RewardsRoute,
+  TermsRoute: TermsRoute,
   CityCityRoute: CityCityRoute,
   CoffeeSlugRoute: CoffeeSlugRoute,
   ApiStripeWebhookRoute: ApiStripeWebhookRoute,

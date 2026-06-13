@@ -32,13 +32,12 @@ export function CoffeeShopCard({
       params={{ slug: shop.slug }}
       onMouseEnter={() => onHover?.(shop.id)}
       onMouseLeave={() => onHover?.(null)}
-      className="group block overflow-hidden rounded-2xl border bg-white transition-all hover:-translate-y-0.5 hover:shadow-lg"
-      style={{
-        borderColor: active ? "var(--cofex-coffee-deep)" : "var(--border)",
-        boxShadow: active ? "0 10px 30px -12px rgba(0,0,0,.25)" : undefined,
-      }}
+      className={`cofex-app-card group block transition-all duration-300 hover:-translate-y-1 ${
+        active ? "ring-2 ring-[color:var(--cofex-cyan)]" : ""
+      }`}
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+      <div className="cofex-app-card-inner">
+      <div className="relative aspect-[4/3] overflow-hidden bg-[color:var(--cofex-pastel-blue)]">
         {shop.cover_image_url ? (
           <OptimizedImage
             src={shop.cover_image_url}
@@ -48,29 +47,34 @@ export function CoffeeShopCard({
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="h-full w-full" style={{ background: "var(--cofex-pastel-blue)" }} />
+          <div className="h-full w-full bg-gradient-to-br from-[color:var(--cofex-pastel-blue)] to-[color:var(--cofex-cream)]" />
         )}
         {shop.free_coffee_available && (
           <span
-            className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white shadow"
-            style={{ background: "var(--cofex-accent-gold, #c8a063)" }}
+            className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-md"
+            style={{ background: "var(--gradient-coffee)" }}
           >
             <Gift className="h-3 w-3" /> Free coffee
           </span>
         )}
-        <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-semibold shadow">
-          <Star className="h-3 w-3 fill-current" style={{ color: "var(--cofex-accent-gold, #c8a063)" }} />
+        <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full border border-white/60 bg-white/95 px-2.5 py-1 text-[11px] font-semibold shadow-sm backdrop-blur">
+          <Star className="h-3 w-3 fill-[color:var(--cofex-accent-gold)] text-[color:var(--cofex-accent-gold)]" />
           {shop.rating.toFixed(1)}
-          <span className="text-muted-foreground font-normal">({shop.rating_count})</span>
+          <span className="font-normal text-[color:var(--cofex-black)]/50">({shop.rating_count})</span>
         </span>
       </div>
-      <div className="space-y-2 p-4">
+      <div className="space-y-2.5 p-4">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="text-base font-semibold leading-tight" style={{ color: "var(--cofex-coffee-deep)" }}>
-            {shop.name}
-          </h3>
-          <span className="text-xs text-muted-foreground inline-flex items-center gap-1 shrink-0">
-            <MapPin className="h-3 w-3" /> {shop.distance_km.toFixed(1)} km
+          <div className="min-w-0">
+            <h3 className="truncate text-base font-extrabold leading-tight text-[color:var(--cofex-coffee-deep)]">
+              {shop.name}
+            </h3>
+            {shop.city && (
+              <p className="mt-0.5 truncate text-xs text-[color:var(--cofex-black)]/55">{shop.city}</p>
+            )}
+          </div>
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[color:var(--cofex-pastel-blue)] px-2 py-1 text-[11px] font-semibold text-[color:var(--cofex-coffee-deep)]">
+            <MapPin className="h-3 w-3 text-[color:var(--cofex-cyan)]" /> {shop.distance_km.toFixed(1)} km
           </span>
         </div>
         {shop.tags.length > 0 && (
@@ -78,22 +82,22 @@ export function CoffeeShopCard({
             {shop.tags.slice(0, 3).map((t) => (
               <span
                 key={t}
-                className="rounded-full px-2 py-0.5 text-[10px] font-medium"
-                style={{ background: "var(--cofex-cream, #f5efe6)", color: "var(--cofex-coffee-deep)" }}
+                className="rounded-full border border-[color:var(--border)] bg-[color:var(--cofex-cream)] px-2 py-0.5 text-[10px] font-medium text-[color:var(--cofex-coffee-deep)]"
               >
                 {t}
               </span>
             ))}
           </div>
         )}
-        <div className="flex items-center gap-4 pt-1 text-xs text-muted-foreground">
+        <div className="flex items-center gap-4 border-t border-[color:var(--border)] pt-2.5 text-xs text-[color:var(--cofex-black)]/55">
           <span className="inline-flex items-center gap-1">
-            <Megaphone className="h-3.5 w-3.5" /> {shop.active_campaigns} active
+            <Megaphone className="h-3.5 w-3.5 text-[color:var(--cofex-cyan)]" /> {shop.active_campaigns} active
           </span>
           <span className="inline-flex items-center gap-1">
-            <Users className="h-3.5 w-3.5" /> {shop.popularity} explorers
+            <Users className="h-3.5 w-3.5 text-[color:var(--cofex-cyan)]" /> {shop.popularity} explorers
           </span>
         </div>
+      </div>
       </div>
     </Link>
   );

@@ -34,6 +34,32 @@ export async function rpcRedeemCampaign(client: SupabaseClient<Database>, campai
   return client.rpc("redeem_campaign", { _campaign_id: campaignId });
 }
 
+export interface ClaimChallengeRpcResult {
+  challenge_id: string;
+  period_key: string;
+  points_awarded: number;
+  total_points: number;
+}
+
+export async function rpcClaimExplorerChallenge(
+  client: SupabaseClient<Database>,
+  challengeId: string,
+) {
+  return client.rpc("claim_explorer_challenge", { _challenge_id: challengeId });
+}
+
+export function parseClaimChallengeResult(data: unknown): ClaimChallengeRpcResult | null {
+  if (!data || typeof data !== "object") return null;
+  const row = data as Record<string, unknown>;
+  if (typeof row.points_awarded !== "number") return null;
+  return {
+    challenge_id: String(row.challenge_id ?? ""),
+    period_key: String(row.period_key ?? ""),
+    points_awarded: row.points_awarded,
+    total_points: Number(row.total_points ?? 0),
+  };
+}
+
 export function parseCheckInResult(data: unknown): CheckInRpcResult | null {
   if (!data || typeof data !== "object") return null;
   const row = data as Record<string, unknown>;

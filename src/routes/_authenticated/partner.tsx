@@ -1,7 +1,20 @@
-import { createFileRoute, Outlet, redirect, useNavigate, Link } from "@tanstack/react-router";
-import { LogOut, LayoutDashboard, Store, Megaphone, Gift, BarChart3, Shield, Share2, CreditCard } from "lucide-react";
+import { createFileRoute, Outlet, redirect, useNavigate } from "@tanstack/react-router";
+import {
+  LogOut,
+  LayoutDashboard,
+  Store,
+  Megaphone,
+  Gift,
+  BarChart3,
+  Shield,
+  Share2,
+  CreditCard,
+  ArrowLeft,
+  Settings,
+} from "lucide-react";
 import { SideNav } from "@/components/app/SideNav";
-import { NotificationsBell } from "@/components/app/NotificationsBell";
+import { PartnerHeader } from "@/components/app/PartnerHeader";
+import { PartnerBottomNav } from "@/components/app/PartnerBottomNav";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/partner")({
@@ -22,12 +35,15 @@ const items = [
   { to: "/partner", label: "Dashboard", Icon: LayoutDashboard },
   { to: "/partner/shop", label: "Shop profile", Icon: Store },
   { to: "/partner/campaigns", label: "Campaigns", Icon: Megaphone },
-  { to: "/partner/verify", label: "Verify code", Icon: Shield },
   { to: "/partner/submissions", label: "Submissions", Icon: Share2 },
+  { to: "/partner/verify", label: "Verify code", Icon: Shield },
   { to: "/partner/rewards", label: "Rewards", Icon: Gift },
   { to: "/partner/analytics", label: "Analytics", Icon: BarChart3 },
   { to: "/partner/billing", label: "Billing", Icon: CreditCard },
+  { to: "/partner/settings", label: "Settings", Icon: Settings },
 ];
+
+const footerItems = [{ to: "/explore", label: "Back to Explorer", Icon: ArrowLeft }];
 
 function PartnerLayout() {
   const navigate = useNavigate();
@@ -35,28 +51,22 @@ function PartnerLayout() {
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   };
+
   return (
-    <div className="min-h-screen flex bg-white" style={{ fontFamily: "'Nunito Sans', system-ui, sans-serif" }}>
-      <SideNav title="Partner" items={items} />
-      <div className="flex-1 flex flex-col">
-        <header
-          className="flex items-center justify-between border-b px-5 py-3"
-          style={{ borderColor: "var(--border)" }}
-        >
-          <Link to="/partner" className="text-xs font-bold tracking-[0.3em]" style={{ color: "var(--cofex-coffee-deep)" }}>
-            CO:FE(X) · Partner
-          </Link>
-          <div className="flex items-center gap-1">
-            <NotificationsBell />
-            <button onClick={signOut} className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 px-2">
-              <LogOut className="h-4 w-4" /> Sign out
-            </button>
-          </div>
-        </header>
-        <main className="flex-1">
-          <Outlet />
-        </main>
+    <div
+      className="flex min-h-screen flex-col pb-20 md:pb-0"
+      style={{ fontFamily: "'Nunito Sans', system-ui, sans-serif" }}
+    >
+      <div className="flex min-h-0 flex-1">
+        <SideNav title="Partner" items={items} footerItems={footerItems} />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <PartnerHeader onSignOut={signOut} />
+          <main className="flex min-h-0 flex-1 flex-col">
+            <Outlet />
+          </main>
+        </div>
       </div>
+      <PartnerBottomNav />
     </div>
   );
 }

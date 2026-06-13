@@ -1,24 +1,57 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
-/** Adds `.is-visible` to all `.cofex-reveal` elements as they enter the viewport. */
+const REVEAL_SELECTOR = ".cofex-reveal:not(.is-visible)";
+
+function revealInView() {
+  const vh = window.innerHeight;
+  const bottomMargin = vh * 0.08;
+
+  document.querySelectorAll<HTMLElement>(REVEAL_SELECTOR).forEach((el) => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < vh - bottomMargin && rect.bottom > 0) {
+      el.classList.add("is-visible");
+    }
+  });
+}
+
+/** Adds `.is-visible` to `.cofex-reveal` elements as they enter the viewport. */
 export function useScrollReveal() {
-  const seen = useRef(false);
   useEffect(() => {
-    if (seen.current) return;
-    seen.current = true;
-    const els = document.querySelectorAll<HTMLElement>(".cofex-reveal");
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) {
-            e.target.classList.add("is-visible");
-            io.unobserve(e.target);
-          }
-        }
-      },
-      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
-    );
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+    if (typeof window === "undefined") return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      document.querySelectorAll<HTMLElement>(".cofex-reveal").forEach((el) => {
+        el.classList.add("is-visible");
+      });
+      return;
+    }
+
+    let raf = 0;
+    const schedule = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        revealInView();
+      });
+    };
+
+    // Run after hydration paint (SSR replaces initial DOM nodes).
+    const boot = requestAnimationFrame(() => {
+      requestAnimationFrame(schedule);
+    });
+
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
+
+    const mo = new MutationObserver(schedule);
+    mo.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      cancelAnimationFrame(boot);
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      mo.disconnect();
+    };
   }, []);
 }

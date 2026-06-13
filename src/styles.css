@@ -118,7 +118,10 @@
   /* Premium gradients & shadows */
   --gradient-gold: linear-gradient(135deg, var(--cofex-gold), var(--cofex-gold-soft));
   --gradient-coffee: linear-gradient(135deg, var(--cofex-coffee-deep), var(--cofex-coffee));
-  --shadow-premium: 0 18px 40px -18px color-mix(in oklab, var(--cofex-coffee) 55%, transparent);
+  --shadow-premium:
+    0 1px 2px color-mix(in oklab, var(--cofex-coffee) 5%, transparent),
+    0 4px 12px -2px color-mix(in oklab, var(--cofex-coffee) 9%, transparent),
+    0 12px 28px -8px color-mix(in oklab, var(--cofex-coffee) 7%, transparent);
   --shadow-gold: 0 18px 40px -18px color-mix(in oklab, var(--cofex-gold) 60%, transparent);
 }
 
@@ -254,4 +257,355 @@
   .cofex-glow--a, .cofex-glow--b, .cofex-glow--c { animation: none !important; }
   .cofex-reveal { opacity: 1; transform: none; transition: none; }
   .cofex-px { transform: none !important; }
+}
+
+html[data-cofex-auth-busy] body {
+  cursor: wait;
+}
+
+html[data-cofex-auth-busy] body::before {
+  content: "Signing you in…";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cofex-cream, #f5efe6);
+  font-family: "Nunito Sans", system-ui, sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--cofex-coffee-deep, #3d2417);
+}
+
+.cofex-onboarding-card {
+  border-color: var(--border);
+  box-shadow: var(--shadow-premium);
+}
+
+.cofex-onboarding-back {
+  transition:
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.cofex-onboarding-back:hover {
+  transform: translateY(-1px);
+  background-color: var(--cofex-cream);
+  border-color: var(--cofex-coffee-deep);
+  box-shadow: 0 6px 18px -10px color-mix(in oklab, var(--cofex-coffee-deep) 45%, transparent);
+}
+
+.cofex-onboarding-back:active {
+  transform: translateY(0);
+  background-color: white;
+}
+
+.cofex-onboarding-cta {
+  background: var(--gradient-coffee);
+  transition:
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.22s ease;
+}
+
+.cofex-onboarding-cta:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow:
+    var(--shadow-premium),
+    0 10px 28px -8px color-mix(in oklab, var(--cofex-coffee-deep) 55%, transparent);
+  filter: brightness(1.06);
+}
+
+.cofex-onboarding-cta:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
+  filter: brightness(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cofex-onboarding-back {
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+  .cofex-onboarding-back:hover,
+  .cofex-onboarding-back:active {
+    transform: none;
+  }
+  .cofex-onboarding-cta {
+    transition: filter 0.15s ease;
+  }
+  .cofex-onboarding-cta:hover:not(:disabled),
+  .cofex-onboarding-cta:active:not(:disabled) {
+    transform: none;
+  }
+  .cofex-app-chip:hover,
+  .cofex-app-header-signout:hover {
+    transform: none;
+  }
+}
+
+/* ── App shell (explorer) ── */
+.cofex-app-page {
+  background: linear-gradient(180deg, var(--cofex-pastel-blue) 0%, var(--cofex-cream) 38%, #fff 100%);
+}
+
+.cofex-app-card {
+  border: 1px solid color-mix(in oklab, var(--border) 85%, var(--cofex-coffee) 15%);
+  border-radius: 1.5rem;
+  background: #fff;
+  box-shadow: var(--shadow-premium);
+  overflow: visible;
+}
+
+.cofex-app-card-inner {
+  overflow: hidden;
+  border-radius: calc(1.5rem - 1px);
+}
+
+.cofex-app-card-dashed {
+  border-style: dashed;
+  background: color-mix(in oklab, #fff 88%, var(--cofex-pastel-blue));
+}
+
+.cofex-explore-panels {
+  display: flex;
+  min-height: 0;
+  width: 100%;
+  flex: 1;
+  gap: 0.75rem;
+}
+
+.cofex-explore-panel {
+  display: flex;
+  min-height: 0;
+  min-width: 0;
+  transition:
+    flex 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.2s ease;
+}
+
+.cofex-explore-panel-expanded {
+  flex: 1 1 0%;
+}
+
+.cofex-explore-panel-balanced {
+  flex: 1 1 0%;
+}
+
+.cofex-explore-panel-peek {
+  flex: 0 0 3.25rem;
+  width: 3.25rem;
+}
+
+.cofex-explore-peek {
+  display: flex;
+  height: 100%;
+  min-height: 12rem;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid color-mix(in oklab, var(--border) 85%, var(--cofex-cyan) 15%);
+  border-radius: 1.25rem;
+  background: linear-gradient(180deg, var(--cofex-pastel-blue) 0%, #fff 100%);
+  color: var(--cofex-coffee-deep);
+  box-shadow: var(--shadow-premium);
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cofex-explore-peek:hover,
+.cofex-explore-peek:active {
+  background: var(--cofex-pastel-blue);
+  border-color: var(--cofex-cyan);
+}
+
+.cofex-explore-peek-label {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.cofex-explore-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 80%, transparent);
+  padding: 0.625rem 0.875rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cofex-filters-option:hover {
+    transform: none;
+  }
+}
+
+/* ── Explore filters panel (onboarding style) ── */
+.cofex-filters-panel {
+  overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--border) 85%, var(--cofex-coffee) 15%);
+  border-radius: 1.5rem;
+  background: #fff;
+  box-shadow: var(--shadow-premium);
+  padding: 0;
+}
+
+.cofex-filters-panel-header {
+  background: linear-gradient(180deg, var(--cofex-pastel-blue) 0%, var(--cofex-cream) 100%);
+}
+
+.cofex-filters-panel-body {
+  background: linear-gradient(180deg, color-mix(in oklab, var(--cofex-cream) 55%, #fff) 0%, #fff 100%);
+}
+
+.cofex-filters-option {
+  transition:
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.cofex-filters-option:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -14px color-mix(in oklab, var(--cofex-cyan) 40%, transparent);
+}
+
+.cofex-filters-tag {
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.cofex-filters-tag:hover {
+  transform: translateY(-1px);
+}
+
+.cofex-filters-result-pill {
+  background: var(--gradient-coffee);
+  color: #fff;
+  border-radius: 9999px;
+  padding: 0.375rem 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Branded popover host — strip default shadcn chrome */
+.cofex-popover-panel-host {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  outline: none;
+}
+
+.cofex-app-chip {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--cofex-coffee-deep);
+  transition:
+    transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease;
+}
+
+.cofex-app-chip:hover {
+  transform: translateY(-1px);
+  border-color: var(--cofex-cyan);
+  box-shadow: 0 8px 20px -14px color-mix(in oklab, var(--cofex-cyan) 55%, transparent);
+}
+
+.cofex-app-chip-active {
+  border-color: var(--cofex-coffee-deep);
+  background: var(--cofex-pastel-blue);
+  color: var(--cofex-coffee-deep);
+  font-weight: 600;
+}
+
+.cofex-app-chip-active:hover {
+  border-color: var(--cofex-coffee-deep);
+  background: var(--cofex-pastel-blue);
+}
+
+.cofex-chip-scroll-row {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  margin-inline: -0.25rem;
+  padding: 0.375rem 0.25rem 0.5rem;
+  scrollbar-width: none;
+}
+
+.cofex-chip-scroll-row::-webkit-scrollbar {
+  display: none;
+}
+
+.cofex-app-header-signout {
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.cofex-app-header-signout:hover {
+  transform: translateY(-1px);
+  background: var(--cofex-black);
+  color: #fff;
+}
+
+.cofex-bottom-nav {
+  border-color: color-mix(in oklab, var(--border) 70%, transparent);
+  background: color-mix(in oklab, #fff 92%, var(--cofex-pastel-blue));
+  box-shadow: 0 -12px 32px -24px color-mix(in oklab, var(--cofex-coffee-deep) 35%, transparent);
+}
+
+/* Keep Leaflet map layers below app overlays (nav menus, popovers) */
+.cofex-explore-map-host {
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+}
+
+.cofex-explore-map-host .leaflet-pane,
+.cofex-explore-map-host .leaflet-top,
+.cofex-explore-map-host .leaflet-bottom,
+.cofex-explore-map-host .leaflet-control-container {
+  z-index: 1 !important;
+}
+
+.cofex-rewards-menu [role="menuitem"] {
+  border-radius: 0.75rem;
+}
+
+.cofex-nav-link-active {
+  color: var(--cofex-coffee-deep) !important;
+}
+
+.cofex-nav-link-active svg {
+  color: var(--cofex-cyan);
+}
+
+.cofex-partner-nav-link-active {
+  background: color-mix(in oklab, var(--cofex-pastel-blue) 55%, #fff);
+  color: var(--cofex-coffee-deep) !important;
+  font-weight: 700;
+}
+
+.cofex-partner-nav-link-active svg {
+  color: var(--cofex-cyan);
 }

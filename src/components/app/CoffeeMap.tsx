@@ -39,16 +39,31 @@ function FlyTo({ center, zoom }: { center: [number, number]; zoom: number }) {
   return null;
 }
 
+function MapInvalidateSize({ layoutKey }: { layoutKey: string }) {
+  const map = useMap();
+  useEffect(() => {
+    const t1 = window.setTimeout(() => map.invalidateSize(), 50);
+    const t2 = window.setTimeout(() => map.invalidateSize(), 320);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+  }, [layoutKey, map]);
+  return null;
+}
+
 export function CoffeeMap({
   shops,
   center,
   activeId,
   onMarkerClick,
+  layoutKey = "default",
 }: {
   shops: MapShop[];
   center: [number, number];
   activeId?: string | null;
   onMarkerClick?: (id: string) => void;
+  layoutKey?: string;
 }) {
   const ref = useRef<L.Map | null>(null);
   const activeShop = useMemo(() => shops.find((s) => s.id === activeId), [shops, activeId]);
@@ -62,7 +77,7 @@ export function CoffeeMap({
       center={center}
       zoom={14}
       scrollWheelZoom
-      style={{ height: "100%", width: "100%", borderRadius: "1rem" }}
+      style={{ height: "100%", width: "100%" }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -77,6 +92,7 @@ export function CoffeeMap({
         />
       ))}
       {activeShop && <FlyTo center={focus} zoom={16} />}
+      <MapInvalidateSize layoutKey={layoutKey} />
     </MapContainer>
   );
 }

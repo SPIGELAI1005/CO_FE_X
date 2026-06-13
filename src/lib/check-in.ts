@@ -74,7 +74,7 @@ export function validateCheckIn(input: CheckInValidationInput): CheckInValidatio
 export function checkInErrorMessage(result: CheckInValidationResult): string {
   switch (result.code) {
     case "missing_location":
-      return "Location required — enable GPS to check in at the café";
+      return "Location required. Enable GPS to check in at the café";
     case "shop_unavailable":
       return "Coffee shop not available";
     case "shop_missing_coords":
