@@ -31,6 +31,7 @@ import {
   Plus,
 } from "lucide-react";
 import { PARTNER_BTN, PartnerEmptyState, PartnerStatusPill } from "@/components/app/partner/PartnerShell";
+import { ShopDoorQr } from "@/components/app/ShopDoorQr";
 
 export const Route = createFileRoute("/_authenticated/partner/shop")({
   head: () => ({ meta: [{ title: "Shop profile · Partner" }] }),
@@ -55,6 +56,11 @@ type Shop = {
   free_coffee_available: boolean;
   price_level: number;
   status: string;
+  origin_region: string | null;
+  roaster_name: string | null;
+  fair_trade: boolean;
+  co2_note: string | null;
+  soundscape_url: string | null;
 };
 
 const SIGNED_TTL = 60 * 60 * 24 * 365;
@@ -77,6 +83,11 @@ const EMPTY_SHOP = (): Shop => ({
   free_coffee_available: false,
   price_level: 2,
   status: "pending",
+  origin_region: "",
+  roaster_name: "",
+  fair_trade: false,
+  co2_note: "",
+  soundscape_url: "",
 });
 
 function ShopProfilePage() {
@@ -146,6 +157,11 @@ function ShopProfilePage() {
       amenities: shop.amenities,
       free_coffee_available: shop.free_coffee_available,
       price_level: shop.price_level,
+      origin_region: shop.origin_region || null,
+      roaster_name: shop.roaster_name || null,
+      fair_trade: shop.fair_trade,
+      co2_note: shop.co2_note || null,
+      soundscape_url: shop.soundscape_url || null,
     };
     if (shop.id) {
       const { error } = await supabase.from("coffee_shops").update(patch).eq("id", shop.id);
@@ -402,6 +418,42 @@ function ShopProfilePage() {
           </div>
         </Section>
 
+        <Section title="Origin story">
+          <Field label="Origin region / farm">
+            <Input
+              value={shop.origin_region ?? ""}
+              onChange={(e) => setShop({ ...shop, origin_region: e.target.value })}
+              placeholder="Ethiopia Yirgacheffe, Colombia Huila…"
+            />
+          </Field>
+          <Field label="Roaster name">
+            <Input
+              value={shop.roaster_name ?? ""}
+              onChange={(e) => setShop({ ...shop, roaster_name: e.target.value })}
+            />
+          </Field>
+          <Field label="CO₂ / sustainability note">
+            <Textarea
+              rows={2}
+              value={shop.co2_note ?? ""}
+              onChange={(e) => setShop({ ...shop, co2_note: e.target.value })}
+            />
+          </Field>
+          <div className="cofex-app-card flex items-center justify-between rounded-xl p-3 shadow-none">
+            <div>
+              <div className="text-sm font-semibold text-[color:var(--cofex-coffee-deep)]">Fair trade certified</div>
+            </div>
+            <Switch checked={shop.fair_trade} onCheckedChange={(v) => setShop({ ...shop, fair_trade: v })} />
+          </div>
+          <Field label="Soundscape URL (optional 30s audio)">
+            <Input
+              value={shop.soundscape_url ?? ""}
+              onChange={(e) => setShop({ ...shop, soundscape_url: e.target.value })}
+              placeholder="https://…"
+            />
+          </Field>
+        </Section>
+
         <Section
           title="Map location"
           right={
@@ -481,6 +533,8 @@ function ShopProfilePage() {
             placeholder="wifi, outdoor seating, pet friendly"
           />
         </Section>
+
+        {shop.id && shop.slug ? <ShopDoorQr shopSlug={shop.slug} shopName={shop.name} /> : null}
 
         {shop.id && shopList.length > 0 && (
           <div className="cofex-app-card border-rose-200 bg-rose-50/50 p-5">

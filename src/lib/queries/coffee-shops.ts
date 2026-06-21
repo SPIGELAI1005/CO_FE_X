@@ -27,6 +27,11 @@ export interface CoffeeShopDetail extends CoffeeShopRow {
   logo_url: string | null;
   gallery_urls: string[];
   price_level: number;
+  origin_region?: string | null;
+  roaster_name?: string | null;
+  fair_trade?: boolean | null;
+  co2_note?: string | null;
+  soundscape_url?: string | null;
 }
 
 async function fetchApprovedCoffeeShop(slug: string) {

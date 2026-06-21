@@ -52,7 +52,10 @@ import { Route as AuthenticatedExplorerPassportRouteImport } from './routes/_aut
 import { Route as AuthenticatedExplorerOnboardingRouteImport } from './routes/_authenticated/_explorer/onboarding'
 import { Route as AuthenticatedExplorerLeaderboardRouteImport } from './routes/_authenticated/_explorer/leaderboard'
 import { Route as AuthenticatedExplorerExploreRouteImport } from './routes/_authenticated/_explorer/explore'
+import { Route as AuthenticatedExplorerCrewRouteImport } from './routes/_authenticated/_explorer/crew'
+import { Route as AuthenticatedExplorerCrawlsRouteImport } from './routes/_authenticated/_explorer/crawls'
 import { Route as AuthenticatedExplorerCampaignsRouteImport } from './routes/_authenticated/_explorer/campaigns'
+import { Route as AuthenticatedExplorerCampaignMapRouteImport } from './routes/_authenticated/_explorer/campaign-map'
 import { Route as AuthenticatedExplorerCampaignIdRouteImport } from './routes/_authenticated/_explorer/campaign.$id'
 
 const TermsRoute = TermsRouteImport.update({
@@ -289,10 +292,28 @@ const AuthenticatedExplorerExploreRoute =
     path: '/explore',
     getParentRoute: () => AuthenticatedExplorerRouteRoute,
   } as any)
+const AuthenticatedExplorerCrewRoute =
+  AuthenticatedExplorerCrewRouteImport.update({
+    id: '/crew',
+    path: '/crew',
+    getParentRoute: () => AuthenticatedExplorerRouteRoute,
+  } as any)
+const AuthenticatedExplorerCrawlsRoute =
+  AuthenticatedExplorerCrawlsRouteImport.update({
+    id: '/crawls',
+    path: '/crawls',
+    getParentRoute: () => AuthenticatedExplorerRouteRoute,
+  } as any)
 const AuthenticatedExplorerCampaignsRoute =
   AuthenticatedExplorerCampaignsRouteImport.update({
     id: '/campaigns',
     path: '/campaigns',
+    getParentRoute: () => AuthenticatedExplorerRouteRoute,
+  } as any)
+const AuthenticatedExplorerCampaignMapRoute =
+  AuthenticatedExplorerCampaignMapRouteImport.update({
+    id: '/campaign-map',
+    path: '/campaign-map',
     getParentRoute: () => AuthenticatedExplorerRouteRoute,
   } as any)
 const AuthenticatedExplorerCampaignIdRoute =
@@ -321,7 +342,10 @@ export interface FileRoutesByFullPath {
   '/auth/reset': typeof AuthResetRoute
   '/city/$city': typeof CityCityRoute
   '/coffee/$slug': typeof CoffeeSlugRoute
+  '/campaign-map': typeof AuthenticatedExplorerCampaignMapRoute
   '/campaigns': typeof AuthenticatedExplorerCampaignsRoute
+  '/crawls': typeof AuthenticatedExplorerCrawlsRoute
+  '/crew': typeof AuthenticatedExplorerCrewRoute
   '/explore': typeof AuthenticatedExplorerExploreRoute
   '/leaderboard': typeof AuthenticatedExplorerLeaderboardRoute
   '/onboarding': typeof AuthenticatedExplorerOnboardingRoute
@@ -364,7 +388,10 @@ export interface FileRoutesByTo {
   '/auth/reset': typeof AuthResetRoute
   '/city/$city': typeof CityCityRoute
   '/coffee/$slug': typeof CoffeeSlugRoute
+  '/campaign-map': typeof AuthenticatedExplorerCampaignMapRoute
   '/campaigns': typeof AuthenticatedExplorerCampaignsRoute
+  '/crawls': typeof AuthenticatedExplorerCrawlsRoute
+  '/crew': typeof AuthenticatedExplorerCrewRoute
   '/explore': typeof AuthenticatedExplorerExploreRoute
   '/leaderboard': typeof AuthenticatedExplorerLeaderboardRoute
   '/onboarding': typeof AuthenticatedExplorerOnboardingRoute
@@ -412,7 +439,10 @@ export interface FileRoutesById {
   '/auth/reset': typeof AuthResetRoute
   '/city/$city': typeof CityCityRoute
   '/coffee/$slug': typeof CoffeeSlugRoute
+  '/_authenticated/_explorer/campaign-map': typeof AuthenticatedExplorerCampaignMapRoute
   '/_authenticated/_explorer/campaigns': typeof AuthenticatedExplorerCampaignsRoute
+  '/_authenticated/_explorer/crawls': typeof AuthenticatedExplorerCrawlsRoute
+  '/_authenticated/_explorer/crew': typeof AuthenticatedExplorerCrewRoute
   '/_authenticated/_explorer/explore': typeof AuthenticatedExplorerExploreRoute
   '/_authenticated/_explorer/leaderboard': typeof AuthenticatedExplorerLeaderboardRoute
   '/_authenticated/_explorer/onboarding': typeof AuthenticatedExplorerOnboardingRoute
@@ -459,7 +489,10 @@ export interface FileRouteTypes {
     | '/auth/reset'
     | '/city/$city'
     | '/coffee/$slug'
+    | '/campaign-map'
     | '/campaigns'
+    | '/crawls'
+    | '/crew'
     | '/explore'
     | '/leaderboard'
     | '/onboarding'
@@ -502,7 +535,10 @@ export interface FileRouteTypes {
     | '/auth/reset'
     | '/city/$city'
     | '/coffee/$slug'
+    | '/campaign-map'
     | '/campaigns'
+    | '/crawls'
+    | '/crew'
     | '/explore'
     | '/leaderboard'
     | '/onboarding'
@@ -549,7 +585,10 @@ export interface FileRouteTypes {
     | '/auth/reset'
     | '/city/$city'
     | '/coffee/$slug'
+    | '/_authenticated/_explorer/campaign-map'
     | '/_authenticated/_explorer/campaigns'
+    | '/_authenticated/_explorer/crawls'
+    | '/_authenticated/_explorer/crew'
     | '/_authenticated/_explorer/explore'
     | '/_authenticated/_explorer/leaderboard'
     | '/_authenticated/_explorer/onboarding'
@@ -898,11 +937,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedExplorerExploreRouteImport
       parentRoute: typeof AuthenticatedExplorerRouteRoute
     }
+    '/_authenticated/_explorer/crew': {
+      id: '/_authenticated/_explorer/crew'
+      path: '/crew'
+      fullPath: '/crew'
+      preLoaderRoute: typeof AuthenticatedExplorerCrewRouteImport
+      parentRoute: typeof AuthenticatedExplorerRouteRoute
+    }
+    '/_authenticated/_explorer/crawls': {
+      id: '/_authenticated/_explorer/crawls'
+      path: '/crawls'
+      fullPath: '/crawls'
+      preLoaderRoute: typeof AuthenticatedExplorerCrawlsRouteImport
+      parentRoute: typeof AuthenticatedExplorerRouteRoute
+    }
     '/_authenticated/_explorer/campaigns': {
       id: '/_authenticated/_explorer/campaigns'
       path: '/campaigns'
       fullPath: '/campaigns'
       preLoaderRoute: typeof AuthenticatedExplorerCampaignsRouteImport
+      parentRoute: typeof AuthenticatedExplorerRouteRoute
+    }
+    '/_authenticated/_explorer/campaign-map': {
+      id: '/_authenticated/_explorer/campaign-map'
+      path: '/campaign-map'
+      fullPath: '/campaign-map'
+      preLoaderRoute: typeof AuthenticatedExplorerCampaignMapRouteImport
       parentRoute: typeof AuthenticatedExplorerRouteRoute
     }
     '/_authenticated/_explorer/campaign/$id': {
@@ -916,7 +976,10 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedExplorerRouteRouteChildren {
+  AuthenticatedExplorerCampaignMapRoute: typeof AuthenticatedExplorerCampaignMapRoute
   AuthenticatedExplorerCampaignsRoute: typeof AuthenticatedExplorerCampaignsRoute
+  AuthenticatedExplorerCrawlsRoute: typeof AuthenticatedExplorerCrawlsRoute
+  AuthenticatedExplorerCrewRoute: typeof AuthenticatedExplorerCrewRoute
   AuthenticatedExplorerExploreRoute: typeof AuthenticatedExplorerExploreRoute
   AuthenticatedExplorerLeaderboardRoute: typeof AuthenticatedExplorerLeaderboardRoute
   AuthenticatedExplorerOnboardingRoute: typeof AuthenticatedExplorerOnboardingRoute
@@ -929,7 +992,11 @@ interface AuthenticatedExplorerRouteRouteChildren {
 
 const AuthenticatedExplorerRouteRouteChildren: AuthenticatedExplorerRouteRouteChildren =
   {
+    AuthenticatedExplorerCampaignMapRoute:
+      AuthenticatedExplorerCampaignMapRoute,
     AuthenticatedExplorerCampaignsRoute: AuthenticatedExplorerCampaignsRoute,
+    AuthenticatedExplorerCrawlsRoute: AuthenticatedExplorerCrawlsRoute,
+    AuthenticatedExplorerCrewRoute: AuthenticatedExplorerCrewRoute,
     AuthenticatedExplorerExploreRoute: AuthenticatedExplorerExploreRoute,
     AuthenticatedExplorerLeaderboardRoute:
       AuthenticatedExplorerLeaderboardRoute,

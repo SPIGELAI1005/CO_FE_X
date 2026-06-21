@@ -49,6 +49,8 @@ export default defineConfig({
       SUPABASE_URL: env.VITE_SUPABASE_URL ?? process.env.VITE_SUPABASE_URL ?? "",
       SUPABASE_PUBLISHABLE_KEY:
         env.VITE_SUPABASE_PUBLISHABLE_KEY ?? process.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "",
+      SUPABASE_SERVICE_ROLE_KEY:
+        env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
     },
   },
 });

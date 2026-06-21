@@ -1,7 +1,7 @@
 # Latest Changes — CO:FE(X)
 
-**Last updated:** June 11, 2026  
-**Status:** i18n (EN/DE) + mobile phone pass shipped; committed to [CO_FE_X](https://github.com/SPIGELAI1005/CO_FE_X).
+**Last updated:** June 21, 2026  
+**Status:** Vision Waves 1–4 + campaign/reward domain shipped; i18n (EN/DE) + mobile pass; committed to [CO_FE_X](https://github.com/SPIGELAI1005/CO_FE_X).
 
 This document summarizes the most recent product and engineering work. For sprint-level detail, see [SPRINT_EXPLORER_ENGAGEMENT.md](./SPRINT_EXPLORER_ENGAGEMENT.md), [PLAN_EXPLORER_GAPS.md](./PLAN_EXPLORER_GAPS.md), and [PLAN_PARTNER_NEXT_STEPS.md](./PLAN_PARTNER_NEXT_STEPS.md). For a full system review, see [AUDIT.md](./AUDIT.md).
 
@@ -11,6 +11,8 @@ This document summarizes the most recent product and engineering work. For sprin
 
 | Batch | Scope |
 |-------|--------|
+| **Campaign/reward domain** | Spec-aligned schema extensions, Zod schemas, mission steps UI, campaign discovery map — [DATA_MODEL_CAMPAIGN_REWARD.md](./DATA_MODEL_CAMPAIGN_REWARD.md) |
+| **Vision plan (Waves 1–4)** | 20-feature audit doc + migrations + UI: crawls, beverage passport, time bonuses, door QR, wallet/campaign rotating verify, mood explore, origin stories, photo reviews, spawns, mayor, Beans, stories, map themes, crews, gifts, arrivals, push hook, health log stub — see [PLAN_VISION_FEATURES.md](./PLAN_VISION_FEATURES.md) |
 | **i18n (EN / DE)** | `i18next` + `react-i18next`; locale files; `LanguageToggle` (EN/DE) in headers; auth bridge for `cofex-auth.js`; page headers, nav, explore filters/sort, passport, radar, partner routes |
 | **Mobile / phone pass** | Safe-area insets, viewport-fit, explore default list view, radar 2×2 stats, responsive page shells, partner nav icon-only labels, landing/auth sizing |
 | **Partner Next Steps** | QR verify scanner, multi-shop, campaign lifecycle, settings (API keys/referrals), printable QR PDF, auto-approve social, catalog verify UI, shop delete |
@@ -39,7 +41,38 @@ This document summarizes the most recent product and engineering work. For sprin
 
 **Wired routes/components:** Explorer (explore, radar, campaigns, passport, wallet, profile, leaderboard), all partner page headers, landing nav/hero, auth, bottom nav, notifications, notFound, error boundary.
 
-**Partial / follow-up:** Wallet body copy, partner dashboard KPIs, landing Features/Testimonials sections, campaign wizard toasts — keys exist or remain English in deep UI.
+**Partial / follow-up:** Campaign wizard toasts, deep partner form strings — keys exist or remain English in niche UI.
+
+---
+
+## Campaign & reward domain model
+
+**Doc:** [DATA_MODEL_CAMPAIGN_REWARD.md](./DATA_MODEL_CAMPAIGN_REWARD.md)  
+**Migration:** `20260621120000_campaign_reward_domain.sql`
+
+| Item | Detail |
+|------|--------|
+| Schema extensions | `profiles` (explorer_level, preferred_drink_categories), `campaigns` (slogan, reward_type, hashtags, T&C), `coffee_shops` (opening_hours, social_links) |
+| Views | `cafe_listings`, `explorer_rewards`, `social_proofs`, `xp_events` |
+| TypeScript | `src/lib/domain/campaign-reward-model.ts`, `schemas.ts` + unit tests |
+| Mission UI | `CampaignMissionSteps.tsx`, `CampaignMissionInfo.tsx`, `src/lib/campaign-mission.ts` |
+| Discovery map | `/campaign-map`, `CampaignDiscoveryMap.tsx`, `lib/queries/campaign-map.ts` |
+| Verify polish | `RotatingVerifyDisplay.tsx`, `WalletRewardQr.tsx`, `CampaignRewardQr.tsx` |
+
+---
+
+## Vision feature plan (Waves 1–4)
+
+**Doc:** [PLAN_VISION_FEATURES.md](./PLAN_VISION_FEATURES.md) · **Wave 4 eval:** [VISION_WAVE4_PLATFORM.md](./VISION_WAVE4_PLATFORM.md)
+
+| Wave | Highlights |
+|------|------------|
+| **1** | `coffee_crawls` + `/crawls`; beverage pick on check-in + passport tabs; time-of-day multipliers in `perform_check_in`; door QR (`?door=1`); wallet QR + rotating verify; mood chips on explore; origin block on shop/partner form; photo reviews + weekly challenge banner on radar |
+| **2** | `spawn_events`, `shop_stories`, `beans_balance`, `map_theme`; Radar spawn banner; mayor badge; soundscape player |
+| **3** | `crews`, `gift_credits`, `shop_arrivals`, `push_subscription`; `/crew`, gift dialog, arrival button, partner arrivals list, push enable on profile |
+| **4** | `explorer_health_logs` + manual `HealthLogRing`; platform evaluation doc (HealthKit, NFC, AR deferred) |
+
+**Migrations:** `20260619120000_vision_wave1.sql` … `20260619150000_vision_wave4.sql` — run `npm run db:push` + `npm run db:types` on linked Supabase.
 
 ---
 
@@ -254,11 +287,13 @@ Optional env: `E2E_PARTNER_EMAIL`, `E2E_PARTNER_PASSWORD` (defaults to `e2e-part
 
 | Migration | Purpose |
 |-----------|---------|
-| `20260614120000_explorer_challenge_claims.sql` | Challenge claims |
-| `20260614140000_engagement_followup.sql` | Challenge defs, leaderboard rank |
-| `20260615120000_explorer_gaps.sql` | City collections, events, funnel KPIs |
-| `20260616120000_eeffoc_social_flow.sql` | Social proof, fulfillment modes, participation tokens |
 | `20260617120000_partner_next_steps.sql` | Campaign lifecycle RPCs, auto-approve, shop delete |
+| `20260618120000_partner_application_notifications.sql` | Partner application inbox notifications |
+| `20260619120000_vision_wave1.sql` | Crawls, beverage tags, time bonuses, door QR, mood, origin, photo reviews |
+| `20260619130000_vision_wave2.sql` | Spawns, mayor, Beans, shop stories, map themes |
+| `20260619140000_vision_wave3.sql` | Crews, gift credits, shop arrivals, push subscriptions |
+| `20260619150000_vision_wave4.sql` | Health logs, soundscapes |
+| `20260621120000_campaign_reward_domain.sql` | Campaign/reward spec alignment, views, mission RPCs |
 
 Run `npm run db:push` then `npm run db:types` after pulling.
 
@@ -268,10 +303,10 @@ Run `npm run db:push` then `npm run db:types` after pulling.
 
 | Check | Result |
 |-------|--------|
-| Unit tests (`npm test`) | 51 passing |
+| Unit tests (`npm test`) | 61 passing (17 files) |
 | Build (`npm run build`) | Passing |
 | Partner E2E (`npm run test:e2e:partner`) | 12 passing |
-| Migrations pushed | Through `20260617120000_partner_next_steps.sql` |
+| Migrations in repo | Through `20260621120000_campaign_reward_domain.sql` |
 | Types regenerated | `src/integrations/supabase/types.ts` |
 
 ---
@@ -279,26 +314,30 @@ Run `npm run db:push` then `npm run db:types` after pulling.
 ## New / notable files
 
 ```
-src/lib/i18n/
-  index.ts, locales/en.json, locales/de.json, use-filter-labels.ts
-src/components/app/
-  I18nProvider.tsx, LanguageToggle.tsx
-src/components/auth/
-  AuthLocaleBridge.tsx
-
-src/components/app/partner/
-  VerifyQrScanner.tsx, PartnerShopSelect.tsx, PartnerShell.tsx, …
-
+src/lib/domain/
+  campaign-reward-model.ts, schemas.ts, schemas.test.ts
 src/lib/
-  parse-verify-code.ts, participation-qr-pdf.ts, partner-campaign-edit.ts
-  campaign-fulfillment.ts, queries/partner.ts
+  campaign-mission.ts, campaign-mission.test.ts
+  mood-discovery.ts, map-themes.ts, beverage-tags.ts
+  notification-display.ts, qr-check-in.ts, shop-door.ts
+  queries/campaign-map.ts, queries/vision.ts, queries/campaigns.ts
 
-e2e/
-  partner.auth.setup.ts, partner-routes.spec.ts, partner-guest.spec.ts
+src/components/app/
+  CampaignMissionSteps.tsx, CampaignMissionInfo.tsx
+  CampaignDiscoveryMap.tsx (map/), MapCampaignSheet.tsx
+  BeveragePicker.tsx, MoodFilterChips.tsx, OriginStoryBlock.tsx
+  SpawnBanner.tsx, MayorBadge.tsx, ShopStoriesReel.tsx
+  GiftCoffeeDialog.tsx, ArrivalButton.tsx, HealthLogRing.tsx
+  RotatingVerifyDisplay.tsx, WalletRewardQr.tsx, ShopDoorQr.tsx
+  SoundscapePlayer.tsx, MapThemeToggle.tsx
+
+src/routes/_authenticated/_explorer/
+  crawls.tsx, crew.tsx, campaign-map.tsx
 
 supabase/migrations/
-  20260616120000_eeffoc_social_flow.sql
-  20260617120000_partner_next_steps.sql
+  20260618120000_partner_application_notifications.sql
+  20260619120000_vision_wave1.sql … 20260619150000_vision_wave4.sql
+  20260621120000_campaign_reward_domain.sql
 ```
 
 ---
@@ -321,4 +360,7 @@ supabase/migrations/
 | [PLAN_PARTNER_NEXT_STEPS.md](./PLAN_PARTNER_NEXT_STEPS.md) | Partner sprint plan (implemented) |
 | [PLAN_EEFFOC_SOCIAL_FLOW.md](./PLAN_EEFFOC_SOCIAL_FLOW.md) | EEFFOC QR + social proof |
 | [ARCHITECTURE_EXPLORER_ENGAGEMENT.md](./ARCHITECTURE_EXPLORER_ENGAGEMENT.md) | Engagement architecture |
+| [DATA_MODEL_CAMPAIGN_REWARD.md](./DATA_MODEL_CAMPAIGN_REWARD.md) | Campaign/reward domain spec mapping |
+| [PLAN_VISION_FEATURES.md](./PLAN_VISION_FEATURES.md) | Vision feature waves (shipped) |
+| [VISION_WAVE4_PLATFORM.md](./VISION_WAVE4_PLATFORM.md) | Platform capability evaluation |
 | [memory-bank/](./memory-bank/) | Agent / team memory bank |

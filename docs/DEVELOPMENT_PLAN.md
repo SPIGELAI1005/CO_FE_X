@@ -44,29 +44,33 @@ Every new or updated screen must include:
 
 ---
 
-## 2. Current baseline
+## 2. Current baseline (June 2026)
 
-### Done recently
+### Shipped since MVP
 
-- Lovable removed; rebranded as **CO_FE_X**
-- `.env` untracked; `.env.example` added
-- GPS check-ins (200 m) + admin moderation RPCs (migration `20260611120000_co_fe_x_improvements.sql`)
-- Profile page, admin console (partners, users, campaigns, analytics, revenue summary)
-- React Query hooks for explore, profile, admin (`src/lib/queries/`)
-- Vitest + geo tests; README
+- Full explorer loop: explore, radar, GPS check-in, passport, wallet, campaigns, leaderboard
+- Engagement + Gaps sprints: challenge claims, post-check-in sheet, city collections, badge moments, KPI analytics
+- EEFFOC social flow: participation QR, social proof, hybrid fulfillment
+- Partner Next Steps: QR verify scanner, multi-shop, campaign lifecycle, settings, printable QR PDF
+- **Vision Waves 1–4:** crawls, beverage passport, spawns, mayor, Beans, crews, gifts, arrivals, push hook, health log
+- **Campaign/reward domain:** spec-aligned schema, mission UI, campaign discovery map
+- i18n (EN/DE) with `LanguageToggle`; wallet, partner dashboard, landing localized
+- Mobile phone pass: safe-area insets, list-first explore, responsive shells
+- Legal: 9 public compliance pages
+- Tests: **61 Vitest** unit tests, **8 Playwright** specs (12 partner tests), CI on `main`/`develop`
+- Migrations through `20260621120000_campaign_reward_domain.sql`
 
 ### Known gaps
 
 | Area | Status |
 | --- | --- |
-| Café reviews UI | DB + triggers exist; no explorer write UI on shop page |
-| Auth | Sign in/up only; no reset password, email verify UX |
-| React Query | ~6 routes migrated; wallet, passport, campaigns, partner still on `useEffect` |
-| Notifications | Polling bell; no realtime, push, or email |
-| Billing | Placeholder admin revenue page |
-| PWA / SEO | Landing only; shop pages auth-gated |
-| Tests / CI | 4 unit tests; no CI, no E2E |
-| Server functions | Example only; sensitive ops still client-side |
+| i18n depth | Campaign wizard toasts, niche partner form strings still English |
+| React Query | `partner.index.tsx` still uses `useEffect` for dashboard KPIs |
+| Push notifications | Subscription RPC + hook shipped; VAPID keys + SW handler needed for production |
+| Realtime | Leaderboard and notifications still polling-based |
+| Stripe production | Partner billing scaffolded; production webhook hardening pending |
+| CI secrets | `SUPABASE_SERVICE_ROLE_KEY` needed in GitHub for partner E2E in Actions |
+| Production DB | Vision + campaign reward migrations need `db:push` on linked Supabase |
 
 ---
 

@@ -1,21 +1,24 @@
 import { createFileRoute, Link, useParams, useSearch } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { AppPage } from "@/components/app/AppPageShell";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
   ArrowLeft,
-  Calendar,
-  Gift,
-  Hash,
-  MapPin,
-  Users,
-  Megaphone,
   Camera,
+  Map as MapIcon,
   QrCode,
+  Rocket,
+  Sparkles,
 } from "lucide-react";
 import { SocialProofSubmit } from "@/components/app/SocialProofSubmit";
 import { CampaignRewardQr } from "@/components/app/CampaignRewardQr";
+import { CampaignMissionInfo } from "@/components/app/CampaignMissionInfo";
+import {
+  getCampaignMissionMicrocopy,
+  CampaignMissionSteps,
+} from "@/components/app/CampaignMissionSteps";
 import { QueryBoundary } from "@/components/patterns/QueryBoundary";
 import { EmptyState } from "@/components/patterns/EmptyState";
 import { useUser } from "@/hooks/use-user";
@@ -25,11 +28,12 @@ import {
   useRedeemCampaign,
 } from "@/lib/queries/campaigns";
 import {
-  FULFILLMENT_MODE_LABELS,
   canRedeemViaButton,
   getCampaignExplorerPhase,
   needsSocialProof,
 } from "@/lib/campaign-fulfillment";
+import { resolveMissionSteps, formatExpiryCountdown } from "@/lib/campaign-mission";
+import { REWARD_MARKER_STYLES } from "@/lib/map/campaign-markers";
 import { trackExplorerEvent } from "@/lib/explorer-analytics";
 
 type CampaignSearch = {
@@ -47,6 +51,7 @@ export const Route = createFileRoute("/_authenticated/_explorer/campaign/$id")({
 });
 
 function CampaignDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams({ from: "/_authenticated/_explorer/campaign/$id" });
   const search = useSearch({ from: "/_authenticated/_explorer/campaign/$id" });
   const { user } = useUser();
@@ -63,24 +68,24 @@ function CampaignDetailPage() {
     joinMutation.mutate(
       { campaignId: id, source: "qr" },
       {
-        onSuccess: () => toast.success("Welcome! You're in this EEFFOC campaign."),
+        onSuccess: () => toast.success(t("campaignMission.toastJoinedQr")),
         onError: (err) => {
           qrJoinAttempted.current = false;
-          toast.error(err instanceof Error ? err.message.replace(/^.*?: /, "") : "Could not join");
+          toast.error(err instanceof Error ? err.message.replace(/^.*?: /, "") : t("campaignMission.toastJoinError"));
         },
       },
     );
-  }, [search.src, user?.id, detailQuery.isLoading, detailQuery.data, id, joinMutation]);
+  }, [search.src, user?.id, detailQuery.isLoading, detailQuery.data, id, joinMutation, t]);
 
   return (
-    <QueryBoundary query={detailQuery} loadingLabel="Loading campaign…">
+    <QueryBoundary query={detailQuery} loadingLabel={t("campaignMission.loading")}>
       {({ campaign, user: userState }) =>
         !campaign ? (
           <div className="mx-auto max-w-md p-8">
             <EmptyState
-              title="Campaign not found"
-              description="This campaign may have ended or been removed."
-              actionLabel="All campaigns"
+              title={t("campaignMission.notFoundTitle")}
+              description={t("campaignMission.notFoundDescription")}
+              actionLabel={t("campaignMission.allCampaigns")}
               actionTo="/campaigns"
             />
           </div>
@@ -108,17 +113,23 @@ function CampaignDetailView({
   userId: string | undefined;
   scannedViaQr: boolean;
 }) {
+  const { t } = useTranslation();
   const joinMutation = useJoinCampaign(userId);
   const redeemMutation = useRedeemCampaign(userId);
 
   const required = Math.max(1, c.required_check_ins ?? 1);
-  const progress = Math.min(100, Math.round((userState.myCheckIns / required) * 100));
   const cover = c.cover_image_url ?? c.coffee_shops?.cover_image_url;
+  const rewardStyle = REWARD_MARKER_STYLES[c.reward_type];
   const full = c.max_participants ? userState.participantCount >= c.max_participants : false;
   const ended = c.ends_at ? new Date(c.ends_at) < new Date() : false;
   const qualified = userState.myCheckIns >= required;
   const busy = joinMutation.isPending || redeemMutation.isPending;
   const redemption = userState.redemption;
+  const expiryLabel = formatExpiryCountdown(c.ends_at);
+
+  const cap = c.available_quantity ?? c.max_participants;
+  const remaining =
+    cap != null ? Math.max(0, cap - userState.participantCount) : null;
 
   const phase = getCampaignExplorerPhase({
     joined: userState.joined,
@@ -131,21 +142,41 @@ function CampaignDetailView({
     socialStatus: userState.latestSocialStatus,
   });
 
+  const missionSteps = useMemo(
+    () =>
+      resolveMissionSteps({
+        fulfillmentMode: c.fulfillment_mode,
+        joined: userState.joined,
+        phase,
+        myCheckIns: userState.myCheckIns,
+        requiredCheckIns: required,
+        hasSocialSubmission: userState.socialSubmissions.length > 0,
+        latestSocialStatus: userState.latestSocialStatus,
+        hasRedemption: !!redemption,
+        rewardUsed: !!redemption?.used_at,
+      }),
+    [c.fulfillment_mode, userState, phase, required, redemption],
+  );
+
+  const microcopyKey = getCampaignMissionMicrocopy(phase, userState.joined);
+
   async function join() {
     try {
       await joinMutation.mutateAsync({ campaignId: c.id });
-      toast.success("You're in! Follow the steps below to unlock your reward.");
+      toast.success(t("campaignMission.toastJoined"));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message.replace(/^.*?: /, "") : "Could not join");
+      toast.error(err instanceof Error ? err.message.replace(/^.*?: /, "") : t("campaignMission.toastJoinError"));
     }
   }
 
   async function redeem() {
     try {
       const data = await redeemMutation.mutateAsync(c.id);
-      toast.success(`Reward unlocked! +${data.points_awarded ?? c.points_reward} points`);
+      toast.success(
+        t("campaignMission.toastRedeemed", { points: data.points_awarded ?? c.points_reward }),
+      );
     } catch (err) {
-      toast.error(err instanceof Error ? err.message.replace(/^.*?: /, "") : "Could not redeem");
+      toast.error(err instanceof Error ? err.message.replace(/^.*?: /, "") : t("campaignMission.toastRedeemError"));
     }
   }
 
@@ -157,62 +188,98 @@ function CampaignDetailView({
 
   return (
     <AppPage>
-      <div className="relative h-56 bg-gradient-to-br from-[color:var(--cofex-pastel-blue)] to-[color:var(--cofex-cream)] md:h-72">
-        {cover && <img src={cover} alt="" className="absolute inset-0 h-full w-full object-cover" />}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-        <Link
-          to="/campaigns"
-          className="absolute left-4 top-4 inline-flex items-center gap-1 rounded-full bg-white/95 px-3 py-1.5 text-xs font-medium shadow"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" /> All campaigns
-        </Link>
-        {scannedViaQr && (
-          <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-amber-500 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
-            <QrCode className="h-3 w-3" /> Joined via QR
+      <div className="relative min-h-[16rem] bg-gradient-to-br from-[color:var(--cofex-coffee-deep)] to-[color:var(--cofex-black)] md:min-h-[20rem]">
+        {cover && <img src={cover} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60" />}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/20" />
+
+        <div className="relative flex items-start justify-between gap-2 p-4 sm:p-5">
+          <Link
+            to="/campaigns"
+            className="inline-flex items-center gap-1 rounded-full bg-white/95 px-3 py-1.5 text-xs font-semibold text-[color:var(--cofex-coffee-deep)] shadow"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" /> {t("campaignMission.allCampaigns")}
+          </Link>
+          <div className="flex gap-2">
+            <Link
+              to="/campaign-map"
+              className="inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm hover:bg-white/25"
+            >
+              <MapIcon className="h-3.5 w-3.5" /> {t("campaignsPage.viewMap")}
+            </Link>
+            {scannedViaQr && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+                <QrCode className="h-3 w-3" /> QR
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="relative px-5 pb-6 pt-2 text-white sm:px-6">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[color:var(--cofex-accent-gold)] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.2em] text-[color:var(--cofex-coffee-deep)] shadow">
+            <Sparkles className="h-3 w-3" />
+            {c.slogan}
           </span>
-        )}
-        <div className="absolute bottom-4 left-4 right-4 text-white">
-          <div className="text-xs uppercase tracking-widest opacity-80">{c.hashtag}</div>
-          <h1 className="text-2xl font-bold md:text-3xl">{c.title}</h1>
+
+          <h1 className="mt-3 text-2xl font-extrabold leading-tight md:text-4xl">{c.title}</h1>
+
           {c.coffee_shops && (
             <Link
               to="/coffee/$slug"
               params={{ slug: c.coffee_shops.slug }}
-              className="mt-1 inline-flex items-center gap-1 text-sm opacity-90 hover:underline"
+              className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-white/90 hover:underline"
             >
-              <MapPin className="h-3.5 w-3.5" /> {c.coffee_shops.name}
+              {c.coffee_shops.name}
               {c.coffee_shops.city ? ` · ${c.coffee_shops.city}` : ""}
             </Link>
           )}
+
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold"
+              style={{ background: rewardStyle.color }}
+            >
+              {rewardStyle.emoji} {t(`campaignMap.rewardTypes.${c.reward_type}`)}
+            </span>
+            {expiryLabel && (
+              <span className="rounded-full bg-amber-500/90 px-3 py-1 text-xs font-bold text-white">
+                {expiryLabel}
+              </span>
+            )}
+            {remaining != null && remaining <= 10 && (
+              <span className="rounded-full bg-violet-500/90 px-3 py-1 text-xs font-bold text-white">
+                {t("campaignsPage.spotsLeft", { count: remaining })}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="mx-auto max-w-2xl space-y-5 px-5 py-6">
-        <p className="text-sm leading-relaxed text-[color:var(--cofex-black)]/75">{c.description}</p>
+      <div className="mx-auto max-w-2xl space-y-5 px-4 py-6 sm:px-5">
+        {!userState.joined && (
+          <div className="cofex-app-card border-2 border-[color:var(--cofex-cyan)]/30 bg-gradient-to-br from-[color:var(--cofex-pastel-blue)]/30 to-white p-5 text-center">
+            <Rocket className="mx-auto h-8 w-8 text-[color:var(--cofex-cyan)]" />
+            <p className="mt-2 text-lg font-extrabold text-[color:var(--cofex-coffee-deep)]">
+              {t("campaignMission.readyTitle")}
+            </p>
+            <p className="mt-1 text-sm text-[color:var(--cofex-black)]/65">{t("campaignMission.readySubtitle")}</p>
+            <Button
+              disabled={busy || full || ended}
+              onClick={join}
+              className="mt-4 w-full rounded-full bg-[color:var(--cofex-coffee-deep)] py-6 text-base font-bold hover:bg-[color:var(--cofex-black)]"
+              size="lg"
+            >
+              {full
+                ? t("campaignMission.campaignFull")
+                : ended
+                  ? t("campaignMission.campaignEnded")
+                  : busy
+                    ? t("campaignMission.starting")
+                    : t("campaignMission.startMission")}
+            </Button>
+          </div>
+        )}
 
-        <div className="cofex-app-card p-5">
-          <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-[color:var(--cofex-pastel-blue)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[color:var(--cofex-coffee-deep)]">
-            <Megaphone className="h-3 w-3" /> {FULFILLMENT_MODE_LABELS[c.fulfillment_mode]}
-          </div>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <Stat Icon={Gift} label="Reward" value={c.reward_description ?? "-"} />
-            <Stat Icon={Gift} label="Bonus points" value={`+${c.points_reward}`} />
-            <Stat
-              Icon={Users}
-              label="Participants"
-              value={`${userState.participantCount}${c.max_participants ? ` / ${c.max_participants}` : ""}`}
-            />
-            <Stat Icon={Calendar} label="Ends" value={c.ends_at ? new Date(c.ends_at).toLocaleDateString() : "No end"} />
-          </div>
-          {c.requirements && (
-            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
-              <div className="mb-1 inline-flex items-center gap-1 font-semibold">
-                <Hash className="h-3.5 w-3.5" /> How to participate
-              </div>
-              {c.requirements}
-            </div>
-          )}
-        </div>
+        <CampaignMissionSteps steps={missionSteps} microcopyKey={microcopyKey} />
 
         {redemption ? (
           <CampaignRewardQr
@@ -222,55 +289,41 @@ function CampaignDetailView({
             usedAt={redemption.used_at}
           />
         ) : (
-          <div className="cofex-app-card p-5">
-            <PhaseSteps phase={phase} fulfillmentMode={c.fulfillment_mode} />
-
-            {c.fulfillment_mode !== "social_proof" && (
-              <>
-                <div className="mt-4 flex items-center justify-between text-sm">
-                  <span className="font-semibold text-[color:var(--cofex-coffee-deep)]">Check-in progress</span>
-                  <span className="text-[color:var(--cofex-black)]/55">
-                    {Math.min(userState.myCheckIns, required)} / {required}
-                  </span>
+          userState.joined && (
+            <div className="cofex-app-card p-5">
+              {phase === "pending_review" ? (
+                <div className="rounded-xl bg-amber-50 px-4 py-4 text-center">
+                  <p className="font-semibold text-amber-900">{t("campaignMission.pendingReviewTitle")}</p>
+                  <p className="mt-1 text-sm text-amber-800">{t("campaignMission.pendingReviewBody")}</p>
                 </div>
-                <div className="mt-2 h-2 overflow-hidden rounded-full bg-[color:var(--cofex-cream)]">
-                  <div
-                    className="h-full bg-gradient-to-r from-amber-500 to-orange-600 transition-all"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-              </>
-            )}
-
-            <div className="mt-4">
-              {!userState.joined ? (
-                <Button disabled={busy || full || ended} onClick={join} className="w-full rounded-full bg-amber-700 hover:bg-amber-800">
-                  {full ? "Campaign full" : ended ? "Campaign ended" : busy ? "Joining…" : "Join EEFFOC campaign"}
-                </Button>
-              ) : phase === "pending_review" ? (
-                <div className="rounded-xl bg-amber-50 px-4 py-3 text-center text-sm text-amber-900">
-                  Your post is with the café. You&apos;ll get a reward QR when approved.
-                </div>
-              ) : canRedeemViaButton(c.fulfillment_mode) && c.fulfillment_mode === "check_in" && qualified ? (
+              ) : canRedeemViaButton(c.fulfillment_mode) &&
+                c.fulfillment_mode === "check_in" &&
+                qualified ? (
                 <Button
                   disabled={busy}
                   onClick={redeem}
-                  className="w-full rounded-full bg-gradient-to-r from-amber-600 to-orange-700 text-white"
+                  className="w-full rounded-full bg-gradient-to-r from-[color:var(--cofex-accent-gold)] to-amber-600 py-6 text-base font-bold text-[color:var(--cofex-coffee-deep)]"
+                  size="lg"
                 >
-                  {busy ? "Unlocking…" : `Redeem reward (+${c.points_reward} pts)`}
+                  {busy ? t("campaignMission.unlocking") : t("campaignMission.unlockReward")}
                 </Button>
-              ) : userState.joined && phase === "check_in" && c.coffee_shops ? (
-                <div className="text-center text-sm text-[color:var(--cofex-black)]/65">
-                  <Camera className="mx-auto mb-2 h-5 w-5 text-[color:var(--cofex-cyan)]" />
-                  Visit{" "}
-                  <Link to="/coffee/$slug" params={{ slug: c.coffee_shops.slug }} className="font-medium underline">
-                    {c.coffee_shops.name}
-                  </Link>{" "}
-                  and check in to continue.
+              ) : phase === "check_in" && c.coffee_shops ? (
+                <div className="text-center">
+                  <Camera className="mx-auto mb-2 h-6 w-6 text-[color:var(--cofex-cyan)]" />
+                  <p className="text-sm font-semibold text-[color:var(--cofex-coffee-deep)]">
+                    {t("campaignMission.checkInCta")}
+                  </p>
+                  <Link
+                    to="/coffee/$slug"
+                    params={{ slug: c.coffee_shops.slug }}
+                    className="mt-3 inline-flex rounded-full border border-[color:var(--border)] px-4 py-2 text-sm font-semibold text-[color:var(--cofex-coffee-deep)] hover:border-[color:var(--cofex-cyan)]"
+                  >
+                    {t("campaignMission.goToCafe", { name: c.coffee_shops.name })}
+                  </Link>
                 </div>
               ) : null}
             </div>
-          </div>
+          )
         )}
 
         {showSocialFlow && (
@@ -283,73 +336,12 @@ function CampaignDetailView({
           />
         )}
 
-        {userState.joined && phase === "pending_review" && !redemption && (
-          <div className="cofex-app-card px-4 py-3 text-center text-sm text-amber-900">
-            Waiting for café approval. Your reward QR will appear here once approved.
-          </div>
-        )}
+        <CampaignMissionInfo
+          campaign={c}
+          participantCount={userState.participantCount}
+          remainingQuantity={remaining}
+        />
       </div>
     </AppPage>
-  );
-}
-
-function PhaseSteps({
-  phase,
-  fulfillmentMode,
-}: {
-  phase: ReturnType<typeof getCampaignExplorerPhase>;
-  fulfillmentMode: string;
-}) {
-  const steps =
-    fulfillmentMode === "social_proof"
-      ? ["Join", "Post & submit proof", "Get reward QR"]
-      : fulfillmentMode === "hybrid"
-        ? ["Join", "Check in", "Post & submit proof", "Get reward QR"]
-        : ["Join", "Check in", "Redeem at counter"];
-
-  return (
-    <div>
-      <div className="text-xs font-bold uppercase tracking-wider text-[color:var(--cofex-coffee-deep)]">Your path</div>
-      <ol className="mt-2 flex flex-wrap gap-2">
-        {steps.map((label, i) => (
-          <li
-            key={label}
-            className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${
-              phase === "reward" || i < stepIndexForPhase(phase, fulfillmentMode)
-                ? "bg-amber-100 text-amber-900"
-                : "bg-[color:var(--cofex-cream)] text-[color:var(--cofex-black)]/45"
-            }`}
-          >
-            {i + 1}. {label}
-          </li>
-        ))}
-      </ol>
-    </div>
-  );
-}
-
-function stepIndexForPhase(phase: ReturnType<typeof getCampaignExplorerPhase>, mode: string): number {
-  if (phase === "join") return 0;
-  if (phase === "check_in") return mode === "hybrid" ? 1 : 1;
-  if (phase === "social_post" || phase === "pending_review") return mode === "hybrid" ? 2 : 1;
-  return 3;
-}
-
-function Stat({
-  Icon,
-  label,
-  value,
-}: {
-  Icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div>
-      <div className="inline-flex items-center gap-1 text-[10px] uppercase tracking-widest text-[color:var(--cofex-black)]/45">
-        <Icon className="h-3 w-3" /> {label}
-      </div>
-      <div className="mt-0.5 truncate font-medium text-[color:var(--cofex-coffee-deep)]">{value}</div>
-    </div>
   );
 }

@@ -59,7 +59,7 @@ Bottom nav (5 slots):
 1. **Radar** — nearby offers, challenges, limited-time events
 2. **Explore** — map + list, filters, map check-in
 3. **Campaigns** — active partner campaigns
-4. **Rewards ↓** — Passport · Rank · Wallet
+4. **Rewards ↓** — Passport · Crawls · Rank · Wallet
 5. **Profile** — edit profile, partner apply, legal links
 
 ---
@@ -84,4 +84,7 @@ Every feature must answer [six questions](../PROJECT_CONTEXT.md#development-prin
 | Core explorer loop | Check-in, passport, campaigns, wallet | ✅ Shipped |
 | Engagement sprint | Rank, claims, post-check-in sheet | ✅ Shipped |
 | Gaps sprint | City collections, badges, seasonal, KPIs | ✅ Shipped |
-| Phase 3+ | Friends rank, push, realtime, EU scale | 🔜 Deferred |
+| Partner Next Steps | QR verify, multi-shop, lifecycle, settings | ✅ Shipped |
+| Vision Waves 1–4 | Crawls, spawns, crews, gifts, health log, etc. | ✅ Shipped |
+| Campaign/reward domain | Spec-aligned schema + mission UI + discovery map | ✅ Shipped |
+| Phase 3+ | Friends rank, push production, realtime, EU scale | 🔜 Deferred |

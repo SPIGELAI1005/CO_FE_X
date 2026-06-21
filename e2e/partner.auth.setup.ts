@@ -59,6 +59,10 @@ setup("authenticate as partner", async ({ page }) => {
 
   fs.mkdirSync(path.dirname(authFile), { recursive: true });
 
+  await page.addInitScript(() => {
+    localStorage.setItem("cofex-locale", "en");
+  });
+
   await page.goto("/auth");
   await page.getByPlaceholder("Email").fill(email);
   await page.getByPlaceholder("Password").fill(password);

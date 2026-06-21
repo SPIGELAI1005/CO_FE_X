@@ -6,6 +6,7 @@ import { afterWalletChange } from "./invalidation";
 
 export interface WalletSummary {
   balance: number;
+  beansBalance: number;
   referralCode: string | null;
   referredBy: string | null;
   expireDays: string;
@@ -57,7 +58,7 @@ export function useWallet(userId: string | undefined) {
       const [{ data: prof }, { data: cat }, { data: red }, { data: buckets }] = await Promise.all([
         supabase
           .from("profiles")
-          .select("total_points, referral_code, referred_by, points_expire_days")
+          .select("total_points, referral_code, referred_by, points_expire_days, beans_balance")
           .eq("id", userId!)
           .maybeSingle(),
         supabase.from("reward_catalog").select("*").eq("active", true).order("sort_order"),
@@ -72,6 +73,7 @@ export function useWallet(userId: string | undefined) {
 
       return {
         balance: prof?.total_points ?? 0,
+        beansBalance: Number(prof?.beans_balance ?? 0),
         referralCode: prof?.referral_code ?? null,
         referredBy: prof?.referred_by ?? null,
         expireDays: prof?.points_expire_days ? String(prof.points_expire_days) : "off",

@@ -130,6 +130,7 @@ export type Database = {
       }
       badges: {
         Row: {
+          category: string
           created_at: string
           criteria: Json | null
           description: string | null
@@ -137,9 +138,11 @@ export type Database = {
           id: string
           name: string
           points_required: number | null
+          rarity: string
           slug: string
         }
         Insert: {
+          category?: string
           created_at?: string
           criteria?: Json | null
           description?: string | null
@@ -147,9 +150,11 @@ export type Database = {
           id?: string
           name: string
           points_required?: number | null
+          rarity?: string
           slug: string
         }
         Update: {
+          category?: string
           created_at?: string
           criteria?: Json | null
           description?: string | null
@@ -157,6 +162,7 @@ export type Database = {
           id?: string
           name?: string
           points_required?: number | null
+          rarity?: string
           slug?: string
         }
         Relationships: []
@@ -249,28 +255,34 @@ export type Database = {
       campaign_redemptions: {
         Row: {
           campaign_id: string
+          expires_at: string | null
           id: string
           points_awarded: number
           redeemed_at: string
           redemption_code: string
+          reward_status: string
           used_at: string | null
           user_id: string
         }
         Insert: {
           campaign_id: string
+          expires_at?: string | null
           id?: string
           points_awarded?: number
           redeemed_at?: string
           redemption_code?: string
+          reward_status?: string
           used_at?: string | null
           user_id: string
         }
         Update: {
           campaign_id?: string
+          expires_at?: string | null
           id?: string
           points_awarded?: number
           redeemed_at?: string
           redemption_code?: string
+          reward_status?: string
           used_at?: string | null
           user_id?: string
         }
@@ -287,6 +299,7 @@ export type Database = {
       campaigns: {
         Row: {
           auto_approve_social: boolean
+          available_quantity: number | null
           campaign_type: string
           coffee_shop_id: string
           cover_image_url: string | null
@@ -295,6 +308,7 @@ export type Database = {
           ends_at: string | null
           fulfillment_mode: string
           hashtag: string | null
+          hashtags: string[]
           id: string
           max_participants: number | null
           participation_token: string | null
@@ -302,14 +316,19 @@ export type Database = {
           required_check_ins: number
           requirements: string | null
           reward_description: string | null
+          reward_quantity: number
+          reward_type: string
+          slogan: string
           social_requirements: Json
           starts_at: string | null
           status: string
+          terms_and_conditions: string | null
           title: string
           updated_at: string
         }
         Insert: {
           auto_approve_social?: boolean
+          available_quantity?: number | null
           campaign_type?: string
           coffee_shop_id: string
           cover_image_url?: string | null
@@ -318,6 +337,7 @@ export type Database = {
           ends_at?: string | null
           fulfillment_mode?: string
           hashtag?: string | null
+          hashtags?: string[]
           id?: string
           max_participants?: number | null
           participation_token?: string | null
@@ -325,14 +345,19 @@ export type Database = {
           required_check_ins?: number
           requirements?: string | null
           reward_description?: string | null
+          reward_quantity?: number
+          reward_type?: string
+          slogan?: string
           social_requirements?: Json
           starts_at?: string | null
           status?: string
+          terms_and_conditions?: string | null
           title: string
           updated_at?: string
         }
         Update: {
           auto_approve_social?: boolean
+          available_quantity?: number | null
           campaign_type?: string
           coffee_shop_id?: string
           cover_image_url?: string | null
@@ -341,6 +366,7 @@ export type Database = {
           ends_at?: string | null
           fulfillment_mode?: string
           hashtag?: string | null
+          hashtags?: string[]
           id?: string
           max_participants?: number | null
           participation_token?: string | null
@@ -348,13 +374,24 @@ export type Database = {
           required_check_ins?: number
           requirements?: string | null
           reward_description?: string | null
+          reward_quantity?: number
+          reward_type?: string
+          slogan?: string
           social_requirements?: Json
           starts_at?: string | null
           status?: string
+          terms_and_conditions?: string | null
           title?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "campaigns_coffee_shop_id_fkey"
+            columns: ["coffee_shop_id"]
+            isOneToOne: false
+            referencedRelation: "cafe_listings"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "campaigns_coffee_shop_id_fkey"
             columns: ["coffee_shop_id"]
@@ -368,9 +405,11 @@ export type Database = {
         Row: {
           catalog_id: string
           created_at: string
+          expires_at: string | null
           id: string
           points_spent: number
           redemption_code: string
+          reward_status: string
           used_at: string | null
           used_by: string | null
           user_id: string
@@ -378,9 +417,11 @@ export type Database = {
         Insert: {
           catalog_id: string
           created_at?: string
+          expires_at?: string | null
           id?: string
           points_spent: number
           redemption_code?: string
+          reward_status?: string
           used_at?: string | null
           used_by?: string | null
           user_id: string
@@ -388,9 +429,11 @@ export type Database = {
         Update: {
           catalog_id?: string
           created_at?: string
+          expires_at?: string | null
           id?: string
           points_spent?: number
           redemption_code?: string
+          reward_status?: string
           used_at?: string | null
           used_by?: string | null
           user_id?: string
@@ -407,36 +450,54 @@ export type Database = {
       }
       check_ins: {
         Row: {
+          beverage_tag: string | null
           campaign_id: string | null
+          check_in_status: string
           coffee_shop_id: string
           created_at: string
           id: string
+          latitude: number | null
+          location_confirmed: boolean
+          longitude: number | null
           notes: string | null
           points_awarded: number
+          qr_code_used: string | null
           social_platform: string | null
           social_post_url: string | null
           user_id: string
           verified: boolean
         }
         Insert: {
+          beverage_tag?: string | null
           campaign_id?: string | null
+          check_in_status?: string
           coffee_shop_id: string
           created_at?: string
           id?: string
+          latitude?: number | null
+          location_confirmed?: boolean
+          longitude?: number | null
           notes?: string | null
           points_awarded?: number
+          qr_code_used?: string | null
           social_platform?: string | null
           social_post_url?: string | null
           user_id: string
           verified?: boolean
         }
         Update: {
+          beverage_tag?: string | null
           campaign_id?: string | null
+          check_in_status?: string
           coffee_shop_id?: string
           created_at?: string
           id?: string
+          latitude?: number | null
+          location_confirmed?: boolean
+          longitude?: number | null
           notes?: string | null
           points_awarded?: number
+          qr_code_used?: string | null
           social_platform?: string | null
           social_post_url?: string | null
           user_id?: string
@@ -448,6 +509,13 @@ export type Database = {
             columns: ["campaign_id"]
             isOneToOne: false
             referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "check_ins_coffee_shop_id_fkey"
+            columns: ["coffee_shop_id"]
+            isOneToOne: false
+            referencedRelation: "cafe_listings"
             referencedColumns: ["id"]
           },
           {
@@ -546,17 +614,52 @@ export type Database = {
         }
         Relationships: []
       }
+      coffee_crawls: {
+        Row: {
+          active: boolean
+          city_slug: string
+          created_at: string
+          description: string | null
+          id: string
+          reward_points: number
+          slug: string
+          title: string
+        }
+        Insert: {
+          active?: boolean
+          city_slug: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          reward_points?: number
+          slug: string
+          title: string
+        }
+        Update: {
+          active?: boolean
+          city_slug?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          reward_points?: number
+          slug?: string
+          title?: string
+        }
+        Relationships: []
+      }
       coffee_shops: {
         Row: {
           address: string | null
           amenities: string[]
           city: string | null
           city_id: string | null
+          co2_note: string | null
           country: string | null
           country_code: string | null
           cover_image_url: string | null
           created_at: string
           description: string | null
+          fair_trade: boolean
           free_coffee_available: boolean
           gallery_urls: string[]
           id: string
@@ -564,11 +667,16 @@ export type Database = {
           logo_url: string | null
           longitude: number | null
           name: string
+          opening_hours: Json
+          origin_region: string | null
           partner_id: string | null
           price_level: number
           rating: number
           rating_count: number
+          roaster_name: string | null
           slug: string
+          social_links: Json
+          soundscape_url: string | null
           status: string
           tags: string[]
           updated_at: string
@@ -578,11 +686,13 @@ export type Database = {
           amenities?: string[]
           city?: string | null
           city_id?: string | null
+          co2_note?: string | null
           country?: string | null
           country_code?: string | null
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
+          fair_trade?: boolean
           free_coffee_available?: boolean
           gallery_urls?: string[]
           id?: string
@@ -590,11 +700,16 @@ export type Database = {
           logo_url?: string | null
           longitude?: number | null
           name: string
+          opening_hours?: Json
+          origin_region?: string | null
           partner_id?: string | null
           price_level?: number
           rating?: number
           rating_count?: number
+          roaster_name?: string | null
           slug: string
+          social_links?: Json
+          soundscape_url?: string | null
           status?: string
           tags?: string[]
           updated_at?: string
@@ -604,11 +719,13 @@ export type Database = {
           amenities?: string[]
           city?: string | null
           city_id?: string | null
+          co2_note?: string | null
           country?: string | null
           country_code?: string | null
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
+          fair_trade?: boolean
           free_coffee_available?: boolean
           gallery_urls?: string[]
           id?: string
@@ -616,11 +733,16 @@ export type Database = {
           logo_url?: string | null
           longitude?: number | null
           name?: string
+          opening_hours?: Json
+          origin_region?: string | null
           partner_id?: string | null
           price_level?: number
           rating?: number
           rating_count?: number
+          roaster_name?: string | null
           slug?: string
+          social_links?: Json
+          soundscape_url?: string | null
           status?: string
           tags?: string[]
           updated_at?: string
@@ -675,6 +797,102 @@ export type Database = {
           locale?: string
           name?: string
           vat_rate?: number
+        }
+        Relationships: []
+      }
+      crawl_stops: {
+        Row: {
+          coffee_shop_id: string
+          crawl_id: string
+          hint: string | null
+          id: string
+          stop_order: number
+        }
+        Insert: {
+          coffee_shop_id: string
+          crawl_id: string
+          hint?: string | null
+          id?: string
+          stop_order: number
+        }
+        Update: {
+          coffee_shop_id?: string
+          crawl_id?: string
+          hint?: string | null
+          id?: string
+          stop_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crawl_stops_coffee_shop_id_fkey"
+            columns: ["coffee_shop_id"]
+            isOneToOne: false
+            referencedRelation: "cafe_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crawl_stops_coffee_shop_id_fkey"
+            columns: ["coffee_shop_id"]
+            isOneToOne: false
+            referencedRelation: "coffee_shops"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crawl_stops_crawl_id_fkey"
+            columns: ["crawl_id"]
+            isOneToOne: false
+            referencedRelation: "coffee_crawls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crew_members: {
+        Row: {
+          crew_id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          crew_id: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          crew_id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crew_members_crew_id_fkey"
+            columns: ["crew_id"]
+            isOneToOne: false
+            referencedRelation: "crews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crews: {
+        Row: {
+          created_at: string
+          id: string
+          invite_code: string
+          name: string
+          owner_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invite_code?: string
+          name: string
+          owner_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invite_code?: string
+          name?: string
+          owner_id?: string
         }
         Relationships: []
       }
@@ -741,6 +959,66 @@ export type Database = {
           id?: string
           props?: Json
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      explorer_health_logs: {
+        Row: {
+          caffeine_mg: number | null
+          created_at: string
+          id: string
+          log_date: string
+          steps: number | null
+          user_id: string
+        }
+        Insert: {
+          caffeine_mg?: number | null
+          created_at?: string
+          id?: string
+          log_date?: string
+          steps?: number | null
+          user_id: string
+        }
+        Update: {
+          caffeine_mg?: number | null
+          created_at?: string
+          id?: string
+          log_date?: string
+          steps?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      gift_credits: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          points_value: number
+          recipient_id: string
+          redeemed_at: string | null
+          redemption_code: string
+          sender_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          points_value?: number
+          recipient_id: string
+          redeemed_at?: string | null
+          redemption_code?: string
+          sender_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          points_value?: number
+          recipient_id?: string
+          redeemed_at?: string | null
+          redemption_code?: string
+          sender_id?: string
         }
         Relationships: []
       }
@@ -891,6 +1169,33 @@ export type Database = {
         }
         Relationships: []
       }
+      photo_challenge_defs: {
+        Row: {
+          active: boolean
+          ends_at: string
+          id: string
+          reward_points: number
+          starts_at: string
+          theme: string
+        }
+        Insert: {
+          active?: boolean
+          ends_at: string
+          id: string
+          reward_points?: number
+          starts_at: string
+          theme: string
+        }
+        Update: {
+          active?: boolean
+          ends_at?: string
+          id?: string
+          reward_points?: number
+          starts_at?: string
+          theme?: string
+        }
+        Relationships: []
+      }
       plans: {
         Row: {
           active: boolean
@@ -1028,58 +1333,79 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          beans_balance: number
           bio: string | null
           city: string | null
           created_at: string
           display_name: string | null
+          explorer_level: string
           handle: string | null
           id: string
           instagram_handle: string | null
+          map_theme: string
           onboarding_completed_at: string | null
           points_expire_days: number | null
           preferences: Json
+          preferred_drink_categories: string[]
+          privacy_preferences: Json
+          push_subscription: Json | null
           referral_code: string | null
           referred_by: string | null
           total_check_ins: number
           total_points: number
+          total_rewards_redeemed: number
           updated_at: string
           x_handle: string | null
         }
         Insert: {
           avatar_url?: string | null
+          beans_balance?: number
           bio?: string | null
           city?: string | null
           created_at?: string
           display_name?: string | null
+          explorer_level?: string
           handle?: string | null
           id: string
           instagram_handle?: string | null
+          map_theme?: string
           onboarding_completed_at?: string | null
           points_expire_days?: number | null
           preferences?: Json
+          preferred_drink_categories?: string[]
+          privacy_preferences?: Json
+          push_subscription?: Json | null
           referral_code?: string | null
           referred_by?: string | null
           total_check_ins?: number
           total_points?: number
+          total_rewards_redeemed?: number
           updated_at?: string
           x_handle?: string | null
         }
         Update: {
           avatar_url?: string | null
+          beans_balance?: number
           bio?: string | null
           city?: string | null
           created_at?: string
           display_name?: string | null
+          explorer_level?: string
           handle?: string | null
           id?: string
           instagram_handle?: string | null
+          map_theme?: string
           onboarding_completed_at?: string | null
           points_expire_days?: number | null
           preferences?: Json
+          preferred_drink_categories?: string[]
+          privacy_preferences?: Json
+          push_subscription?: Json | null
           referral_code?: string | null
           referred_by?: string | null
           total_check_ins?: number
           total_points?: number
+          total_rewards_redeemed?: number
           updated_at?: string
           x_handle?: string | null
         }
@@ -1171,6 +1497,7 @@ export type Database = {
           coffee_shop_id: string
           created_at: string
           id: string
+          media_urls: string[]
           rating: number
           updated_at: string
           user_id: string
@@ -1180,6 +1507,7 @@ export type Database = {
           coffee_shop_id: string
           created_at?: string
           id?: string
+          media_urls?: string[]
           rating: number
           updated_at?: string
           user_id: string
@@ -1189,11 +1517,19 @@ export type Database = {
           coffee_shop_id?: string
           created_at?: string
           id?: string
+          media_urls?: string[]
           rating?: number
           updated_at?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "reviews_coffee_shop_id_fkey"
+            columns: ["coffee_shop_id"]
+            isOneToOne: false
+            referencedRelation: "cafe_listings"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "reviews_coffee_shop_id_fkey"
             columns: ["coffee_shop_id"]
@@ -1304,6 +1640,58 @@ export type Database = {
             foreignKeyName: "rewards_coffee_shop_id_fkey"
             columns: ["coffee_shop_id"]
             isOneToOne: false
+            referencedRelation: "cafe_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rewards_coffee_shop_id_fkey"
+            columns: ["coffee_shop_id"]
+            isOneToOne: false
+            referencedRelation: "coffee_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shop_arrivals: {
+        Row: {
+          coffee_shop_id: string
+          created_at: string
+          eta_minutes: number
+          id: string
+          message: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          coffee_shop_id: string
+          created_at?: string
+          eta_minutes?: number
+          id?: string
+          message?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          coffee_shop_id?: string
+          created_at?: string
+          eta_minutes?: number
+          id?: string
+          message?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_arrivals_coffee_shop_id_fkey"
+            columns: ["coffee_shop_id"]
+            isOneToOne: false
+            referencedRelation: "cafe_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shop_arrivals_coffee_shop_id_fkey"
+            columns: ["coffee_shop_id"]
+            isOneToOne: false
             referencedRelation: "coffee_shops"
             referencedColumns: ["id"]
           },
@@ -1348,6 +1736,55 @@ export type Database = {
             foreignKeyName: "shop_daily_stats_shop_id_fkey"
             columns: ["shop_id"]
             isOneToOne: false
+            referencedRelation: "cafe_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shop_daily_stats_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "coffee_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shop_stories: {
+        Row: {
+          caption: string | null
+          coffee_shop_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          media_url: string
+        }
+        Insert: {
+          caption?: string | null
+          coffee_shop_id: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          media_url: string
+        }
+        Update: {
+          caption?: string | null
+          coffee_shop_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          media_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_stories_coffee_shop_id_fkey"
+            columns: ["coffee_shop_id"]
+            isOneToOne: false
+            referencedRelation: "cafe_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shop_stories_coffee_shop_id_fkey"
+            columns: ["coffee_shop_id"]
+            isOneToOne: false
             referencedRelation: "coffee_shops"
             referencedColumns: ["id"]
           },
@@ -1391,6 +1828,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "shop_subscriptions_coffee_shop_id_fkey"
+            columns: ["coffee_shop_id"]
+            isOneToOne: true
+            referencedRelation: "cafe_listings"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "shop_subscriptions_coffee_shop_id_fkey"
             columns: ["coffee_shop_id"]
@@ -1472,6 +1916,64 @@ export type Database = {
           },
           {
             foreignKeyName: "social_submissions_coffee_shop_id_fkey"
+            columns: ["coffee_shop_id"]
+            isOneToOne: false
+            referencedRelation: "cafe_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_submissions_coffee_shop_id_fkey"
+            columns: ["coffee_shop_id"]
+            isOneToOne: false
+            referencedRelation: "coffee_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      spawn_events: {
+        Row: {
+          active: boolean
+          bonus_points: number
+          coffee_shop_id: string
+          created_at: string
+          ends_at: string
+          id: string
+          rarity: string
+          starts_at: string
+          title: string | null
+        }
+        Insert: {
+          active?: boolean
+          bonus_points?: number
+          coffee_shop_id: string
+          created_at?: string
+          ends_at: string
+          id?: string
+          rarity?: string
+          starts_at?: string
+          title?: string | null
+        }
+        Update: {
+          active?: boolean
+          bonus_points?: number
+          coffee_shop_id?: string
+          created_at?: string
+          ends_at?: string
+          id?: string
+          rarity?: string
+          starts_at?: string
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spawn_events_coffee_shop_id_fkey"
+            columns: ["coffee_shop_id"]
+            isOneToOne: false
+            referencedRelation: "cafe_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "spawn_events_coffee_shop_id_fkey"
             columns: ["coffee_shop_id"]
             isOneToOne: false
             referencedRelation: "coffee_shops"
@@ -1588,6 +2090,75 @@ export type Database = {
         }
         Relationships: []
       }
+      user_crawl_completions: {
+        Row: {
+          completed_at: string
+          crawl_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          crawl_id: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          crawl_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_crawl_completions_crawl_id_fkey"
+            columns: ["crawl_id"]
+            isOneToOne: false
+            referencedRelation: "coffee_crawls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_crawl_stops: {
+        Row: {
+          checked_in_at: string
+          coffee_shop_id: string
+          crawl_id: string
+          user_id: string
+        }
+        Insert: {
+          checked_in_at?: string
+          coffee_shop_id: string
+          crawl_id: string
+          user_id: string
+        }
+        Update: {
+          checked_in_at?: string
+          coffee_shop_id?: string
+          crawl_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_crawl_stops_coffee_shop_id_fkey"
+            columns: ["coffee_shop_id"]
+            isOneToOne: false
+            referencedRelation: "cafe_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_crawl_stops_coffee_shop_id_fkey"
+            columns: ["coffee_shop_id"]
+            isOneToOne: false
+            referencedRelation: "coffee_shops"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_crawl_stops_crawl_id_fkey"
+            columns: ["crawl_id"]
+            isOneToOne: false
+            referencedRelation: "coffee_crawls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1611,7 +2182,257 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      cafe_listings: {
+        Row: {
+          active_campaign_count: number | null
+          address: string | null
+          amenities: string[] | null
+          city: string | null
+          city_id: string | null
+          co2_note: string | null
+          country: string | null
+          country_code: string | null
+          cover_image_url: string | null
+          created_at: string | null
+          description: string | null
+          fair_trade: boolean | null
+          free_coffee_available: boolean | null
+          gallery_urls: string[] | null
+          has_active_campaign: boolean | null
+          id: string | null
+          latitude: number | null
+          logo_url: string | null
+          longitude: number | null
+          name: string | null
+          opening_hours: Json | null
+          origin_region: string | null
+          partner_id: string | null
+          price_level: number | null
+          rating: number | null
+          rating_count: number | null
+          roaster_name: string | null
+          slug: string | null
+          social_links: Json | null
+          soundscape_url: string | null
+          status: string | null
+          tags: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          active_campaign_count?: never
+          address?: string | null
+          amenities?: string[] | null
+          city?: string | null
+          city_id?: string | null
+          co2_note?: string | null
+          country?: string | null
+          country_code?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          fair_trade?: boolean | null
+          free_coffee_available?: boolean | null
+          gallery_urls?: string[] | null
+          has_active_campaign?: never
+          id?: string | null
+          latitude?: number | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string | null
+          opening_hours?: Json | null
+          origin_region?: string | null
+          partner_id?: string | null
+          price_level?: number | null
+          rating?: number | null
+          rating_count?: number | null
+          roaster_name?: string | null
+          slug?: string | null
+          social_links?: Json | null
+          soundscape_url?: string | null
+          status?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          active_campaign_count?: never
+          address?: string | null
+          amenities?: string[] | null
+          city?: string | null
+          city_id?: string | null
+          co2_note?: string | null
+          country?: string | null
+          country_code?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          fair_trade?: boolean | null
+          free_coffee_available?: boolean | null
+          gallery_urls?: string[] | null
+          has_active_campaign?: never
+          id?: string | null
+          latitude?: number | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string | null
+          opening_hours?: Json | null
+          origin_region?: string | null
+          partner_id?: string | null
+          price_level?: number | null
+          rating?: number | null
+          rating_count?: number | null
+          roaster_name?: string | null
+          slug?: string | null
+          social_links?: Json | null
+          soundscape_url?: string | null
+          status?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coffee_shops_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coffee_shops_country_code_fkey"
+            columns: ["country_code"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      explorer_rewards: {
+        Row: {
+          cafe_id: string | null
+          campaign_id: string | null
+          catalog_id: string | null
+          expires_at: string | null
+          explorer_id: string | null
+          id: string | null
+          label: string | null
+          points_awarded: number | null
+          qr_value: string | null
+          redeemed_at: string | null
+          reward_code: string | null
+          source: string | null
+          status: string | null
+          unlocked_at: string | null
+        }
+        Relationships: []
+      }
+      social_proofs: {
+        Row: {
+          cafe_id: string | null
+          campaign_id: string | null
+          explorer_id: string | null
+          id: string | null
+          platform: string | null
+          points_awarded: number | null
+          post_url: string | null
+          proof_image: string | null
+          redemption_code: string | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          submission_type: string | null
+          submitted_at: string | null
+          verification_status: string | null
+        }
+        Insert: {
+          cafe_id?: string | null
+          campaign_id?: string | null
+          explorer_id?: string | null
+          id?: string | null
+          platform?: string | null
+          points_awarded?: number | null
+          post_url?: string | null
+          proof_image?: string | null
+          redemption_code?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          submission_type?: string | null
+          submitted_at?: string | null
+          verification_status?: string | null
+        }
+        Update: {
+          cafe_id?: string | null
+          campaign_id?: string | null
+          explorer_id?: string | null
+          id?: string | null
+          platform?: string | null
+          points_awarded?: number | null
+          post_url?: string | null
+          proof_image?: string | null
+          redemption_code?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          submission_type?: string | null
+          submitted_at?: string | null
+          verification_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_submissions_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_submissions_coffee_shop_id_fkey"
+            columns: ["cafe_id"]
+            isOneToOne: false
+            referencedRelation: "cafe_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_submissions_coffee_shop_id_fkey"
+            columns: ["cafe_id"]
+            isOneToOne: false
+            referencedRelation: "coffee_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      xp_events: {
+        Row: {
+          action_type: string | null
+          event_at: string | null
+          id: string | null
+          metadata: Json | null
+          related_id: string | null
+          related_type: string | null
+          user_id: string | null
+          xp_value: number | null
+        }
+        Insert: {
+          action_type?: string | null
+          event_at?: string | null
+          id?: string | null
+          metadata?: Json | null
+          related_id?: string | null
+          related_type?: string | null
+          user_id?: string | null
+          xp_value?: number | null
+        }
+        Update: {
+          action_type?: string | null
+          event_at?: string | null
+          id?: string | null
+          metadata?: Json | null
+          related_id?: string | null
+          related_type?: string | null
+          user_id?: string | null
+          xp_value?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       _approve_social_submission_internal: {
@@ -1626,6 +2447,14 @@ export type Database = {
         Args: { _shop_id: string; _status: string }
         Returns: Json
       }
+      announce_shop_arrival: {
+        Args: { _eta_minutes?: number; _message?: string; _shop_id: string }
+        Returns: Json
+      }
+      award_beans: {
+        Args: { _delta: number; _reason?: string; _user: string }
+        Returns: number
+      }
       award_points: {
         Args: {
           _delta: number
@@ -1637,20 +2466,29 @@ export type Database = {
         }
         Returns: number
       }
+      check_in_time_multiplier: { Args: { _at?: string }; Returns: number }
       claim_explorer_challenge: {
         Args: { _challenge_id: string }
         Returns: Json
       }
       claim_referral: { Args: { _code: string }; Returns: Json }
       consume_api_quota: { Args: { _api_key_id: string }; Returns: Json }
+      create_crew: { Args: { _name: string }; Returns: Json }
       effective_shop_plan: { Args: { _shop_id: string }; Returns: string }
+      get_active_shop_stories: { Args: { _shop_id: string }; Returns: Json }
+      get_active_spawns: {
+        Args: { _lat?: number; _lng?: number; _radius_km?: number }
+        Returns: Json
+      }
       get_admin_engagement: { Args: never; Returns: Json }
+      get_beverage_passport: { Args: { _user?: string }; Returns: Json }
       get_campaign_by_token: { Args: { _token: string }; Returns: Json }
       get_challenge_week_period_key: { Args: never; Returns: string }
       get_city_collection_progress: {
         Args: { _city_slug: string }
         Returns: Json
       }
+      get_coffee_crawls: { Args: { _city_slug?: string }; Returns: Json }
       get_coffee_radar: {
         Args: { _lat?: number; _lng?: number; _radius_km?: number }
         Returns: Json
@@ -1684,7 +2522,12 @@ export type Database = {
         Args: { _city_slug?: string; _metric?: string }
         Returns: Json
       }
+      get_partner_arrivals: { Args: { _shop_id?: string }; Returns: Json }
+      get_rotating_verify_token: { Args: { _code: string }; Returns: string }
+      get_shop_mayor: { Args: { _shop_id: string }; Returns: Json }
+      get_today_health_log: { Args: never; Returns: Json }
       get_user_city_collections: { Args: never; Returns: Json }
+      get_user_crawl_progress: { Args: { _user?: string }; Returns: Json }
       has_plan_feature: {
         Args: { _feature: string; _partner: string }
         Returns: boolean
@@ -1710,6 +2553,7 @@ export type Database = {
             Args: { _campaign_id: string; _join_source?: string }
             Returns: Json
           }
+      join_crew: { Args: { _invite_code: string }; Returns: Json }
       log_explorer_event: {
         Args: { _event_name: string; _props?: Json }
         Returns: undefined
@@ -1752,6 +2596,20 @@ export type Database = {
             }
             Returns: Json
           }
+        | {
+            Args: {
+              _beverage_tag?: string
+              _campaign_id?: string
+              _latitude?: number
+              _longitude?: number
+              _shop_id: string
+            }
+            Returns: Json
+          }
+      record_crawl_stop: {
+        Args: { _shop_id: string; _user: string }
+        Returns: undefined
+      }
       redeem_campaign: { Args: { _campaign_id: string }; Returns: Json }
       redeem_catalog_item: { Args: { _item_id: string }; Returns: Json }
       review_partner_application: {
@@ -1763,6 +2621,12 @@ export type Database = {
         Returns: Json
       }
       revoke_api_key: { Args: { _id: string }; Returns: boolean }
+      save_push_subscription: { Args: { _subscription: Json }; Returns: Json }
+      send_gift_credit: {
+        Args: { _message?: string; _recipient_id: string }
+        Returns: Json
+      }
+      set_map_theme: { Args: { _theme: string }; Returns: Json }
       set_points_expiration_policy: { Args: { _days: number }; Returns: Json }
       submit_social_proof: {
         Args: {
@@ -1784,6 +2648,10 @@ export type Database = {
           _stripe_subscription_id?: string
         }
         Returns: undefined
+      }
+      upsert_health_log: {
+        Args: { _caffeine_mg?: number; _steps?: number }
+        Returns: Json
       }
       verify_api_key: {
         Args: { _raw: string }

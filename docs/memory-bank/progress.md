@@ -1,6 +1,6 @@
 # Progress (Memory Bank)
 
-**Last updated:** June 11, 2026
+**Last updated:** June 21, 2026
 
 ---
 
@@ -27,6 +27,10 @@
 - [x] **EN / DE toggle** in explorer + partner headers (next to notifications)
 - [x] Localized nav, page headers, explore filters/sort, auth form (bridge + `cofex-auth.js`)
 - [x] Explorer level names localized; `QueryBoundary` default strings
+- [x] **Wallet ledger** — full page body, toasts, CSV export, referral block
+- [x] **Partner dashboard** — KPIs, activity feed, charts, workflow steps, quick actions
+- [x] **Landing** — Features, Testimonials, Download sections (EN/DE)
+- [x] **German copy polish** — idiomatic DE for wallet, dashboard, landing, testimonials
 
 ### Mobile / phone UX
 
@@ -84,18 +88,30 @@
 
 ### Testing
 
-- [x] Vitest: 51 tests (geo, check-in, challenges, parse-verify-code, partner-campaign-edit, RPC)
+- [x] Vitest: 61 tests in 17 files (geo, check-in, challenges, campaign-mission, domain schemas, notification-display, parse-verify-code, partner-campaign-edit, RPC)
 - [x] Playwright: landing, auth, public, PWA, authenticated explorer, **partner (12 tests)**
-- [x] CI: lint + test + build + e2e on `main` / `develop`
+- [x] CI: lint + test + build + e2e + partner e2e on `main` / `develop`
+
+### Vision feature plan (June 2026)
+
+- [x] [PLAN_VISION_FEATURES.md](../PLAN_VISION_FEATURES.md) — 20-feature audit + wave roadmap
+- [x] Wave 1: coffee crawls, beverage passport, time bonuses, door QR, wallet/campaign verify polish, mood explore, origin stories, photo reviews
+- [x] Wave 2: spawns, mayor, Beans balance, shop stories reel, map themes
+- [x] Wave 3: crews, gift credits, shop arrivals, push subscription RPC + profile hook
+- [x] Wave 4: manual health log + [VISION_WAVE4_PLATFORM.md](../VISION_WAVE4_PLATFORM.md) (HealthKit/NFC/AR deferred)
+- [x] Migrations `20260619120000`–`20260619150000` (apply with `db:push`)
+- [x] Campaign/reward domain model — `20260621120000_campaign_reward_domain.sql`, [DATA_MODEL_CAMPAIGN_REWARD.md](../DATA_MODEL_CAMPAIGN_REWARD.md)
 
 ---
 
 ## In progress / follow-up
 
-- [ ] **i18n depth** — wallet ledger, partner dashboard KPIs, landing Features/Testimonials, campaign wizard toasts
-- [ ] CI: add `SUPABASE_SERVICE_ROLE_KEY` for partner E2E in GitHub Actions
-- [ ] `DEVELOPMENT_PLAN.md` refresh (some sections stale vs shipped features)
+- [ ] CI: add GitHub repository secrets (see README) for partner E2E in Actions
+- [ ] **i18n depth** — campaign wizard toasts and deep partner form strings
 - [ ] Partner dashboard full React Query migration (`partner.index.tsx` still uses `useEffect`)
+- [ ] Apply vision + campaign reward migrations to production Supabase + seed crawl stops with real shop IDs
+- [ ] VAPID keys for Web Push (`VITE_VAPID_PUBLIC_KEY`) + service worker push handler
+- [ ] Partner application notification flow (`20260618120000_partner_application_notifications.sql`)
 
 ---
 
@@ -105,7 +121,7 @@
 
 - [ ] Friends leaderboard
 - [ ] Realtime leaderboard (Supabase Realtime)
-- [ ] Push notifications (native / PWA)
+- [ ] Push notifications — infra stubbed; needs VAPID + service worker handler
 - [ ] European expansion tooling
 - [ ] Premium membership billing (Stripe production hardening)
 - [ ] CO:FE(X) token, ordering, reservations
@@ -123,18 +139,20 @@
 
 | Layer | Count | Notes |
 |-------|-------|-------|
-| Vitest | 14 files, 51 tests | Includes partner parse-verify + campaign edit rules |
+| Vitest | 17 files, 61 tests | Includes campaign-mission, domain schemas, notification-display |
 | Playwright | 8 specs | + partner setup, routes, guest |
 | Partner E2E | 12 tests | `npm run test:e2e:partner` |
 
 ---
 
-## Migration inventory (28+ total)
+## Migration inventory (33 total)
 
-Latest five:
+Latest seven:
 
-1. `20260614120000_explorer_challenge_claims.sql`
-2. `20260614140000_engagement_followup.sql`
-3. `20260615120000_explorer_gaps.sql`
-4. `20260616120000_eeffoc_social_flow.sql`
-5. `20260617120000_partner_next_steps.sql`
+1. `20260617120000_partner_next_steps.sql`
+2. `20260618120000_partner_application_notifications.sql`
+3. `20260619120000_vision_wave1.sql`
+4. `20260619130000_vision_wave2.sql`
+5. `20260619140000_vision_wave3.sql`
+6. `20260619150000_vision_wave4.sql`
+7. `20260621120000_campaign_reward_domain.sql`

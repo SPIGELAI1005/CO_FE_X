@@ -124,7 +124,10 @@ export function PostCheckInSheet({
             Check-in confirmed!
           </SheetTitle>
           <SheetDescription className="text-[color:var(--cofex-black)]/65">
-            +{result.points_awarded} pts at {shop.name} · {result.total_points.toLocaleString()} total ·{" "}
+            +{result.points_awarded} pts at {shop.name}
+            {result.time_bonus ? ` · ${result.time_bonus}` : ""}
+            {result.multiplier && result.multiplier > 1 ? ` (${result.multiplier}×)` : ""}
+            {" · "}{result.total_points.toLocaleString()} total ·{" "}
             {result.total_check_ins} visits
           </SheetDescription>
         </SheetHeader>

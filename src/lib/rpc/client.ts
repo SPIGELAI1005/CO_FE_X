@@ -7,6 +7,10 @@ export interface CheckInRpcResult {
   total_points: number;
   total_check_ins: number;
   new_badges: { slug: string; name: string }[];
+  time_bonus?: string | null;
+  multiplier?: number;
+  beverage_tag?: string | null;
+  check_in_status?: string | null;
 }
 
 export async function rpcPerformCheckIn(
@@ -16,6 +20,7 @@ export async function rpcPerformCheckIn(
     latitude: number;
     longitude: number;
     campaignId?: string;
+    beverageTag?: string;
   },
 ) {
   return client.rpc("perform_check_in", {
@@ -23,6 +28,7 @@ export async function rpcPerformCheckIn(
     _campaign_id: payload.campaignId ?? undefined,
     _latitude: payload.latitude,
     _longitude: payload.longitude,
+    _beverage_tag: payload.beverageTag ?? undefined,
   });
 }
 
@@ -72,6 +78,10 @@ export function parseCheckInResult(data: unknown): CheckInRpcResult | null {
     new_badges: Array.isArray(row.new_badges)
       ? (row.new_badges as { slug: string; name: string }[])
       : [],
+    time_bonus: row.time_bonus ? String(row.time_bonus) : null,
+    multiplier: row.multiplier != null ? Number(row.multiplier) : undefined,
+    beverage_tag: row.beverage_tag ? String(row.beverage_tag) : null,
+    check_in_status: row.check_in_status ? String(row.check_in_status) : null,
   };
 }
 

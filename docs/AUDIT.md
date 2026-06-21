@@ -1,6 +1,6 @@
 # CO:FE(X) — Comprehensive Application Audit
 
-**Audit date:** June 11, 2026  
+**Audit date:** June 21, 2026  
 **Scope:** brew-quest-app full stack — product, engineering, security, compliance, operations  
 **Auditor:** Engineering review (codebase + docs analysis)
 
@@ -8,26 +8,26 @@
 
 ## Executive summary
 
-CO:FE(X) is a **production-ready MVP** for the core explorer loop: discover cafés → GPS check-in → earn points/badges → passport → leaderboard → campaigns/wallet. Recent sprints closed engagement/gaps (challenges, post-check-in, city collections, KPIs) and **Partner Next Steps** (QR verify scanner, multi-shop, campaign lifecycle, settings, EEFFOC social flow).
+CO:FE(X) is a **production-ready MVP+** for the core explorer loop and extended vision features: discover cafés → GPS check-in → earn points/badges → passport → leaderboard → campaigns/wallet, plus crawls, crews, spawns, and campaign mission flows. Recent sprints closed engagement/gaps, Partner Next Steps, **Vision Waves 1–4**, and the **campaign/reward domain model**.
 
 | Area | Grade | Summary |
 |------|-------|---------|
-| Product completeness (explorer) | **A-** | Core loop shipped; Phase 3 social/realtime deferred |
+| Product completeness (explorer) | **A** | Core loop + vision waves shipped; push production + friends rank deferred |
 | Partner / admin surfaces | **A-** | Full counter flow + lifecycle; partner.index still useEffect |
 | Security & auth | **B+** | RLS + RPC pattern sound; client-side mutations rely on Supabase guards |
-| Testing & CI | **B+** | 51 unit tests + 8 e2e specs (incl. 12 partner tests) + CI |
+| Testing & CI | **A-** | 61 unit tests + 8 e2e specs (incl. 12 partner tests) + CI |
 | Legal / GDPR readiness | **B** | Pages drafted; external legal review noted as pending |
-| Scalability architecture | **B+** | SaaS schema designed; not all scale paths exercised |
-| Documentation | **B+** | Strong sprint docs; DEVELOPMENT_PLAN partially stale |
-| Operational readiness | **B-** | i18n + mobile pass committed; Stripe/E2E CI secrets still need hardening |
+| Scalability architecture | **B+** | SaaS schema designed; campaign domain views in place |
+| Documentation | **A-** | Memory bank + sprint docs current; DEVELOPMENT_PLAN baseline refreshed |
+| Operational readiness | **B** | Migrations in repo; production `db:push` + VAPID + Stripe/E2E CI secrets pending |
 
 **Top recommendations:**
 
-1. Complete i18n wiring for wallet, partner dashboard KPIs, and landing marketing sections.
-2. Refresh `DEVELOPMENT_PLAN.md` known-gaps section to match current state.
-3. Add GitHub secrets for E2E + document required env matrix.
+1. Apply vision + campaign reward migrations to production Supabase (`db:push`).
+2. Configure VAPID keys + service worker handler for Web Push.
+3. Add GitHub secrets for partner E2E + document required env matrix.
 4. Schedule external GDPR/legal review before Sep 28, 2026 launch target.
-5. Plan Phase 3: push notifications, realtime leaderboard, friends scope, additional locales.
+5. Complete i18n for campaign wizard toasts and niche partner form strings.
 
 ---
 
@@ -55,7 +55,17 @@ The implementation aligns with the stated vision: **exploration and engagement**
 | Wallet + ledger | ✅ Shipped | `wallet.tsx` |
 | Campaigns | ✅ Shipped | `campaigns.tsx`, `campaign.$id.tsx` |
 | Profile + onboarding | ✅ Shipped | `profile.tsx`, `onboarding.tsx` |
-| i18n (EN / DE) | ✅ Partial | `src/lib/i18n/`, `LanguageToggle`; wallet/dashboard deep copy pending |
+| i18n (EN / DE) | ✅ Shipped | `src/lib/i18n/`, `LanguageToggle`; wallet/dashboard/landing localized; wizard toasts partial |
+| Coffee crawls | ✅ Shipped | `/crawls`, `coffee_crawls` table |
+| Campaign discovery map | ✅ Shipped | `/campaign-map`, `CampaignDiscoveryMap.tsx` |
+| Campaign mission steps | ✅ Shipped | `CampaignMissionSteps.tsx`, `campaign-mission.ts` |
+| Beverage passport tabs | ✅ Shipped | `BeveragePicker.tsx`, `check_ins.beverage_tag` |
+| Mood-based explore | ✅ Shipped | `MoodFilterChips.tsx` |
+| Spawns + mayor | ✅ Shipped | `SpawnBanner.tsx`, `MayorBadge.tsx` |
+| Crews + gifts | ✅ Shipped | `/crew`, `GiftCoffeeDialog.tsx` |
+| Shop arrivals | ✅ Shipped | `ArrivalButton.tsx` |
+| Health log (manual) | ✅ Shipped | `HealthLogRing.tsx` (Wave 4 stub) |
+| Push subscription hook | ✅ Partial | RPC + profile hook; VAPID production pending |
 | Limited-time challenges | ✅ Shipped | Radar Limited section, `matcha-week` seed |
 | Map check-in | ✅ Shipped | `MapShopSheet.tsx` |
 | Reviews | ✅ Shipped | `ReviewSection.tsx` |
@@ -429,7 +439,7 @@ Scripts: `db:link`, `db:push`, `db:types` — documented in README.
 
 ### 10.3 Release state
 
-**Committed** to [CO_FE_X](https://github.com/SPIGELAI1005/CO_FE_X) on `main` (June 2026). Latest batch: English/German i18n (`i18next`), EN/DE header toggle, mobile phone responsiveness pass, on top of Partner Next Steps + explorer engagement/gaps. Migrations through `20260617120000_partner_next_steps.sql`.
+**Committed** to [CO_FE_X](https://github.com/SPIGELAI1005/CO_FE_X) on `main` (June 2026). Latest batch: Vision Waves 1–4, campaign/reward domain model, i18n (EN/DE), mobile pass. Migrations through `20260621120000_campaign_reward_domain.sql`.
 
 ### 10.4 Monitoring (production)
 
@@ -450,11 +460,13 @@ Not configured in repo. Recommend:
 | `SPRINT_EXPLORER_ENGAGEMENT.md` | Excellent | Complete sprint record |
 | `PLAN_EXPLORER_GAPS.md` | Excellent | Deliverables all [x] |
 | `ARCHITECTURE.md` | Excellent | Scale target documented |
-| `DEVELOPMENT_PLAN.md` | Stale sections | Known gaps list outdated |
-| `README.md` | Good | Needs link to new docs |
-| `LATEST_CHANGES.md` | New | Changelog |
-| `AUDIT.md` | New | This document |
-| `memory-bank/` | New | Agent/team context |
+| `DEVELOPMENT_PLAN.md` | Good | Baseline refreshed June 2026 |
+| `README.md` | Good | Links to vision + campaign domain docs |
+| `LATEST_CHANGES.md` | Excellent | Changelog through June 21, 2026 |
+| `PLAN_VISION_FEATURES.md` | Excellent | Waves 1–4 shipped |
+| `DATA_MODEL_CAMPAIGN_REWARD.md` | Excellent | Domain spec mapping |
+| `AUDIT.md` | Good | This document |
+| `memory-bank/` | Excellent | Agent/team context current |
 
 ---
 
@@ -478,9 +490,10 @@ Not configured in repo. Recommend:
 ### Immediate (1–2 weeks)
 
 1. ~~Commit engagement + gaps + partner sprints~~ ✅
-2. Staging deploy + smoke test full explorer + partner loops
-3. Configure CI secrets for e2e (incl. `SUPABASE_SERVICE_ROLE_KEY`)
-4. Update `DEVELOPMENT_PLAN.md` known gaps
+2. ~~Vision Waves 1–4 + campaign domain~~ ✅
+3. Apply migrations to production Supabase (`db:push` + `db:types`)
+4. Configure CI secrets for e2e (incl. `SUPABASE_SERVICE_ROLE_KEY`)
+5. Staging deploy + smoke test full explorer + partner loops
 
 ### Short term (1 month)
 

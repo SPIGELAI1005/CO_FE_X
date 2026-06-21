@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Users } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { getCurrentPosition } from "@/lib/geo";
 import { rpcPerformCheckIn, parseCheckInResult, parseRpcErrorMessage, type CheckInRpcResult } from "@/lib/rpc/client";
@@ -7,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/hooks/use-user";
 import { PostCheckInSheet } from "@/components/app/PostCheckInSheet";
 import { BadgeUnlockSheet } from "@/components/app/BadgeUnlockSheet";
+import { BeveragePicker } from "@/components/app/BeveragePicker";
 import { afterCheckIn } from "@/lib/queries/invalidation";
 import { trackExplorerEvent } from "@/lib/explorer-analytics";
 import { cityToSlug } from "@/lib/cities";
@@ -19,6 +21,7 @@ interface ShopCheckInFlowProps {
   campaigns?: { id: string; title: string; reward_description?: string | null }[];
   onWriteReview?: () => void;
   compact?: boolean;
+  autoFocus?: boolean;
 }
 
 export function ShopCheckInFlow({
@@ -29,9 +32,12 @@ export function ShopCheckInFlow({
   campaigns = [],
   onWriteReview,
   compact,
+  autoFocus,
 }: ShopCheckInFlowProps) {
+  const { t } = useTranslation();
   const { user } = useUser();
   const qc = useQueryClient();
+  const [beverageTag, setBeverageTag] = useState("coffee");
   const [busy, setBusy] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [badgeSheetOpen, setBadgeSheetOpen] = useState(false);
@@ -48,6 +54,7 @@ export function ShopCheckInFlow({
         shopId,
         latitude,
         longitude,
+        beverageTag,
       });
       if (rpcError) {
         setError(parseRpcErrorMessage(rpcError));
@@ -79,8 +86,15 @@ export function ShopCheckInFlow({
   const citySlug = shopCity ? cityToSlug(shopCity) : undefined;
 
   return (
-    <div className="space-y-2">
+    <div id="check-in" className={`space-y-2 ${autoFocus ? "scroll-mt-24 ring-2 ring-[color:var(--cofex-cyan)]/40 rounded-2xl p-3" : ""}`}>
       {!checkedIn ? (
+        <>
+          <div className="space-y-1.5">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[color:var(--cofex-black)]/55">
+              {t("beverage.pickLabel")}
+            </p>
+            <BeveragePicker value={beverageTag} onChange={setBeverageTag} />
+          </div>
         <button
           type="button"
           onClick={checkIn}
@@ -91,17 +105,18 @@ export function ShopCheckInFlow({
           style={{ background: "var(--cofex-coffee-deep, #3d2417)" }}
         >
           <Users className="mr-2 inline h-4 w-4" />
-          {busy ? "Checking in…" : "Check in nearby & earn +10 points"}
+          {busy ? t("checkIn.busy") : t("checkIn.cta")}
         </button>
+        </>
       ) : (
         <div className="cofex-app-card px-4 py-3 text-center text-sm text-[color:var(--cofex-coffee-deep)]">
-          You&apos;re checked in here today.
+          {t("checkIn.alreadyToday")}
           <button
             type="button"
             className="ml-2 font-semibold text-[color:var(--cofex-cyan)] underline"
             onClick={() => setSheetOpen(true)}
           >
-            View summary
+            {t("checkIn.viewSummary")}
           </button>
         </div>
       )}

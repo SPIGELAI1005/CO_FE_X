@@ -22,6 +22,7 @@
     "rank": "Rang",
     "wallet": "Wallet",
     "profile": "Profil",
+    "crawls": "Crawl",
     "rewardsMenuAria": "Pass, Rang und Wallet",
     "home": "Start",
     "verify": "Prüfen",
@@ -43,10 +44,26 @@
     "moreMenuAria": "Weitere Partner-Tools"
   },
   "notifications": {
-    "title": "Benachrichtigungen",
-    "ariaLabel": "Benachrichtigungen",
+    "title": "Posteingang",
+    "subtitle": "Bewerbungen, Prämien und Aktivitäts-Updates",
+    "ariaLabel": "Benachrichtigungs-Posteingang",
     "markAllRead": "Alle gelesen",
-    "empty": "Noch keine Benachrichtigungen."
+    "empty": "Noch keine Nachrichten",
+    "emptyHint": "Wenn du Partner wirst oder Prämien freischaltest, erscheinen Updates hier."
+  },
+  "notificationTypes": {
+    "partner_application_received": {
+      "title": "Bewerbung eingegangen",
+      "body": "Danke für deine Bewerbung mit {{business_name}}. Wir prüfen sie gerade und melden uns bald bei dir."
+    },
+    "partner_application_approved": {
+      "title": "Bewerbung genehmigt",
+      "body": "Willkommen als CO:FE(X)-Partner! Richte dein Café-Profil ein und starte deine erste EEFFOC-Kampagne."
+    },
+    "partner_application_rejected": {
+      "title": "Update zu deiner Bewerbung",
+      "body": "Deine Bewerbung für {{business_name}} konnten wir derzeit nicht genehmigen. Du kannst deine Angaben im Profil aktualisieren oder uns bei Fragen kontaktieren."
+    }
   },
   "auth": {
     "welcomeBack": "Willkommen zurück",
@@ -199,7 +216,147 @@
     "emptyAction": "Cafés entdecken",
     "surpriseReward": "Überraschungsprämie",
     "ends": "Endet {{date}}",
-    "spotsLeft": "Noch {{count}} Plätze"
+    "spotsLeft": "Noch {{count}} Plätze",
+    "viewMap": "Entdeckungskarte"
+  },
+  "campaignMap": {
+    "title": "EEFFOC-Karte",
+    "back": "Kampagnen",
+    "startMission": "Mission starten",
+    "continueMission": "Mission fortsetzen",
+    "reward": "Prämie",
+    "remaining": "Verfügbar",
+    "distance": "Entfernung",
+    "socialAction": "Erforderliche Aktion",
+    "cafe": "Café",
+    "expiringSoon": "Endet bald",
+    "limited": "Begrenzte Plätze",
+    "collected": "Besucht",
+    "results": "{{count}} Missionen in der Nähe",
+    "clearFilters": "Filter zurücksetzen",
+    "emptyTitle": "Keine Missionen passen zu deinen Filtern",
+    "emptyDescription": "Vergrößere den Radius oder deaktiviere Filter, um mehr EEFFOC in der Nähe zu finden.",
+    "opening": {
+      "open": "Jetzt geöffnet",
+      "closed": "Geschlossen",
+      "unknown": "Öffnungszeiten unbekannt"
+    },
+    "rewardTypes": {
+      "coffee": "Kaffee",
+      "espresso": "Espresso",
+      "cappuccino": "Cappuccino",
+      "matcha": "Matcha",
+      "ice_cream": "Eis",
+      "juice": "Saft",
+      "cola": "Cola",
+      "other": "Sonstiges"
+    },
+    "filters": {
+      "drinkType": "Getränkeart",
+      "distance": "Entfernung",
+      "maxDistance": "Innerhalb {{km}} km",
+      "availableNow": "Jetzt geöffnet",
+      "newCampaigns": "Neu",
+      "expiringSoon": "Endet bald",
+      "notCollected": "Noch nicht besucht",
+      "badgeCampaigns": "Social-Missionen"
+    }
+  },
+  "campaignMission": {
+    "loading": "Mission wird geladen…",
+    "notFoundTitle": "Mission nicht gefunden",
+    "notFoundDescription": "Diese Kampagne ist beendet oder wurde entfernt.",
+    "allCampaigns": "Alle Kampagnen",
+    "missionPath": "Missionspfad",
+    "yourProgress": "Dein Fortschritt",
+    "complete": "fertig",
+    "almostThere": "Fast geschafft!",
+    "xpEarned": "XP & Prämien gespeichert",
+    "rewardType": "Deine Prämie",
+    "requiredAction": "Erforderliche Aktion",
+    "bonusXp": "Bonus-XP",
+    "availability": "Verfügbarkeit",
+    "unlimited": "Offene Plätze",
+    "expires": "Endet",
+    "noExpiry": "Kein Enddatum",
+    "aboutMission": "Über diese Mission",
+    "location": "Missionsort",
+    "openMaps": "Route öffnen",
+    "hashtags": "Diese Hashtags verwenden",
+    "hashtagHint": "Füge sie in deinen Post ein, damit das Café deinen Beweis findet.",
+    "rewardRules": "Prämienregeln",
+    "termsTitle": "Bedingungen & Hinweise",
+    "termsDefault": "Eine Prämie pro Explorer, sofern das Café nichts anderes angibt. Zeige deinen QR-Code an der Theke. Missbrauch kann zum Verlust der Prämie führen.",
+    "termsReminder": "Die Teilnahme kann öffentliches Teilen erfordern. Starte nur, wenn du den Regeln zustimmst.",
+    "participantCount": "{{count}} Explorer dabei",
+    "participantCount_max": "{{count}} / {{max}} Explorer dabei",
+    "readyTitle": "Bereit für dein nächstes Abenteuer?",
+    "readySubtitle": "Starte die Mission, um deine EEFFOC-Prämie und Bonus-XP freizuschalten.",
+    "startMission": "Mission starten",
+    "starting": "Startet…",
+    "campaignFull": "Mission voll",
+    "campaignEnded": "Mission beendet",
+    "pendingReviewTitle": "Beweis beim Café",
+    "pendingReviewBody": "Geduld — nach Freigabe erscheint hier dein Prämien-QR.",
+    "unlockReward": "Prämie freischalten",
+    "unlocking": "Wird freigeschaltet…",
+    "checkInCta": "Geh ins Café und checke ein, um fortzufahren.",
+    "goToCafe": "Zu {{name}}",
+    "toastJoined": "Mission gestartet! Folge den Schritten unten.",
+    "toastJoinedQr": "Willkommen! Du bist in dieser EEFFOC-Mission.",
+    "toastJoinError": "Mission konnte nicht gestartet werden",
+    "toastRedeemed": "Prämie freigeschaltet! +{{points}} XP",
+    "toastRedeemError": "Prämie konnte nicht freigeschaltet werden",
+    "microcopy": {
+      "discover": "Du hast eine EEFFOC-Mission in der Nähe gefunden. Starte, wenn du bereit bist — kein Stress, nur guter Kaffee.",
+      "checkIn": "Das Café wartet. Checke vor Ort ein — das ist Explorer-Energie.",
+      "social": "Fotografiere etwas Teilenswertes, tagge das Café und reiche deinen Beweis ein.",
+      "review": "Dein Beweis ist beim Café-Team. Nimm Platz — die Freigabe dauert meist nicht lange.",
+      "reward": "Geschafft! Zeig deinen QR an der Theke und hol dir dein EEFFOC.",
+      "default": "Schritt für Schritt. Jeder Besuch zählt für deinen Coffee Passport."
+    },
+    "steps": {
+      "discover": {
+        "title": "Kampagne entdecken",
+        "hint": "Finde EEFFOC-Missionen auf der Karte oder in der Liste.",
+        "current": "Du bist hier — lies die Mission, dann tippe auf Mission starten."
+      },
+      "visit": {
+        "title": "Café besuchen",
+        "hint": "Mach dich auf den Weg zum Partner-Café.",
+        "current": "Zeit für einen Besuch! Genieß die Atmosphäre vor Ort."
+      },
+      "check_in": {
+        "title": "Check-in-QR scannen",
+        "hint": "Checke an der Theke oder über die Café-Seite ein.",
+        "current": "Öffne die Café-Seite und checke ein, während du vor Ort bist."
+      },
+      "social_post": {
+        "title": "Social Post erstellen",
+        "hint": "Poste auf Instagram, TikTok oder Facebook mit den Hashtags.",
+        "current": "Teile deinen Besuch — nutze die Hashtags unten und tagge das Café."
+      },
+      "submit_proof": {
+        "title": "Beweis einreichen",
+        "hint": "Link einfügen oder Screenshot hochladen.",
+        "current": "Reiche deinen Beweis unten ein, damit das Café deinen Post prüfen kann."
+      },
+      "cafe_confirms": {
+        "title": "Café bestätigt",
+        "hint": "Der Partner prüft deine Einreichung.",
+        "current": "Warte auf die Freigabe — du wirst benachrichtigt, wenn es soweit ist."
+      },
+      "reward_unlocked": {
+        "title": "Prämie freigeschaltet",
+        "hint": "Dein persönlicher Prämien-QR erscheint hier.",
+        "current": "Fast da — schalte deinen Prämien-QR unten frei."
+      },
+      "badge_xp": {
+        "title": "Abzeichen & XP gesammelt",
+        "hint": "Bonuspunkte landen automatisch in deiner Wallet.",
+        "current": "Löse an der Theke ein, um deine Mission abzuschließen."
+      }
+    }
   },
   "passportPage": {
     "loading": "Pass wird geladen…",
@@ -218,7 +375,7 @@
     "cityCollectionsSubtitle": "Stempel nach Stadt gruppiert",
     "collection": "Sammlung",
     "noCityStamps": "Noch keine Stadt-Stempel",
-    "noCityStampsHint": "Checke in Cafés ein, um eine Stadt-Sammlung zu starten.",
+    "noCityStampsHint": "Checke bei Cafés ein, um eine Stadtsammlung zu starten.",
     "countryCollections": "Länder-Sammlungen",
     "countryCollectionsSubtitle": "Die Welt, eine Tasse nach der anderen",
     "stampCount": "{{count}} Stempel",
@@ -262,7 +419,7 @@
       "check_in": "Check-in",
       "review": "Bewertung",
       "campaign_redemption": "Kampagne",
-      "social_post": "Social Post",
+      "social_post": "Social-Media-Beitrag",
       "referral_bonus": "Empfehlungsbonus",
       "referral_reward": "Empfehlungsprämie",
       "catalog_redemption": "Prämie eingelöst",
@@ -274,7 +431,46 @@
       "180": "6 Monate",
       "365": "12 Monate",
       "730": "24 Monate"
-    }
+    },
+    "earnCheckIn": "Check-in",
+    "earnReview": "Bewertung",
+    "earnSocialPost": "Social-Media-Beitrag",
+    "earnCampaign": "Kampagne",
+    "earnVaries": "variabel",
+    "earnReferFriend": "Freund werben",
+    "earnGetReferred": "Empfehlung nutzen",
+    "expirationTimeline": "Ablaufübersicht",
+    "expired": "Abgelaufen",
+    "soon": "Bald",
+    "premium": "Premium",
+    "statusUsed": "verwendet",
+    "statusActive": "aktiv",
+    "usedAt": "Verwendet am {{time}}",
+    "issuedAt": "Ausgestellt am {{date}}",
+    "ptsSpentLine": "{{count}} Pkt. ausgegeben",
+    "noRedemptionsHint": "Verdiene Punkte durch Check-ins und Kampagnen und löse oben Prämien ein.",
+    "referHintFull": "Teile deinen Code. Freunde erhalten 50 Pkt., du erhältst 100 Pkt., wenn sie mitmachen.",
+    "claimReferral": "Code einlösen",
+    "emptyExploreCafes": "Cafés entdecken",
+    "expiresOn": "läuft ab am {{date}}",
+    "expiresSoon": "(bald)",
+    "rewardFallback": "Prämie",
+    "campaignFallback": "Kampagne",
+    "toastNeedMore": "Noch {{count}} Punkte nötig",
+    "toastRewardUnlocked": "Prämie freigeschaltet: {{name}}",
+    "toastRedemptionFailed": "Einlösung fehlgeschlagen",
+    "toastReferralClaimed": "Empfehlung eingelöst! +50 Punkte",
+    "toastClaimFailed": "Einlösung fehlgeschlagen",
+    "toastExpirationSet": "Punkte verfallen nach {{days}} Tagen (gilt für neu verdiente Punkte)",
+    "toastExpirationOff": "Punkte-Ablauf deaktiviert",
+    "toastUpdateFailed": "Aktualisierung fehlgeschlagen",
+    "toastNothingToExport": "Nichts zum Exportieren",
+    "csvDate": "Datum",
+    "csvSource": "Quelle",
+    "csvDelta": "Änderung",
+    "csvBalanceAfter": "Saldo danach",
+    "csvExpiresAt": "Läuft ab am",
+    "csvReference": "Referenz"
   },
   "profilePage": {
     "yourRank": "Dein Rang",
@@ -301,6 +497,7 @@
     "phone": "Telefon",
     "aboutCafe": "Erzähle uns von deinem Café",
     "applyPartner": "Als Partner bewerben",
+    "applicationSubmitted": "Bewerbung gesendet — Bestätigung findest du im Posteingang",
     "submitting": "Wird gesendet…",
     "changeAvatar": "Avatar ändern",
     "points": "{{count}} Punkte",
@@ -318,7 +515,7 @@
       "cafes": "Besuchte Cafés",
       "reviews": "Geschriebene Bewertungen",
       "campaigns": "Abgeschlossene Kampagnen",
-      "social": "Social Posts"
+      "social": "Social-Media-Beiträge"
     }
   },
   "radar": {
@@ -385,14 +582,15 @@
     "visitorsMonth": "Besucher diesen Monat",
     "campaignParticipation": "Kampagnen-Teilnahme",
     "newCustomers": "Neukunden",
-    "socialReach": "Generierte Social-Reichweite",
-    "reviewsGenerated": "Generierte Bewertungen",
+    "socialReach": "Erreichte Social-Reichweite",
+    "reviewsGenerated": "Neue Bewertungen",
     "rewardRedemptions": "Prämien-Einlösungen",
     "recentActivity": "Letzte Aktivität",
     "noActivity": "Noch keine Aktivität.",
     "checkedIn": "Ein Besucher hat eingecheckt",
     "rewardRedeemed": "Prämie eingelöst · {{name}}",
     "newReview": "Neue Bewertung erhalten",
+    "campaignFallback": "Kampagne",
     "quickActions": "Schnellaktionen",
     "editProfile": "Profil bearbeiten",
     "submissions": "Einreichungen",
@@ -409,7 +607,20 @@
     "topCampaigns": "Top-Kampagnen",
     "topCampaignsDesc": "Teilnehmer vs. Einlösungen diesen Monat.",
     "launchCampaignData": "Starte eine Kampagne, um Daten zu sehen.",
-    "createOne": "Erstellen →"
+    "createOne": "Erstellen →",
+    "flowStep1Title": "Explorer nimmt an deiner Kampagne teil",
+    "flowStep1Desc": "Über die Karte, QR-Code an der Theke oder den Kampagnen-Tab.",
+    "flowStep1Label": "Kampagnen verwalten",
+    "flowStep2Title": "Check-in oder Social Proof",
+    "flowStep2Desc": "GPS-Check-in oder genehmigter Instagram-/TikTok-Beitrag — je nach Modus.",
+    "flowStep2Label": "Einreichungen prüfen",
+    "flowStep3Title": "An der Theke einlösen",
+    "flowStep3Desc": "Gib den 8-stelligen Code ein, um die Prämie als verwendet zu markieren.",
+    "flowStep3Label": "Code prüfen",
+    "shopProfile": "Café-Profil",
+    "campaigns": "Kampagnen",
+    "rewards": "Prämien",
+    "fullLoopSubtitle": "Der komplette Weg von der Entdeckung bis zur Einlösung."
   },
   "partnerVerifyPage": {
     "history": "Verlauf",
@@ -459,7 +670,82 @@
     "email": "E-Mail *",
     "notifyMe": "Ja, ich möchte benachrichtigt werden. *",
     "submit": "Absenden",
-    "thanksSignup": "Danke! Wir melden uns bei dir."
+    "thanksSignup": "Danke! Wir melden uns bei dir.",
+    "forExplorer": "Für Explorer",
+    "forCafes": "Für Cafés",
+    "testimonialsExplorer": "Das sagen Explorer…",
+    "testimonialsCafe": "Das sagen Cafés…",
+    "testimonialPrev": "Vorheriges Zitat",
+    "testimonialNext": "Nächstes Zitat",
+    "featureItems": [
+      {
+        "title": "Foto & Verdienen",
+        "explorer": "Fotografiere deinen Becher, poste ihn und sichere dir <bold>sofort einen Gratis-Kaffee</bold>. Keine Likes, kein Warten, kein Haken.",
+        "cafe": "Mach aus jedem Besuch authentischen Social Content. Echte Posts von echten Gästen — <bold>ohne Werbebudget</bold>."
+      },
+      {
+        "title": "Café-Entdeckerkarte",
+        "explorer": "Entdecke gemütliche Cafés in der Nähe und angesagte Spots, die einen Umweg wert sind. Dein <bold>nächster Lieblingsort</bold> ist nur einen Tipp entfernt.",
+        "cafe": "Komm auf die Karte. Erreiche Explorer, die aktiv nach ihrem <bold>nächsten Kaffee-Stopp</bold> suchen."
+      },
+      {
+        "title": "Vorteile & Treue",
+        "explorer": "Verdiene Gratis-Kaffees, Bonus-Prämien und exklusive Vorteile. <bold>Je mehr du entdeckst und teilst, desto mehr bekommst du</bold>.",
+        "cafe": "Belohne Stammgäste und <bold>mach Erstbesucher zu Fans</bold>, die immer wieder kommen."
+      },
+      {
+        "title": "Echtzeit-Analysen",
+        "explorer": "Verfolge freigeschaltete Kaffees, besuchte Cafés und geteilte Posts. <bold>Sieh deinen Fortschritt auf einen Blick</bold>.",
+        "cafe": "Miss Reichweite, Engagement und Laufkundschaft live. <bold>Erkenne sofort, was funktioniert</bold>."
+      }
+    ],
+    "testimonialItems": [
+      {
+        "audience": "explorer",
+        "quote": "Mein Kaffee-Ritual war noch nie so einfach.\nIch entdecke neue Cafés, teile kurz einen Post und bekomme sofort meinen Gratis-Kaffee.\nEndlich bringt Social Media einen echten, greifbaren Vorteil!",
+        "author": "Floria N. (Unternehmerin)"
+      },
+      {
+        "audience": "explorer",
+        "quote": "Früher habe ich nur gescrollt. Jetzt wird jeder Post zu einem echten Kaffee-Moment an einem neuen Ort.\nDas hat meine Art, die Stadt zu erkunden, komplett verändert.",
+        "author": "Marco T. (Designer)"
+      },
+      {
+        "audience": "explorer",
+        "quote": "CO:FE(X) hat mich an drei Cafés erinnert, an denen ich jahrelang vorbeigelaufen bin.\nEin Foto, ein Post — und plötzlich kennt mich der Barista beim Namen.",
+        "author": "Lena K. (Fotografin)"
+      },
+      {
+        "audience": "explorer",
+        "quote": "Jedes Wochenende öffne ich die Karte. Hinter einer Buchhandlung fand ich eine Rösterei, postete einmal und trank einen Gratis-Flat White, bevor die Bildunterschrift fertig war.",
+        "author": "Amir H. (Student)"
+      },
+      {
+        "audience": "explorer",
+        "quote": "Mein Pass wächst stetig. Gratis-Kaffees, Bonus-Vorteile und Orte, die ich wirklich wieder besuchen möchte.\nEs fühlt sich an wie Entdecken mit einer Belohnung an jedem Stopp.",
+        "author": "Jana W. (Marketing)"
+      },
+      {
+        "audience": "cafe",
+        "quote": "Wir bekommen echte Geschichten von Gästen, die ohnehin gute Laune haben.\nKeine bezahlte Werbung. Einfach zufriedene Kunden, die von unseren Tischen posten.",
+        "author": "Klaus M. (Inhaber, Klein & Fein)"
+      },
+      {
+        "audience": "cafe",
+        "quote": "Jede Woche kommen neue Gesichter, weil wir auf der Karte erscheinen.\nCO:FE(X) schickt uns Explorer, die wir sonst nie erreicht hätten.",
+        "author": "Elena V. (Managerin, Casa del Grano)"
+      },
+      {
+        "audience": "cafe",
+        "quote": "Das Dashboard zeigt, welche Posts Gäste durch die Tür bringen.\nWiederkehrende Besuche haben sich in zwei Monaten verdoppelt — ohne Menüänderung.",
+        "author": "David R. (Inhaber, Filter House)"
+      },
+      {
+        "audience": "cafe",
+        "quote": "Eine Stempelkarte hat nie dafür gesorgt, dass online über uns gesprochen wird.\nCO:FE(X) macht aus einem Cappuccino Content und einen Grund, wiederzukommen.",
+        "author": "Priya S. (Mitgründerin, Morning Ritual)"
+      }
+    ]
   },
   "pages": {
     "campaigns": {
@@ -555,5 +841,95 @@
     "delete": "Löschen",
     "edit": "Bearbeiten",
     "close": "Schließen"
+  },
+  "beverage": {
+    "pickLabel": "Was trinkst du?",
+    "coffee": "Kaffee",
+    "matcha": "Matcha",
+    "iceCream": "Eis",
+    "cola": "Cola",
+    "juice": "Saft"
+  },
+  "mood": {
+    "label": "Stimmung",
+    "cozy": "Gemütlich",
+    "productive": "Produktiv",
+    "date": "Date",
+    "hangover": "Kater"
+  },
+  "mapTheme": {
+    "default": "Klassisch",
+    "sunrise": "Sonnenaufgang",
+    "neon": "Neon-Nacht",
+    "luxury": "Luxus",
+    "spring": "Frühling"
+  },
+  "checkIn": {
+    "cta": "Einchecken & Punkte sammeln",
+    "busy": "Check-in…",
+    "alreadyToday": "Du bist heute schon hier eingecheckt.",
+    "viewSummary": "Zusammenfassung"
+  },
+  "crawls": {
+    "eyebrow": "Stadtrouten",
+    "title": "Coffee Crawls",
+    "subtitle": "Mehrere Stopps — Belohnung, wenn du alle Cafés schaffst.",
+    "loading": "Crawls laden…",
+    "empty": "Noch keine Crawls in deinen Städten.",
+    "completed": "Crawl geschafft!",
+    "progress": "{{done}} von {{total}} Stopps"
+  },
+  "crew": {
+    "eyebrow": "Social",
+    "title": "Coffee Crew",
+    "subtitle": "Team up mit Freunden.",
+    "create": "Crew gründen",
+    "namePlaceholder": "Crew-Name",
+    "createBtn": "Crew erstellen",
+    "created": "Crew erstellt — teile den Code!",
+    "join": "Mit Code beitreten",
+    "joinBtn": "Beitreten",
+    "joined": "Willkommen in der Crew!"
+  },
+  "gift": {
+    "title": "Kaffee verschenken",
+    "subtitle": "Ein Getränke-Guthaben an einen Explorer senden.",
+    "recipientPlaceholder": "Empfänger User-ID",
+    "messagePlaceholder": "Nachricht (optional)",
+    "sendBtn": "Geschenk senden",
+    "sent": "Geschenk gesendet!",
+    "failed": "Senden fehlgeschlagen",
+    "codeReady": "Einlösecode"
+  },
+  "shopPage": {
+    "moreInCity": "Mehr Cafés in {{city}}",
+    "freeCoffeeToday": "Heute gratis Kaffee",
+    "doorScanHint": "Willkommen! Checke unten ein für Stempel und Bonuspunkte.",
+    "loadingCampaigns": "Kampagnen laden…",
+    "activeCampaigns": "Aktive Kampagnen",
+    "gallery": "Galerie",
+    "signInTitle": "Anmelden zum Einchecken",
+    "signInHint": "Check-ins, Pass und EEFFOC-Prämien für Explorers."
+  },
+  "reviews": {
+    "title": "Bewertungen",
+    "loading": "Bewertungen laden…",
+    "pickRating": "Sterne wählen",
+    "updated": "Bewertung aktualisiert",
+    "posted": "Bewertung gepostet — +5 Punkte!",
+    "failed": "Speichern fehlgeschlagen",
+    "yourReview": "Deine Bewertung",
+    "reviewShop": "{{name}} bewerten",
+    "edit": "Bearbeiten",
+    "placeholder": "Was hat dir gefallen? (optional)",
+    "addPhoto": "Foto hinzufügen",
+    "photoBonusHint": "Foto-Bewertungen bringen Bonuspunkte.",
+    "saving": "Speichern…",
+    "update": "Aktualisieren",
+    "post": "Posten (+5 Pkt.)"
+  },
+  "photoChallenge": {
+    "weekly": "Foto-Challenge diese Woche",
+    "reward": "+{{points}} Pkt. für Gewinner"
   }
 }

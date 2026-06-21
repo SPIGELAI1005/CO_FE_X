@@ -38,12 +38,26 @@ Mobile-first platform for discovering independent coffee shops, joining campaign
 | -------------- | ------------------------ |
 | `npm run dev`  | Start development server |
 | `npm run build`| Production build         |
-| `npm run test` | Run unit tests (Vitest, 51 tests) |
+| `npm run test` | Run unit tests (Vitest, 61 tests) |
 | `npm run test:e2e` | Run all Playwright smoke tests |
 | `npm run test:e2e:partner` | Partner routes E2E (12 tests) |
 | `npm run lint` | ESLint                   |
 | `npm run db:push` | Apply Supabase migrations |
 | `npm run db:types` | Regenerate Supabase types |
+
+## CI / GitHub Actions secrets
+
+The workflow in [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) runs lint, unit tests, build, smoke E2E, and partner E2E on `main` / `develop`.
+
+| Secret | Required for | Notes |
+|--------|----------------|-------|
+| `VITE_SUPABASE_URL` | Build + E2E | Same value as in `.env` |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Build + E2E | Supabase anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Partner E2E only | Provisions the test partner user in `e2e/partner.auth.setup.ts` |
+| `E2E_PARTNER_EMAIL` | Partner E2E (optional) | Defaults to `e2e-partner@cofex.test` |
+| `E2E_PARTNER_PASSWORD` | Partner E2E (optional) | Defaults to value in `.env.example` |
+
+Local partner tests: `npm run test:e2e:partner` (requires `SUPABASE_SERVICE_ROLE_KEY` in `.env`).
 
 ## Project structure
 
@@ -69,7 +83,9 @@ See **[docs/DEVELOPMENT_PLAN.md](./docs/DEVELOPMENT_PLAN.md)** for the full 12-w
 | Doc | Purpose |
 | --- | --- |
 | [docs/PROJECT_CONTEXT.md](./docs/PROJECT_CONTEXT.md) | Product vision, roles, development principles |
-| [docs/LATEST_CHANGES.md](./docs/LATEST_CHANGES.md) | Recent changelog (i18n, mobile, partner, EEFFOC) |
+| [docs/LATEST_CHANGES.md](./docs/LATEST_CHANGES.md) | Recent changelog (vision waves, campaign domain, i18n, mobile, partner) |
+| [docs/PLAN_VISION_FEATURES.md](./docs/PLAN_VISION_FEATURES.md) | Vision feature waves 1–4 (shipped) |
+| [docs/DATA_MODEL_CAMPAIGN_REWARD.md](./docs/DATA_MODEL_CAMPAIGN_REWARD.md) | Campaign/reward domain spec mapping |
 | [docs/AUDIT.md](./docs/AUDIT.md) | Comprehensive app audit (product, security, compliance, ops) |
 | [docs/memory-bank/](./docs/memory-bank/) | Agent/team memory bank (active context, patterns, progress) |
 | [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | Production architecture and scale targets |

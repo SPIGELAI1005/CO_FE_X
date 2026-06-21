@@ -34,9 +34,18 @@ Sensitive operations go through Postgres RPCs (RLS + server logic), not direct t
 | `partner_update_campaign` | Partial campaign edit |
 | `partner_delete_shop` | Delete shop (no active campaigns) |
 | `issue_api_key` / `revoke_api_key` | Partner API keys |
+| `get_campaign_mission_progress` | Campaign mission step completion |
+| `join_coffee_crawl` / `complete_crawl_stop` | Coffee crawl progression |
+| `claim_spawn_event` | Rare café spawn rewards |
+| `get_grid_mayor` | Weekly mayor per map grid cell |
+| `send_gift_credit` | One-way gift credits between explorers |
+| `register_shop_arrival` | Live arrival signal (5 min away) |
+| `upsert_push_subscription` | Web Push subscription storage |
 
 Client wrappers: `src/lib/rpc/client.ts`  
-Partner hooks: `src/lib/queries/partner.ts`
+Partner hooks: `src/lib/queries/partner.ts`  
+Vision hooks: `src/lib/queries/vision.ts`  
+Campaign map: `src/lib/queries/campaign-map.ts`
 
 ---
 
@@ -87,7 +96,7 @@ Admin reads funnel via `get_explorer_funnel_kpis` in `admin.analytics.tsx`.
   - `AppHeader`, `BottomNav`, onboarding redirect, email verification banner
   - `LanguageToggle` (EN/DE) in header next to notifications
 - Page shell: `AppPage` + `AppPageHeader` + `AppPageBody` + `AppPageSection` — stacks on mobile
-- Rewards dropdown: `BottomNav.tsx` — Passport, Rank, Wallet
+- Rewards dropdown: `BottomNav.tsx` — Passport, Crawls, Rank, Wallet
 
 ---
 
@@ -114,7 +123,26 @@ Do not hardcode user-facing English in new UI — add keys to both locale files.
 
 ---
 
-## Legal links (single source)
+## Campaign mission & discovery
+
+- Mission steps: `CampaignMissionSteps.tsx` + `src/lib/campaign-mission.ts` (unit-tested)
+- Campaign detail: `campaign.$id.tsx` shows mission progress + reward QR
+- Discovery map: `/campaign-map` → `CampaignDiscoveryMap.tsx` with filters (`CampaignMapFilters.tsx`)
+- Domain types: `src/lib/domain/campaign-reward-model.ts`, validated via `schemas.ts`
+
+---
+
+## Vision feature patterns
+
+- **Beverage pick:** `BeveragePicker.tsx` on check-in → `check_ins.beverage_tag`
+- **Mood discovery:** `MoodFilterChips.tsx` + `mood-discovery.ts` on explore
+- **Door QR:** `ShopDoorQr.tsx` + `?door=1` deep link via `shop-door.ts`
+- **Rotating verify:** `RotatingVerifyDisplay.tsx` + `qr-check-in.ts` TOTP window
+- **Crawls:** `/crawls` route, `coffee_crawls` table
+- **Crews:** `/crew` route, invite flow
+- **Push:** `use-push-subscription.ts` hook on profile (needs VAPID for production)
+
+---
 
 `LEGAL_LINK_GROUPS` in `LegalPageShell.tsx` feeds:
 

@@ -2,7 +2,7 @@
 
 Persistent context for AI agents and team members working on the brew-quest-app codebase.
 
-**Last updated:** June 11, 2026  
+**Last updated:** June 21, 2026  
 **Repository:** [github.com/SPIGELAI1005/CO_FE_X](https://github.com/SPIGELAI1005/CO_FE_X)
 
 ---
@@ -34,6 +34,9 @@ The memory bank is a set of small, focused documents that capture **what the pro
 | [../AUDIT.md](../AUDIT.md) | Comprehensive app audit |
 | [../ARCHITECTURE.md](../ARCHITECTURE.md) | Scale / SaaS architecture |
 | [../DEVELOPMENT_PLAN.md](../DEVELOPMENT_PLAN.md) | 12-week engineering roadmap |
+| [../PLAN_VISION_FEATURES.md](../PLAN_VISION_FEATURES.md) | Vision feature waves 1–4 (shipped June 2026) |
+| [../DATA_MODEL_CAMPAIGN_REWARD.md](../DATA_MODEL_CAMPAIGN_REWARD.md) | Campaign/reward domain spec mapping |
+| [../VISION_WAVE4_PLATFORM.md](../VISION_WAVE4_PLATFORM.md) | Platform capability evaluation (HealthKit, NFC, AR) |
 | [../ARCHITECTURE_EXPLORER_ENGAGEMENT.md](../ARCHITECTURE_EXPLORER_ENGAGEMENT.md) | Engagement sprint architecture |
 | [../SPRINT_EXPLORER_ENGAGEMENT.md](../SPRINT_EXPLORER_ENGAGEMENT.md) | Engagement sprint plan & outcomes |
 | [../PLAN_EEFFOC_SOCIAL_FLOW.md](../PLAN_EEFFOC_SOCIAL_FLOW.md) | EEFFOC social QR + proof flow |
@@ -58,6 +61,8 @@ The memory bank is a set of small, focused documents that capture **what the pro
 - **Users:** Explorers, Partners (cafés), Admins.
 - **Stack:** TanStack Start + React 19 + Supabase + Tailwind v4 + i18next (EN/DE).
 - **Explorer nav:** Radar · Explore · Campaigns · Rewards↓ · Profile.
+- **Rewards menu:** Passport · Crawls · Rank · Wallet.
 - **Partner nav:** Dashboard · Shop · Campaigns · Submissions · Verify · Rewards · Analytics · Billing · Settings.
 - **Core explorer loop:** Discover → check-in (GPS) → sheet → challenges → passport → rank.
 - **Core partner loop:** Shop → EEFFOC campaign → social/check-in → verify at counter → analytics.
+- **Latest migrations:** Through `20260621120000_campaign_reward_domain.sql`.

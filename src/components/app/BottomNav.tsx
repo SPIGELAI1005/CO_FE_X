@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
-import { Map as MapIcon, Megaphone, BookOpen, Wallet, User, RadioTower, ChevronUp, Trophy } from "lucide-react";
+import { Map as MapIcon, Megaphone, BookOpen, Wallet, User, RadioTower, ChevronUp, Trophy, Compass } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   DropdownMenu,
@@ -17,6 +17,7 @@ const navItemKeys = [
 
 const rewardsLinkKeys = [
   { to: "/passport", labelKey: "nav.passport", Icon: BookOpen },
+  { to: "/crawls", labelKey: "nav.crawls", Icon: Compass },
   { to: "/leaderboard", labelKey: "nav.rank", Icon: Trophy },
   { to: "/wallet", labelKey: "nav.wallet", Icon: Wallet },
 ] as const;
@@ -48,9 +49,10 @@ function NavLink({
 
 function rewardsActiveState(pathname: string, rewardsLabel: string) {
   const onPassport = pathname.startsWith("/passport");
+  const onCrawls = pathname.startsWith("/crawls");
   const onWallet = pathname.startsWith("/wallet");
   const onRank = pathname.startsWith("/leaderboard");
-  const active = onPassport || onWallet || onRank;
+  const active = onPassport || onCrawls || onWallet || onRank;
   const activeLink = rewardsLinkKeys.find(({ to }) => pathname === to || pathname.startsWith(`${to}/`));
   const ActiveIcon = activeLink?.Icon ?? BookOpen;
   const labelKey = activeLink?.labelKey ?? null;

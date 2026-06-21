@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef } from "react";
-import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
+import { useMemo } from "react";
+import { Marker } from "react-leaflet";
 import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import { MapCore, FlyTo } from "@/components/app/map/MapCore";
 
 export type MapShop = {
   id: string;
@@ -31,58 +31,34 @@ const coffeePin = (free: boolean) =>
     iconAnchor: [20, 40],
   });
 
-function FlyTo({ center, zoom }: { center: [number, number]; zoom: number }) {
-  const map = useMap();
-  useEffect(() => {
-    map.flyTo(center, zoom, { duration: 0.6 });
-  }, [center[0], center[1], zoom]);
-  return null;
-}
-
-function MapInvalidateSize({ layoutKey }: { layoutKey: string }) {
-  const map = useMap();
-  useEffect(() => {
-    const t1 = window.setTimeout(() => map.invalidateSize(), 50);
-    const t2 = window.setTimeout(() => map.invalidateSize(), 320);
-    return () => {
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
-    };
-  }, [layoutKey, map]);
-  return null;
-}
-
 export function CoffeeMap({
   shops,
   center,
   activeId,
   onMarkerClick,
   layoutKey = "default",
+  mapThemeId,
 }: {
   shops: MapShop[];
   center: [number, number];
   activeId?: string | null;
   onMarkerClick?: (id: string) => void;
   layoutKey?: string;
+  mapThemeId?: string | null;
 }) {
-  const ref = useRef<L.Map | null>(null);
   const activeShop = useMemo(() => shops.find((s) => s.id === activeId), [shops, activeId]);
   const focus: [number, number] = activeShop
     ? [activeShop.latitude, activeShop.longitude]
     : center;
 
   return (
-    <MapContainer
-      ref={ref as any}
+    <MapCore
       center={center}
       zoom={14}
-      scrollWheelZoom
-      style={{ height: "100%", width: "100%" }}
+      mapThemeId={mapThemeId}
+      layoutKey={layoutKey}
+      className="cofex-explore-map-host h-full min-h-0 w-full"
     >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
       {shops.map((s) => (
         <Marker
           key={s.id}
@@ -92,7 +68,6 @@ export function CoffeeMap({
         />
       ))}
       {activeShop && <FlyTo center={focus} zoom={16} />}
-      <MapInvalidateSize layoutKey={layoutKey} />
-    </MapContainer>
+    </MapCore>
   );
 }

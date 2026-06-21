@@ -17,8 +17,14 @@ export interface Profile {
   x_handle: string | null;
   total_points: number;
   total_check_ins: number;
+  total_rewards_redeemed?: number;
+  explorer_level?: string;
+  preferred_drink_categories?: string[];
+  privacy_preferences?: Record<string, unknown> | null;
   onboarding_completed_at: string | null;
   preferences: ProfilePreferences | null;
+  map_theme?: string | null;
+  beans_balance?: number;
 }
 export function useProfile(userId: string | undefined) {
   return useQuery({
@@ -28,7 +34,7 @@ export function useProfile(userId: string | undefined) {
       const { data, error } = await supabase
         .from("profiles")
         .select(
-          "id, display_name, handle, avatar_url, bio, city, instagram_handle, x_handle, total_points, total_check_ins, onboarding_completed_at, preferences",
+          "id, display_name, handle, avatar_url, bio, city, instagram_handle, x_handle, total_points, total_check_ins, total_rewards_redeemed, explorer_level, preferred_drink_categories, privacy_preferences, onboarding_completed_at, preferences, map_theme, beans_balance",
         )
         .eq("id", userId!)
         .single();
@@ -170,6 +176,7 @@ export function useSubmitPartnerApplication() {
     },
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: queryKeys.partnerApplication(vars.userId) });
+      qc.invalidateQueries({ queryKey: queryKeys.notifications(vars.userId) });
     },
   });
 }

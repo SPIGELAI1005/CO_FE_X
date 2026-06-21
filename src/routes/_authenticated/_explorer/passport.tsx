@@ -21,6 +21,8 @@ import { QueryBoundary } from "@/components/patterns/QueryBoundary";
 import { useUser } from "@/hooks/use-user";
 import { usePassport, type PassportBadge, type PassportCheckIn } from "@/lib/queries/passport";
 import { useUserCityCollections, type UserCityCollection } from "@/lib/queries/city-collections";
+import { useBeveragePassport } from "@/lib/queries/vision";
+import { BEVERAGE_TAGS, beverageTitle } from "@/lib/beverage-tags";
 import { cityToSlug } from "@/lib/cities";
 
 export const Route = createFileRoute("/_authenticated/_explorer/passport")({
@@ -84,10 +86,17 @@ function PassportPage() {
   const { user } = useUser();
   const passportQuery = usePassport(user?.id);
   const collectionsQuery = useUserCityCollections(user?.id);
+  const beverageQuery = useBeveragePassport(user?.id);
 
   return (
     <QueryBoundary query={passportQuery} loadingLabel={t("passportPage.loading")}>
-      {(data) => <PassportContent data={data} collections={collectionsQuery.data ?? []} />}
+      {(data) => (
+        <PassportContent
+          data={data}
+          collections={collectionsQuery.data ?? []}
+          beverageCounts={beverageQuery.data ?? {}}
+        />
+      )}
     </QueryBoundary>
   );
 }
@@ -95,9 +104,11 @@ function PassportPage() {
 function PassportContent({
   data,
   collections,
+  beverageCounts,
 }: {
   data: NonNullable<ReturnType<typeof usePassport>["data"]>;
   collections: UserCityCollection[];
+  beverageCounts: Record<string, number>;
 }) {
   const { t } = useTranslation();
   const { profile, badges, earnedBadgeIds: earned, earnedBadges, checkIns } = data;
@@ -212,6 +223,36 @@ function PassportContent({
             ))}
           </div>
         )}
+
+        <AppPageSection
+          eyebrow={t("passportPage.beverageEyebrow")}
+          title={t("passportPage.beverageTitle")}
+          icon={<Coffee className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
+        >
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {BEVERAGE_TAGS.map((b) => {
+              const count = beverageCounts[b.id] ?? 0;
+              return (
+                <div key={b.id} className="cofex-app-card p-4 text-center">
+                  <div className="text-2xl">{b.emoji}</div>
+                  <div className="mt-1 text-lg font-extrabold text-[color:var(--cofex-coffee-deep)]">{count}</div>
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[color:var(--cofex-black)]/55">
+                    {t(b.labelKey)}
+                  </div>
+                  <div className="mt-1 text-xs font-semibold text-[color:var(--cofex-cyan)]">
+                    {beverageTitle(count, b.id)}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <Link
+            to="/crawls"
+            className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[color:var(--cofex-cyan)] hover:underline"
+          >
+            {t("passportPage.crawlCta")} →
+          </Link>
+        </AppPageSection>
 
         <AppPageSection eyebrow={t("passportPage.collectAll")} title={t("passportPage.achievements")} icon={<Award className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">

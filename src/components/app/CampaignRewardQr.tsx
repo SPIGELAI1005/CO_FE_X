@@ -1,4 +1,5 @@
 import { CampaignQrCode } from "@/components/app/CampaignQrCode";
+import { RotatingVerifyDisplay } from "@/components/app/RotatingVerifyDisplay";
 import { campaignVerifyUrl } from "@/lib/campaign-fulfillment";
 import { Gift, ScanLine } from "lucide-react";
 
@@ -26,6 +27,7 @@ export function CampaignRewardQr({
       ) : null}
       <div className="mt-5 flex flex-col items-center gap-4">
         <CampaignQrCode value={verifyUrl} size={200} label="Show this QR at the counter" />
+        <RotatingVerifyDisplay code={redemptionCode} label="Live code" />
         <div className="w-full rounded-xl bg-white px-4 py-3 shadow-sm">
           <div className="text-[10px] font-bold uppercase tracking-widest text-amber-700">Backup code</div>
           <div className="mt-1 font-mono text-2xl font-bold tracking-[0.3em] text-amber-900">{redemptionCode}</div>

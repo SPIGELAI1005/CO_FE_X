@@ -283,5 +283,8 @@ Always prioritize **simplicity**, **engagement**, and **scalability**.
 
 - [Architecture](./ARCHITECTURE.md)
 - [Development plan](./DEVELOPMENT_PLAN.md)
+- [Latest changes](./LATEST_CHANGES.md)
+- [Vision features plan](./PLAN_VISION_FEATURES.md)
+- [Campaign/reward data model](./DATA_MODEL_CAMPAIGN_REWARD.md)
 - [Explorer engagement sprint](./SPRINT_EXPLORER_ENGAGEMENT.md)
 - [Explorer gaps plan](./PLAN_EXPLORER_GAPS.md)

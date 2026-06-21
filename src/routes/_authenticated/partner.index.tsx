@@ -18,6 +18,8 @@ import {
 import { AppPage, AppPageBody, AppPageHeader, AppPageSection } from "@/components/app/AppPageShell";
 import { PartnerDashboardCharts } from "@/components/app/PartnerDashboardCharts";
 import { Button } from "@/components/ui/button";
+import { usePartnerArrivals } from "@/lib/queries/vision";
+import { Navigation } from "lucide-react";
 import {
   PARTNER_BTN,
   PartnerEmptyState,
@@ -70,6 +72,7 @@ function PartnerDashboard() {
   const [series, setSeries] = useState<Daily[]>([]);
   const [campaignBars, setCampaignBars] = useState<{ name: string; participants: number; redemptions: number }[]>([]);
   const [recent, setRecent] = useState<{ id: string; kind: string; text: string; at: string }[]>([]);
+  const arrivalsQuery = usePartnerArrivals();
 
   const days = useMemo(() => lastNDays(30), []);
 
@@ -86,7 +89,7 @@ function PartnerDashboard() {
       const { data: shops } = await supabase.from("coffee_shops").select("id, name").eq("partner_id", user.id);
       const shopIds = (shops ?? []).map((s) => s.id);
       setShopCount(shopIds.length);
-      setShopName(shops?.[0]?.name ?? "Your café");
+      setShopName(shops?.[0]?.name ?? t("partnerDashboardPage.yourCafe"));
       if (!shopIds.length) {
         setLoading(false);
         return;
@@ -238,16 +241,16 @@ function PartnerDashboard() {
 
       const feed: { id: string; kind: string; text: string; at: string }[] = [];
       for (const r of (cinsSeries ?? []).slice(-5))
-        feed.push({ id: "ci-" + r.created_at, kind: "visit", text: "A visitor checked in", at: r.created_at });
+        feed.push({ id: "ci-" + r.created_at, kind: "visit", text: t("partnerDashboardPage.checkedIn"), at: r.created_at });
       for (const r of (redSeries ?? []).slice(-5))
         feed.push({
           id: "rd-" + r.id,
           kind: "redeem",
-          text: `Reward redeemed · ${cTitle.get(r.campaign_id) ?? "campaign"}`,
+          text: t("partnerDashboardPage.rewardRedeemed", { name: cTitle.get(r.campaign_id) ?? t("partnerDashboardPage.campaignFallback") }),
           at: r.redeemed_at,
         });
       for (const r of (revSeries ?? []).slice(-5))
-        feed.push({ id: "rv-" + r.id, kind: "review", text: "New review received", at: r.created_at });
+        feed.push({ id: "rv-" + r.id, kind: "review", text: t("partnerDashboardPage.newReview"), at: r.created_at });
       feed.sort((a, b) => (a.at < b.at ? 1 : -1));
       setRecent(feed.slice(0, 8));
 
@@ -265,7 +268,7 @@ function PartnerDashboard() {
       void socialMonth;
       setLoading(false);
     })();
-  }, [days]);
+  }, [days, t]);
 
   if (loading) {
     return (
@@ -289,32 +292,32 @@ function PartnerDashboard() {
         <AppPageBody className="max-w-2xl pb-10">
           <PartnerEmptyState
             Icon={Store}
-            title="Set up your café first"
-            description="Add your shop profile to start seeing visitors, campaigns, and rewards data here."
+            title={t("partnerDashboardPage.setupFirst")}
+            description={t("partnerDashboardPage.setupFirstHint")}
             to="/partner/shop"
-            actionLabel="Set up profile"
+            actionLabel={t("partnerDashboardPage.setupProfile")}
           />
           <div className="mt-8 space-y-3">
             <PartnerWorkflowStep
               step={1}
-              title="Create your shop profile"
-              description="Photos, story, location, and amenities explorers see on the map."
+              title={t("partnerDashboardPage.step1Title")}
+              description={t("partnerDashboardPage.step1Desc")}
               to="/partner/shop"
-              label="Shop profile"
+              label={t("partnerDashboardPage.shopProfile")}
             />
             <PartnerWorkflowStep
               step={2}
-              title="Launch an EEFFOC campaign"
-              description="Free coffee, matcha drops, or social-proof rewards in under a minute."
+              title={t("partnerDashboardPage.step2Title")}
+              description={t("partnerDashboardPage.step2Desc")}
               to="/partner/campaigns"
-              label="Campaigns"
+              label={t("partnerDashboardPage.campaigns")}
             />
             <PartnerWorkflowStep
               step={3}
-              title="Verify rewards at the counter"
-              description="Scan or enter explorer codes when they redeem in person."
+              title={t("partnerDashboardPage.step3Title")}
+              description={t("partnerDashboardPage.step3Desc")}
               to="/partner/verify"
-              label="Verify code"
+              label={t("partnerDashboardPage.verifyCode")}
             />
           </div>
         </AppPageBody>
@@ -332,12 +335,12 @@ function PartnerDashboard() {
           <div className="flex flex-wrap gap-2">
             <Button asChild className={PARTNER_BTN}>
               <Link to="/partner/campaigns">
-                <Megaphone className="mr-1 h-4 w-4" /> New campaign
+                <Megaphone className="mr-1 h-4 w-4" /> {t("partnerDashboardPage.newCampaign")}
               </Link>
             </Button>
             <Button asChild variant="outline" className="rounded-full">
               <Link to="/partner/verify">
-                <Shield className="mr-1 h-4 w-4" /> Verify code
+                <Shield className="mr-1 h-4 w-4" /> {t("partnerDashboardPage.verifyCode")}
               </Link>
             </Button>
           </div>
@@ -347,36 +350,36 @@ function PartnerDashboard() {
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
           <PartnerKpiCard
             Icon={Eye}
-            label="Visitors this month"
+            label={t("partnerDashboardPage.visitorsMonth")}
             value={kpis.visitors}
             delta={partnerDelta(kpis.visitors, kpis.visitorsPrev)}
             tint="from-amber-500 to-orange-600"
           />
           <PartnerKpiCard
             Icon={Users}
-            label="Campaign participation"
+            label={t("partnerDashboardPage.campaignParticipation")}
             value={kpis.participants}
             delta={partnerDelta(kpis.participants, kpis.participantsPrev)}
             tint="from-emerald-500 to-teal-600"
           />
-          <PartnerKpiCard Icon={UserPlus} label="New customers" value={kpis.new_customers} tint="from-sky-500 to-blue-600" />
+          <PartnerKpiCard Icon={UserPlus} label={t("partnerDashboardPage.newCustomers")} value={kpis.new_customers} tint="from-sky-500 to-blue-600" />
           <PartnerKpiCard
             Icon={Share2}
-            label="Social reach generated"
+            label={t("partnerDashboardPage.socialReach")}
             value={formatCompact(kpis.social_reach)}
             tint="from-fuchsia-500 to-pink-600"
           />
-          <PartnerKpiCard Icon={Star} label="Reviews generated" value={kpis.reviews} tint="from-yellow-500 to-amber-600" />
-          <PartnerKpiCard Icon={Gift} label="Reward redemptions" value={kpis.redemptions} tint="from-rose-500 to-red-600" />
+          <PartnerKpiCard Icon={Star} label={t("partnerDashboardPage.reviewsGenerated")} value={kpis.reviews} tint="from-yellow-500 to-amber-600" />
+          <PartnerKpiCard Icon={Gift} label={t("partnerDashboardPage.rewardRedemptions")} value={kpis.redemptions} tint="from-rose-500 to-red-600" />
         </div>
 
         <PartnerDashboardCharts series={series} campaignBars={campaignBars} />
 
         <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-3">
           <div className="cofex-app-card lg:col-span-2 p-5">
-            <h3 className="font-extrabold text-[color:var(--cofex-coffee-deep)]">Recent activity</h3>
+            <h3 className="font-extrabold text-[color:var(--cofex-coffee-deep)]">{t("partnerDashboardPage.recentActivity")}</h3>
             {recent.length === 0 ? (
-              <div className="py-8 text-center text-sm text-[color:var(--cofex-black)]/55">No activity yet.</div>
+              <div className="py-8 text-center text-sm text-[color:var(--cofex-black)]/55">{t("partnerDashboardPage.noActivity")}</div>
             ) : (
               <ul className="mt-3 divide-y divide-[color:var(--border)]">
                 {recent.map((r) => (
@@ -406,45 +409,71 @@ function PartnerDashboard() {
             )}
           </div>
           <div className="cofex-app-card p-5">
-            <h3 className="font-extrabold text-[color:var(--cofex-coffee-deep)]">Quick actions</h3>
+            <h3 className="font-extrabold text-[color:var(--cofex-coffee-deep)]">{t("partnerDashboardPage.quickActions")}</h3>
             <div className="mt-3 grid grid-cols-2 gap-2">
-              <ActionTile to="/partner/shop" Icon={Camera} label="Edit profile" />
-              <ActionTile to="/partner/campaigns" Icon={Megaphone} label="Campaigns" />
-              <ActionTile to="/partner/rewards" Icon={Gift} label="Rewards" />
-              <ActionTile to="/partner/submissions" Icon={Share2} label="Submissions" />
-              <ActionTile to="/partner/verify" Icon={Shield} label="Verify code" />
-              <ActionTile to="/partner/analytics" Icon={BarChart3} label="Analytics" />
+              <ActionTile to="/partner/shop" Icon={Camera} label={t("partnerDashboardPage.editProfile")} />
+              <ActionTile to="/partner/campaigns" Icon={Megaphone} label={t("partnerDashboardPage.campaigns")} />
+              <ActionTile to="/partner/rewards" Icon={Gift} label={t("partnerDashboardPage.rewards")} />
+              <ActionTile to="/partner/submissions" Icon={Share2} label={t("partnerDashboardPage.submissions")} />
+              <ActionTile to="/partner/verify" Icon={Shield} label={t("partnerDashboardPage.verifyCode")} />
+              <ActionTile to="/partner/analytics" Icon={BarChart3} label={t("partnerDashboardPage.analytics")} />
             </div>
           </div>
         </div>
 
+        {(arrivalsQuery.data?.length ?? 0) > 0 && (
+          <AppPageSection
+            eyebrow={t("partnerDashboardPage.arrivalsEyebrow")}
+            title={t("partnerDashboardPage.arrivalsTitle")}
+            icon={<Navigation className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
+            className="mt-8"
+          >
+            <ul className="cofex-app-card divide-y overflow-hidden">
+              {arrivalsQuery.data!.map((a) => (
+                <li key={a.id} className="flex items-center justify-between gap-3 p-3 text-sm">
+                  <div>
+                    <div className="font-semibold text-[color:var(--cofex-coffee-deep)]">{a.explorer_name}</div>
+                    <div className="text-xs text-[color:var(--cofex-black)]/55">
+                      {a.shop_name} · ~{a.eta_minutes} min
+                      {a.message ? ` · ${a.message}` : ""}
+                    </div>
+                  </div>
+                  <span className="text-[10px] text-[color:var(--cofex-black)]/45">
+                    {new Date(a.created_at).toLocaleTimeString()}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </AppPageSection>
+        )}
+
         <AppPageSection
-          eyebrow="EEFFOC flow"
-          title="How explorers reach your counter"
-          subtitle="The full loop from discovery to redemption."
+          eyebrow={t("partnerDashboardPage.eeffocFlow")}
+          title={t("partnerDashboardPage.eeffocFlowSubtitle")}
+          subtitle={t("partnerDashboardPage.fullLoopSubtitle")}
           className="mt-10"
         >
           <div className="space-y-3">
             <PartnerWorkflowStep
               step={1}
-              title="Explorer joins your campaign"
-              description="Via map, QR at the counter, or the campaigns tab."
+              title={t("partnerDashboardPage.flowStep1Title")}
+              description={t("partnerDashboardPage.flowStep1Desc")}
               to="/partner/campaigns"
-              label="Manage campaigns"
+              label={t("partnerDashboardPage.flowStep1Label")}
             />
             <PartnerWorkflowStep
               step={2}
-              title="Check in or post social proof"
-              description="GPS check-in or approved Instagram/TikTok post depending on mode."
+              title={t("partnerDashboardPage.flowStep2Title")}
+              description={t("partnerDashboardPage.flowStep2Desc")}
               to="/partner/submissions"
-              label="Review submissions"
+              label={t("partnerDashboardPage.flowStep2Label")}
             />
             <PartnerWorkflowStep
               step={3}
-              title="Redeem at your counter"
-              description="Enter their 8-character code to mark the reward as used."
+              title={t("partnerDashboardPage.flowStep3Title")}
+              description={t("partnerDashboardPage.flowStep3Desc")}
               to="/partner/verify"
-              label="Verify code"
+              label={t("partnerDashboardPage.flowStep3Label")}
             />
           </div>
         </AppPageSection>

@@ -20,8 +20,14 @@ import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { usePassport } from "@/lib/queries/passport";
-import { Camera, Coffee, Sparkles, Loader2, Trophy, ChevronRight, Award } from "lucide-react";
+import { Camera, Coffee, Sparkles, Loader2, Trophy, ChevronRight, Award, Users, Bell } from "lucide-react";
 import { levelFor, levelDisplayName } from "@/lib/explorer-levels";
+import { HealthLogRing } from "@/components/app/HealthLogRing";
+import { MapThemeToggle } from "@/components/app/MapThemeToggle";
+import { GiftCoffeeDialog } from "@/components/app/GiftCoffeeDialog";
+import { useSetMapTheme } from "@/lib/queries/vision";
+import { usePushSubscription } from "@/hooks/use-push-subscription";
+import { type MapThemeId } from "@/lib/map-themes";
 
 export const Route = createFileRoute("/_authenticated/_explorer/profile")({
   head: () => ({ meta: [{ title: "Profile · CO:FE(X)" }] }),
@@ -39,6 +45,8 @@ function ProfilePage() {
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const { data: myRank } = useMyLeaderboardRank("points", user?.id);
   const { data: passport } = usePassport(user?.id);
+  const setMapTheme = useSetMapTheme(user?.id);
+  const push = usePushSubscription();
 
   const [form, setForm] = useState<Record<string, string> | null>(null);
   const [appForm, setAppForm] = useState({
@@ -96,7 +104,7 @@ function ProfilePage() {
     if (!user) return;
     try {
       await submitApplication.mutateAsync({ userId: user.id, ...appForm });
-      toast.success("Application submitted. We'll review it soon");
+      toast.success(t("profilePage.applicationSubmitted"));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not submit application");
     }
@@ -219,6 +227,47 @@ function ProfilePage() {
             </div>
           </Link>
         )}
+
+        <HealthLogRing />
+
+        <AppPageSection title={t("profilePage.mapTheme")}>
+          <MapThemeToggle
+            value={(profile?.map_theme as MapThemeId) ?? "default"}
+            onChange={(theme) => {
+              void setMapTheme.mutateAsync(theme).then(() => toast.success(t("profilePage.mapThemeSaved")));
+            }}
+            disabled={setMapTheme.isPending}
+          />
+        </AppPageSection>
+
+        <Link to="/crew" className="cofex-app-card flex items-center gap-3 p-4 transition hover:-translate-y-0.5">
+          <Users className="h-5 w-5 text-[color:var(--cofex-cyan)]" />
+          <div className="flex-1 font-semibold text-[color:var(--cofex-coffee-deep)]">{t("profilePage.crewLink")}</div>
+          <ChevronRight className="h-5 w-5 text-[color:var(--cofex-black)]/35" />
+        </Link>
+
+        <GiftCoffeeDialog />
+
+        <div className="cofex-app-card p-4">
+          <div className="flex items-center gap-2 font-semibold text-[color:var(--cofex-coffee-deep)]">
+            <Bell className="h-4 w-4" /> {t("profilePage.pushTitle")}
+          </div>
+          <p className="mt-1 text-xs text-[color:var(--cofex-black)]/55">{t("profilePage.pushHint")}</p>
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-3 rounded-full"
+            disabled={push.isPending || push.enabled}
+            onClick={() => {
+              void push
+                .subscribe()
+                .then(() => toast.success(t("profilePage.pushEnabled")))
+                .catch((e) => toast.error(e instanceof Error ? e.message : "Failed"));
+            }}
+          >
+            {push.enabled ? t("profilePage.pushOn") : t("profilePage.pushEnable")}
+          </Button>
+        </div>
 
         <AppPageSection title="Edit profile">
           <form onSubmit={saveProfile} className="cofex-app-card space-y-4 p-5">

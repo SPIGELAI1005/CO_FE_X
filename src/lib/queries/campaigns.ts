@@ -4,6 +4,9 @@ import { queryKeys } from "./keys";
 import { afterCampaignAction } from "./invalidation";
 import type { CampaignFulfillmentMode } from "@/lib/campaign-fulfillment";
 import { parseSocialRequirements, type CampaignSocialRequirements } from "@/lib/campaign-fulfillment";
+import type { CampaignRewardType } from "@/lib/domain/campaign-reward-model";
+import { DEFAULT_CAMPAIGN_SLOGAN } from "@/lib/domain/campaign-reward-model";
+import { inferRewardType } from "@/lib/map/campaign-markers";
 
 export interface CampaignListItem {
   id: string;
@@ -30,12 +33,16 @@ export interface CampaignListItem {
 export interface CampaignDetail {
   id: string;
   title: string;
+  slogan: string;
   description: string | null;
   reward_description: string | null;
+  reward_type: CampaignRewardType;
   requirements: string | null;
   hashtag: string | null;
+  hashtags: string[];
   points_reward: number;
   max_participants: number | null;
+  available_quantity: number | null;
   required_check_ins: number;
   campaign_type: string;
   fulfillment_mode: CampaignFulfillmentMode;
@@ -43,6 +50,7 @@ export interface CampaignDetail {
   participation_token: string | null;
   status: string;
   ends_at: string | null;
+  terms_and_conditions: string | null;
   coffee_shop_id: string;
   cover_image_url: string | null;
   coffee_shops: {
@@ -50,6 +58,11 @@ export interface CampaignDetail {
     name: string;
     slug: string;
     city: string | null;
+    address: string | null;
+    description: string | null;
+    latitude: number | null;
+    longitude: number | null;
+    logo_url: string | null;
     cover_image_url: string | null;
   } | null;
 }
@@ -128,7 +141,10 @@ export function useCampaignDetail(campaignId: string, userId: string | undefined
       const { data, error } = await supabase
         .from("campaigns")
         .select(
-          "id, title, description, reward_description, requirements, hashtag, points_reward, max_participants, required_check_ins, campaign_type, fulfillment_mode, social_requirements, participation_token, status, ends_at, coffee_shop_id, cover_image_url, coffee_shops(id, name, slug, city, cover_image_url)",
+          `id, title, slogan, description, reward_description, reward_type, requirements, hashtag, hashtags,
+          points_reward, max_participants, available_quantity, required_check_ins, campaign_type, fulfillment_mode,
+          social_requirements, participation_token, status, ends_at, terms_and_conditions, coffee_shop_id, cover_image_url,
+          coffee_shops(id, name, slug, city, address, description, latitude, longitude, logo_url, cover_image_url)`,
         )
         .eq("id", campaignId)
         .maybeSingle();
@@ -138,6 +154,19 @@ export function useCampaignDetail(campaignId: string, userId: string | undefined
       const raw = data as Record<string, unknown>;
       const campaign: CampaignDetail = {
         ...(data as unknown as CampaignDetail),
+        slogan: String(raw.slogan ?? DEFAULT_CAMPAIGN_SLOGAN),
+        reward_type: inferRewardType(
+          raw.reward_type as string | null,
+          raw.reward_description as string | null,
+        ),
+        hashtags: Array.isArray(raw.hashtags)
+          ? (raw.hashtags as string[])
+          : raw.hashtag
+            ? [String(raw.hashtag)]
+            : [],
+        available_quantity:
+          raw.available_quantity != null ? Number(raw.available_quantity) : null,
+        terms_and_conditions: (raw.terms_and_conditions as string | null) ?? null,
         fulfillment_mode: (raw.fulfillment_mode as CampaignFulfillmentMode) ?? "check_in",
         social_requirements: parseSocialRequirements(raw.social_requirements),
         participation_token: (raw.participation_token as string | null) ?? null,

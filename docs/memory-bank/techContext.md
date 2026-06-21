@@ -41,7 +41,7 @@ Optional / feature-specific: Stripe keys, E2E credentials:
 ```bash
 npm run dev          # Dev server
 npm run build        # Production build
-npm run test         # Vitest (51 tests)
+npm run test         # Vitest (61 tests)
 npm run test:e2e     # Playwright smoke (all projects)
 npm run test:e2e:partner  # Partner routes only (12 tests)
 npm run lint         # ESLint
@@ -60,7 +60,9 @@ src/
   components/ui/             # shadcn primitives
   components/marketing/      # Legal shell, footer
   lib/queries/               # React Query hooks (one file per domain)
+  lib/domain/                # Campaign/reward Zod schemas + model types
   lib/i18n/                  # i18next init, en/de JSON, filter label hooks
+  lib/map/                   # Campaign markers, opening hours helpers
   lib/rpc/                   # Supabase RPC wrappers
   integrations/supabase/     # Client + generated types
 supabase/migrations/         # SQL migrations (apply in order)

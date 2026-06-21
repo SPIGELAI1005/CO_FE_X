@@ -8,9 +8,13 @@ import { CoffeeShopCard, type ShopCardData } from "@/components/app/CoffeeShopCa
 import type { MapShop } from "@/components/app/CoffeeMap";
 import { ExploreFilters } from "@/components/app/ExploreFilters";
 import { ExploreSortSelect } from "@/components/app/ExploreSortSelect";
+import { MoodFilterChips } from "@/components/app/MoodFilterChips";
 import { AppPage } from "@/components/app/AppPageShell";
 import { haversineMetres } from "@/lib/geo";
+import { moodScore, type MoodId } from "@/lib/mood-discovery";
 import { useCoffeeShops, useCoffeeShopCampaignCounts } from "@/lib/queries/coffee-shops";
+import { useProfile } from "@/lib/queries/profile";
+import { useUser } from "@/hooks/use-user";
 
 const CoffeeMap = lazy(() =>
   import("@/components/app/CoffeeMap").then((m) => ({ default: m.CoffeeMap })),
@@ -37,6 +41,7 @@ const searchSchema = z.object({
   sort: fallback(z.enum(SORTS), "distance").default("distance"),
   view: fallback(z.enum(VIEWS), "list").default("list"),
   radius: fallback(z.number().min(0.5).max(50), 5).default(5),
+  mood: fallback(z.enum(["cozy", "productive", "date", "hangover"]).nullable(), null).default(null),
 });
 
 function haversineKm(a: [number, number], b: [number, number]) {
@@ -146,8 +151,10 @@ function PanelHeader({
 
 function ExplorePage() {
   const { t } = useTranslation();
-  const { q, tags, amenities, free, campaignsOnly, minRating, sort, view, radius } = Route.useSearch();
+  const { q, tags, amenities, free, campaignsOnly, minRating, sort, view, radius, mood } = Route.useSearch();
   const navigate = useNavigate();
+  const { user } = useUser();
+  const { data: profile } = useProfile(user?.id);
   type S = z.infer<typeof searchSchema>;
   const update = (patch: Partial<S>) =>
     navigate({
@@ -233,8 +240,19 @@ function ExplorePage() {
         Number(b.free_coffee_available) - Number(a.free_coffee_available) ||
         a.distance_km - b.distance_km,
     };
-    return list.sort(sorters[sort]);
-  }, [rows, counts, tags, amenities, free, campaignsOnly, minRating, q, sort, center, radius]);
+    const moodRank = (id: string) => {
+      if (!mood) return 0;
+      const row = rows.find((r) => r.id === id);
+      return row ? moodScore(mood as MoodId, row) : 0;
+    };
+    return list.sort((a, b) => {
+      if (mood) {
+        const md = moodRank(b.id) - moodRank(a.id);
+        if (md !== 0) return md;
+      }
+      return sorters[sort](a, b);
+    });
+  }, [rows, counts, tags, amenities, free, campaignsOnly, minRating, q, sort, center, radius, mood]);
 
   const mapShops = useMemo(
     () =>
@@ -310,9 +328,15 @@ function ExplorePage() {
             onToggleAmenity={(amenity) => update({ amenities: toggle(amenities, amenity) })}
             onSetMinRating={(rating) => update({ minRating: rating })}
             onClear={() =>
-              update({ tags: [], amenities: [], free: false, campaignsOnly: false, minRating: 0 })
+              update({ tags: [], amenities: [], free: false, campaignsOnly: false, minRating: 0, mood: null })
             }
           />
+          <div className="space-y-1.5">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[color:var(--cofex-black)]/55">
+              {t("mood.label")}
+            </span>
+            <MoodFilterChips value={mood as MoodId | null} onChange={(m) => update({ mood: m })} />
+          </div>
         </div>
 
         {/* Sort + view */}
@@ -430,6 +454,7 @@ function ExplorePage() {
                       center={center}
                       activeId={hovered}
                       layoutKey={layoutKey}
+                      mapThemeId={profile?.map_theme}
                       onMarkerClick={(id) => {
                         const shop = mapShops.find((s) => s.id === id) ?? null;
                         setMapSelectedShop(shop);

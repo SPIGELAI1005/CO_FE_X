@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
+import { z } from "zod";
 import { CoffeeShopPage } from "@/components/app/CoffeeShopPage";
 import { EmptyState } from "@/components/patterns/EmptyState";
 import { useUser } from "@/hooks/use-user";
@@ -9,6 +11,7 @@ import {
 } from "@/lib/queries/coffee-shops";
 
 export const Route = createFileRoute("/coffee/$slug")({
+  validateSearch: zodValidator(z.object({ door: fallback(z.number(), 0).default(0) })),
   ssr: true,
   loader: async ({ context, params }) => {
     try {
@@ -44,6 +47,7 @@ export const Route = createFileRoute("/coffee/$slug")({
 
 function PublicCoffeeShopPage() {
   const { slug } = Route.useParams();
+  const { door } = Route.useSearch();
   const { user } = useUser();
   const shopQuery = useCoffeeShopBySlug(slug);
   const shop = shopQuery.data;
@@ -70,6 +74,7 @@ function PublicCoffeeShopPage() {
       shop={shop}
       backTo={user ? "/explore" : "/"}
       backLabel={user ? "Explore" : "Home"}
+      doorScan={door === 1}
     />
   );
 }

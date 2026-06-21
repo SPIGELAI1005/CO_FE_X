@@ -7,6 +7,7 @@ export interface ShopReview {
   id: string;
   rating: number;
   body: string | null;
+  media_urls?: string[] | null;
   created_at: string;
   user_id: string;
   profiles: { display_name: string | null; avatar_url: string | null } | null;
@@ -19,7 +20,7 @@ export function useShopReviews(shopId: string | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("reviews")
-        .select("id, rating, body, created_at, user_id, profiles(display_name, avatar_url)")
+        .select("id, rating, body, media_urls, created_at, user_id, profiles(display_name, avatar_url)")
         .eq("coffee_shop_id", shopId!)
         .order("created_at", { ascending: false })
         .limit(20);
@@ -36,7 +37,7 @@ export function useMyReview(shopId: string | undefined, userId: string | undefin
     queryFn: async () => {
       const { data, error } = await supabase
         .from("reviews")
-        .select("id, rating, body, created_at")
+        .select("id, rating, body, media_urls, created_at")
         .eq("coffee_shop_id", shopId!)
         .eq("user_id", userId!)
         .maybeSingle();
@@ -54,6 +55,7 @@ export function useUpsertReview() {
       userId: string;
       rating: number;
       body: string;
+      mediaUrls?: string[];
       existingId?: string;
     }) => {
       const row = {
@@ -61,6 +63,7 @@ export function useUpsertReview() {
         user_id: payload.userId,
         rating: payload.rating,
         body: payload.body.trim() || null,
+        media_urls: payload.mediaUrls ?? [],
       };
       if (payload.existingId) {
         const { error } = await supabase.from("reviews").update(row).eq("id", payload.existingId);

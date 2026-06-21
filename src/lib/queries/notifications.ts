@@ -9,6 +9,7 @@ export interface Notification {
   title: string;
   body: string | null;
   link: string | null;
+  payload: Record<string, unknown> | null;
   read_at: string | null;
   created_at: string;
 }
@@ -47,7 +48,7 @@ export function useNotifications(userId: string | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("notifications")
-        .select("id, type, title, body, link, read_at, created_at")
+        .select("id, type, title, body, link, payload, read_at, created_at")
         .eq("user_id", userId!)
         .order("created_at", { ascending: false })
         .limit(20);

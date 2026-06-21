@@ -15,6 +15,8 @@ import {
 import { buildChallengeView, EXPLORER_CHALLENGES, weeklyResetLabel, limitedCountdownLabel } from "@/lib/explorer-challenges";
 import { trackExplorerEvent } from "@/lib/explorer-analytics";
 import { useUser } from "@/hooks/use-user";
+import { useActiveSpawns, useActivePhotoChallenge } from "@/lib/queries/vision";
+import { SpawnBanner } from "@/components/app/SpawnBanner";
 import {
   Coffee, Flame, Megaphone, Trophy, MapPin, Sparkles, Locate, Zap,
   Gift, Leaf, ArrowRight, RadioTower, Check,
@@ -40,6 +42,8 @@ function RadarPage() {
   const [locating, setLocating] = useState(false);
   const [now, setNow] = useState(new Date());
   const radarQuery = useCoffeeRadar(center);
+  const spawnsQuery = useActiveSpawns(center?.[0], center?.[1]);
+  const photoChallengeQuery = useActivePhotoChallenge();
   const claimsQuery = useChallengeClaims(user?.id);
   const defsQuery = useExplorerChallengeDefs();
   const claimMutation = useClaimChallenge(user?.id);
@@ -88,10 +92,33 @@ function RadarPage() {
   }, [challengeViews]);
 
   const claimableCount = challengeViews.filter((v) => v.claimable).length;
+  const timeBonusHint = useMemo(() => {
+    const h = now.getHours();
+    if (h < 8) return t("radar.timeBonusEarlyBird");
+    if (h >= 15 && h < 18) return t("radar.timeBonusHappyHour");
+    return null;
+  }, [now, t]);
 
   return (
     <AppPage>
       <AppPageBody className="pb-8 pt-2">
+        <SpawnBanner spawns={spawnsQuery.data ?? []} />
+        {timeBonusHint ? (
+          <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900">
+            {timeBonusHint}
+          </div>
+        ) : null}
+        {photoChallengeQuery.data ? (
+          <div className="mb-4 rounded-2xl border border-[color:var(--cofex-cyan)]/30 bg-[color:var(--cofex-pastel-blue)]/40 px-4 py-3">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-[color:var(--cofex-cyan)]">
+              {t("photoChallenge.weekly")}
+            </div>
+            <div className="font-semibold text-[color:var(--cofex-coffee-deep)]">{photoChallengeQuery.data.theme}</div>
+            <div className="text-xs text-[color:var(--cofex-black)]/60">
+              {t("photoChallenge.reward", { points: photoChallengeQuery.data.reward_points })}
+            </div>
+          </div>
+        ) : null}
         {/* Hero */}
         {claimableCount > 0 && !nudgeDismissed && (
           <div className="mb-4 flex items-center justify-between gap-3 rounded-2xl bg-[color:var(--cofex-pastel-lilac)] px-4 py-3">

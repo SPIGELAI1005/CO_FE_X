@@ -27,7 +27,7 @@
 | Radar challenges | Claimable with DB-backed defs + celebration UI | `radar.tsx`, `explorer_challenge_defs`, `claim_explorer_challenge` |
 | Check-in success | Bottom sheet with guided CTAs + claimable challenge row | `PostCheckInSheet.tsx`, `CoffeeShopPage.tsx` |
 | Points system | `award_points`, `points_ledger`, `challenge_reward` | RPCs + wallet ledger |
-| Nav | 5 slots: Radar, Explore, Campaigns, Rewards↓ (Passport · Rank · Wallet), Profile | `BottomNav.tsx` |
+| Nav | 5 slots: Radar, Explore, Campaigns, Rewards↓ (Passport · Crawls · Rank · Wallet), Profile | `BottomNav.tsx` |
 | Profile rank card | Shortcut to leaderboard with live rank | `profile.tsx`, `useMyLeaderboardRank` |
 | Analytics hooks | Custom events for leaderboard, claims, post-check-in | `explorer-analytics.ts` |
 

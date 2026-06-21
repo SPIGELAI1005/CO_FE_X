@@ -1,6 +1,6 @@
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 import { MarketingFooter } from "@/components/marketing/LegalPageShell";
 import { LanguageToggle } from "@/components/app/LanguageToggle";
 import { Download as DownloadIcon, ArrowRight, ArrowLeft, Smartphone } from "lucide-react";
@@ -224,82 +224,26 @@ function ShareLove() {
 }
 
 /* ───────────── Features ───────────── */
-const features: {
-  title: string;
-  bg: string;
-  explorer: ReactNode;
-  cafe: ReactNode;
-}[] = [
-  {
-    title: "Snap & Earn",
-    bg: "var(--cofex-pastel-gray)",
-    explorer: (
-      <>
-        Snap your cup, post it, and unlock a <span className="font-bold">free coffee instantly</span>. No likes, no
-        waiting, no catch.
-      </>
-    ),
-    cafe: (
-      <>
-        Turn every visit into authentic social content. Real posts from real customers,{" "}
-        <span className="font-bold">zero ad spend</span>.
-      </>
-    ),
-  },
-  {
-    title: "Café Discovery Map",
-    bg: "var(--cofex-pastel-blue)",
-    explorer: (
-      <>
-        Discover cozy cafés nearby and trending spots worth the trip. Your{" "}
-        <span className="font-bold">next favorite</span> is one tap away.
-      </>
-    ),
-    cafe: (
-      <>
-        Get on the map. Reach explorers who are actively searching for their{" "}
-        <span className="font-bold">next coffee stop</span>.
-      </>
-    ),
-  },
-  {
-    title: "Perks & Loyalty",
-    bg: "var(--cofex-pastel-pink)",
-    explorer: (
-      <>
-        Earn free coffees, bonus rewards, and exclusive perks. The{" "}
-        <span className="font-bold">more you explore and share, the more you get</span>.
-      </>
-    ),
-    cafe: (
-      <>
-        Reward loyal guests and <span className="font-bold">turn first-time visitors into fans</span> who keep coming
-        back.
-      </>
-    ),
-  },
-  {
-    title: "Real-Time Analytics",
-    bg: "var(--cofex-pastel-lilac)",
-    explorer: (
-      <>
-        Track coffees unlocked, cafés visited, and posts shared.{" "}
-        <span className="font-bold">Watch your impact grow</span> at a glance.
-      </>
-    ),
-    cafe: (
-      <>
-        Measure reach, engagement, and foot traffic live.{" "}
-        <span className="font-bold">Know exactly what&apos;s working</span>, instantly.
-      </>
-    ),
-  },
+const FEATURE_BACKGROUNDS = [
+  "var(--cofex-pastel-gray)",
+  "var(--cofex-pastel-blue)",
+  "var(--cofex-pastel-pink)",
+  "var(--cofex-pastel-lilac)",
 ];
 
+interface LandingFeature {
+  title: string;
+  explorer: string;
+  cafe: string;
+}
+
 function Features() {
+  const { t } = useTranslation();
+  const items = t("landingExtended.featureItems", { returnObjects: true }) as LandingFeature[];
+
   return (
     <section className="mx-auto max-w-6xl px-5 pb-24 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" data-parallax>
-      {features.map((f, i) => (
+      {items.map((f, i) => (
         <div
           key={f.title}
           className="cofex-reveal cofex-px"
@@ -313,7 +257,7 @@ function Features() {
           <div
             className="rounded-3xl p-7 flex flex-col justify-end min-h-[340px] cofex-lift h-full"
             style={{
-              background: f.bg,
+              background: FEATURE_BACKGROUNDS[i],
               animation: `cofex-float-sm ${5.5 + i * 0.4}s ease-in-out ${i * 0.4}s infinite`,
             }}
           >
@@ -321,18 +265,18 @@ function Features() {
             <div className="space-y-4">
               <div>
                 <p className="text-sm font-semibold leading-none" style={{ color: "var(--cofex-cyan)" }}>
-                  For Explorer
+                  {t("landingExtended.forExplorer")}
                 </p>
                 <p className="mt-1.5 text-sm leading-relaxed text-[color:var(--cofex-black)]/85">
-                  {f.explorer}
+                  <Trans i18nKey={`landingExtended.featureItems.${i}.explorer`} components={{ bold: <span className="font-bold" /> }} />
                 </p>
               </div>
               <div>
                 <p className="text-sm font-semibold leading-none" style={{ color: "var(--cofex-coffee-deep)" }}>
-                  For Cafés
+                  {t("landingExtended.forCafes")}
                 </p>
                 <p className="mt-1.5 text-sm leading-relaxed text-[color:var(--cofex-black)]/85">
-                  {f.cafe}
+                  <Trans i18nKey={`landingExtended.featureItems.${i}.cafe`} components={{ bold: <span className="font-bold" /> }} />
                 </p>
               </div>
             </div>
@@ -343,74 +287,24 @@ function Features() {
   );
 }
 
-
-
 /* ───────────── Testimonial ───────────── */
-const testimonials = [
-  {
-    audience: "explorer" as const,
-    quote:
-      "The coffee run has never been easier.\nI discover new cafés, share a quick post, and get my free coffee right away.\nFinally, using social media comes with a real tangible reward!",
-    author: "Floria N. (Entrepreneur)",
-  },
-  {
-    audience: "explorer" as const,
-    quote:
-      "I used to just scroll. Now every post turns into a real-life coffee moment in a new spot.\nIt completely changed how I explore my city.",
-    author: "Marco T. (Designer)",
-  },
-  {
-    audience: "explorer" as const,
-    quote:
-      "CO:FE(X) introduced me to three cafés I'd walked past for years.\nOne snap, one post, and suddenly the barista knows my name.",
-    author: "Lena K. (Photographer)",
-  },
-  {
-    audience: "explorer" as const,
-    quote:
-      "I open the map every weekend. Found a roastery behind a bookstore, posted once, and had a free flat white before I finished my caption.",
-    author: "Amir H. (Student)",
-  },
-  {
-    audience: "explorer" as const,
-    quote:
-      "My passport keeps growing. Free coffees, bonus perks, and spots I actually want to visit again.\nIt feels like exploring with a reward at every stop.",
-    author: "Jana W. (Marketing)",
-  },
-  {
-    audience: "cafe" as const,
-    quote:
-      "We get real stories from guests who are already in a good mood.\nNo paid ads. Just happy customers posting from our tables.",
-    author: "Klaus M. (Owner, Klein & Fein)",
-  },
-  {
-    audience: "cafe" as const,
-    quote:
-      "New faces walk in every week because we show up on the map.\nCO:FE(X) sends us explorers we never would have reached on our own.",
-    author: "Elena V. (Manager, Casa del Grano)",
-  },
-  {
-    audience: "cafe" as const,
-    quote:
-      "The dashboard shows which posts bring people through the door.\nWe doubled repeat visits in two months without changing our menu.",
-    author: "David R. (Owner, Filter House)",
-  },
-  {
-    audience: "cafe" as const,
-    quote:
-      "A stamp card never got anyone talking about us online.\nCO:FE(X) turns a cappuccino into content and a reason to come back.",
-    author: "Priya S. (Co-founder, Morning Ritual)",
-  },
-];
+interface LandingTestimonial {
+  audience: "explorer" | "cafe";
+  quote: string;
+  author: string;
+}
 
 function Testimonial() {
+  const { t } = useTranslation();
+  const testimonials = t("landingExtended.testimonialItems", { returnObjects: true }) as LandingTestimonial[];
+
   return (
     <section id="reviews" className="py-24" style={{ background: "var(--cofex-lime)" }} data-parallax>
       <div className="mx-auto max-w-4xl px-5">
         <div id="cofex-testimonial-stage" className="grid w-full">
-          {testimonials.map((t, i) => (
+          {testimonials.map((item, i) => (
             <div
-              key={t.author}
+              key={item.author}
               data-cofex-testimonial-slide
               aria-hidden={i !== 0}
               className={`col-start-1 row-start-1 w-full relative rounded-3xl bg-white p-6 shadow-sm cofex-reveal is-visible cofex-px sm:p-10 md:p-16${i !== 0 ? " invisible pointer-events-none" : ""}`}
@@ -419,16 +313,16 @@ function Testimonial() {
               <span
                 className="absolute -top-4 left-6 right-6 max-w-[calc(100%-3rem)] truncate rounded-full px-4 py-2 text-xs font-bold cofex-float-pill sm:left-10 sm:right-auto sm:max-w-none sm:px-5 sm:text-sm"
                 style={{
-                  background: t.audience === "cafe" ? "var(--cofex-pastel-pink)" : "var(--cofex-pastel-lilac)",
-                  color: t.audience === "cafe" ? "var(--cofex-coffee-deep)" : undefined,
+                  background: item.audience === "cafe" ? "var(--cofex-pastel-pink)" : "var(--cofex-pastel-lilac)",
+                  color: item.audience === "cafe" ? "var(--cofex-coffee-deep)" : undefined,
                 }}
               >
-                {t.audience === "cafe" ? "What Cafés are saying…" : "What Explorers are saying…"}
+                {item.audience === "cafe" ? t("landingExtended.testimonialsCafe") : t("landingExtended.testimonialsExplorer")}
               </span>
               <p className="text-xl font-extrabold leading-snug text-center whitespace-pre-line sm:text-2xl md:text-3xl">
-                &ldquo;{t.quote}&rdquo;
+                &ldquo;{item.quote}&rdquo;
               </p>
-              <p className="mt-8 text-center text-sm font-medium">{t.author}</p>
+              <p className="mt-8 text-center text-sm font-medium">{item.author}</p>
             </div>
           ))}
         </div>
@@ -436,7 +330,7 @@ function Testimonial() {
           <button
             type="button"
             data-cofex-testimonial-prev
-            aria-label="Previous testimonial"
+            aria-label={t("landingExtended.testimonialPrev")}
             className="h-12 w-12 rounded-xl bg-[color:var(--cofex-black)] text-white grid place-items-center hover:opacity-80"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -444,7 +338,7 @@ function Testimonial() {
           <button
             type="button"
             data-cofex-testimonial-next
-            aria-label="Next testimonial"
+            aria-label={t("landingExtended.testimonialNext")}
             className="h-12 w-12 rounded-xl bg-[color:var(--cofex-black)] text-white grid place-items-center hover:opacity-80"
           >
             <ArrowRight className="h-5 w-5" />
@@ -457,6 +351,7 @@ function Testimonial() {
 
 /* ───────────── Download ───────────── */
 function Download() {
+  const { t } = useTranslation();
   const { canInstall, install } = usePwaInstall();
   const [engaged, setEngaged] = useState(false);
 
@@ -472,8 +367,8 @@ function Download() {
 
   return (
     <section id="download" className="mx-auto max-w-4xl px-5 py-24 text-center">
-      <h2 className="text-3xl font-medium tracking-tight sm:text-5xl md:text-7xl">Download CO:FE(X)</h2>
-      <p className="mt-4 text-base">Available starting September 28, 2026, on…</p>
+      <h2 className="text-3xl font-medium tracking-tight sm:text-5xl md:text-7xl">{t("landingExtended.downloadTitle")}</h2>
+      <p className="mt-4 text-base">{t("landingExtended.downloadSubtitle")}</p>
 
       {canInstall && engaged && (
         <button
@@ -481,7 +376,7 @@ function Download() {
           onClick={() => install()}
           className="mt-6 inline-flex items-center gap-2 rounded-full border-2 border-[color:var(--cofex-coffee)] px-6 py-3 text-sm font-semibold hover:bg-[color:var(--cofex-cream-warm,#f5efe6)] transition"
         >
-          <Smartphone className="h-5 w-5" /> Install web app
+          <Smartphone className="h-5 w-5" /> {t("landingExtended.installWebApp")}
         </button>
       )}
 
@@ -520,11 +415,11 @@ function Download() {
         className="mt-16 text-left max-w-xl mx-auto"
         onSubmit={(e) => {
           e.preventDefault();
-          alert("Thanks! We'll keep you posted!");
+          alert(t("landingExtended.thanksSignup"));
         }}
       >
-        <h3 className="text-2xl font-bold mb-6">Sign Up for Early Access</h3>
-        <label className="text-sm font-medium">Email *</label>
+        <h3 className="text-2xl font-bold mb-6">{t("landingExtended.earlyAccess")}</h3>
+        <label className="text-sm font-medium">{t("landingExtended.email")}</label>
         <input
           required
           type="email"
@@ -532,13 +427,13 @@ function Download() {
         />
         <label className="mt-4 flex items-center gap-2 text-sm">
           <input type="checkbox" required className="h-4 w-4" />
-          Yes, I want to be notified. *
+          {t("landingExtended.notifyMe")}
         </label>
         <button
           type="submit"
           className="mt-5 w-full bg-[color:var(--cofex-black)] text-white py-3 font-semibold rounded-sm hover:opacity-90"
         >
-          Submit
+          {t("landingExtended.submit")}
         </button>
       </form>
     </section>

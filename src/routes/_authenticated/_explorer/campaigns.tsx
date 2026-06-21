@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { Gift, Users, Calendar, Hash, MapPin } from "lucide-react";
+import { Gift, Users, Calendar, Hash, MapPin, Map } from "lucide-react";
 import { AppPage, AppPageBody, AppPageHeader } from "@/components/app/AppPageShell";
 import { EmptyState } from "@/components/patterns/EmptyState";
 import { QueryBoundary } from "@/components/patterns/QueryBoundary";
@@ -22,6 +22,15 @@ function ExplorerCampaignsPage() {
         eyebrow={t("pages.campaigns.eyebrow")}
         title={t("pages.campaigns.title")}
         subtitle={t("pages.campaigns.subtitle")}
+        action={
+          <Link
+            to="/campaign-map"
+            className="inline-flex items-center gap-2 rounded-full bg-[color:var(--cofex-coffee-deep)] px-4 py-2.5 text-sm font-bold text-white shadow-md transition hover:-translate-y-0.5"
+          >
+            <Map className="h-4 w-4" />
+            {t("campaignsPage.viewMap")}
+          </Link>
+        }
       />
       <AppPageBody className="pb-8">
         <QueryBoundary
