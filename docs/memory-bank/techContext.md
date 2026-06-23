@@ -41,7 +41,7 @@ Optional / feature-specific: Stripe keys, E2E credentials:
 ```bash
 npm run dev          # Dev server
 npm run build        # Production build
-npm run test         # Vitest (61 tests)
+npm run test         # Vitest (143 tests)
 npm run test:e2e     # Playwright smoke (all projects)
 npm run test:e2e:partner  # Partner routes only (12 tests)
 npm run lint         # ESLint

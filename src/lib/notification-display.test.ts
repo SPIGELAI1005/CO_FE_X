@@ -1,15 +1,19 @@
 import { describe, expect, it } from "vitest";
 import { getNotificationDisplay } from "./notification-display";
 
-const t = (key: string, vars?: Record<string, string>) => {
+const t = (key: string, vars?: Record<string, string> & { defaultValue?: string }) => {
   const map: Record<string, string> = {
     "notificationTypes.partner_application_received.title": "Application received",
     "notificationTypes.partner_application_received.body":
       "Thank you for applying with {{business_name}}. We're reviewing your application and will get back to you soon.",
   };
-  let out = map[key] ?? key;
+  if (!map[key]) return vars?.defaultValue ?? key;
+  let out = map[key];
   if (vars) {
-    for (const [k, v] of Object.entries(vars)) out = out.replace(`{{${k}}}`, v);
+    for (const [k, v] of Object.entries(vars)) {
+      if (k === "defaultValue") continue;
+      out = out.replace(`{{${k}}}`, v);
+    }
   }
   return out;
 };

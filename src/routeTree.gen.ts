@@ -40,9 +40,13 @@ import { Route as AuthenticatedPartnerRewardsRouteImport } from './routes/_authe
 import { Route as AuthenticatedPartnerCampaignsRouteImport } from './routes/_authenticated/partner.campaigns'
 import { Route as AuthenticatedPartnerBillingRouteImport } from './routes/_authenticated/partner.billing'
 import { Route as AuthenticatedPartnerAnalyticsRouteImport } from './routes/_authenticated/partner.analytics'
+import { Route as AuthenticatedGiftTokenRouteImport } from './routes/_authenticated/gift.$token'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
+import { Route as AuthenticatedAdminTrustRouteImport } from './routes/_authenticated/admin.trust'
+import { Route as AuthenticatedAdminShopsRouteImport } from './routes/_authenticated/admin.shops'
 import { Route as AuthenticatedAdminRevenueRouteImport } from './routes/_authenticated/admin.revenue'
 import { Route as AuthenticatedAdminPartnersRouteImport } from './routes/_authenticated/admin.partners'
+import { Route as AuthenticatedAdminModerationRouteImport } from './routes/_authenticated/admin.moderation'
 import { Route as AuthenticatedAdminCampaignsRouteImport } from './routes/_authenticated/admin.campaigns'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
 import { Route as AuthenticatedExplorerWalletRouteImport } from './routes/_authenticated/_explorer/wallet'
@@ -50,12 +54,14 @@ import { Route as AuthenticatedExplorerRadarRouteImport } from './routes/_authen
 import { Route as AuthenticatedExplorerProfileRouteImport } from './routes/_authenticated/_explorer/profile'
 import { Route as AuthenticatedExplorerPassportRouteImport } from './routes/_authenticated/_explorer/passport'
 import { Route as AuthenticatedExplorerOnboardingRouteImport } from './routes/_authenticated/_explorer/onboarding'
+import { Route as AuthenticatedExplorerMomentsRouteImport } from './routes/_authenticated/_explorer/moments'
 import { Route as AuthenticatedExplorerLeaderboardRouteImport } from './routes/_authenticated/_explorer/leaderboard'
 import { Route as AuthenticatedExplorerExploreRouteImport } from './routes/_authenticated/_explorer/explore'
 import { Route as AuthenticatedExplorerCrewRouteImport } from './routes/_authenticated/_explorer/crew'
 import { Route as AuthenticatedExplorerCrawlsRouteImport } from './routes/_authenticated/_explorer/crawls'
 import { Route as AuthenticatedExplorerCampaignsRouteImport } from './routes/_authenticated/_explorer/campaigns'
 import { Route as AuthenticatedExplorerCampaignMapRouteImport } from './routes/_authenticated/_explorer/campaign-map'
+import { Route as AuthenticatedExplorerCrawlsSlugRouteImport } from './routes/_authenticated/_explorer/crawls.$slug'
 import { Route as AuthenticatedExplorerCampaignIdRouteImport } from './routes/_authenticated/_explorer/campaign.$id'
 
 const TermsRoute = TermsRouteImport.update({
@@ -221,9 +227,24 @@ const AuthenticatedPartnerAnalyticsRoute =
     path: '/analytics',
     getParentRoute: () => AuthenticatedPartnerRoute,
   } as any)
+const AuthenticatedGiftTokenRoute = AuthenticatedGiftTokenRouteImport.update({
+  id: '/gift/$token',
+  path: '/gift/$token',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminTrustRoute = AuthenticatedAdminTrustRouteImport.update({
+  id: '/trust',
+  path: '/trust',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminShopsRoute = AuthenticatedAdminShopsRouteImport.update({
+  id: '/shops',
+  path: '/shops',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
 const AuthenticatedAdminRevenueRoute =
@@ -236,6 +257,12 @@ const AuthenticatedAdminPartnersRoute =
   AuthenticatedAdminPartnersRouteImport.update({
     id: '/partners',
     path: '/partners',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminModerationRoute =
+  AuthenticatedAdminModerationRouteImport.update({
+    id: '/moderation',
+    path: '/moderation',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminCampaignsRoute =
@@ -280,6 +307,12 @@ const AuthenticatedExplorerOnboardingRoute =
     path: '/onboarding',
     getParentRoute: () => AuthenticatedExplorerRouteRoute,
   } as any)
+const AuthenticatedExplorerMomentsRoute =
+  AuthenticatedExplorerMomentsRouteImport.update({
+    id: '/moments',
+    path: '/moments',
+    getParentRoute: () => AuthenticatedExplorerRouteRoute,
+  } as any)
 const AuthenticatedExplorerLeaderboardRoute =
   AuthenticatedExplorerLeaderboardRouteImport.update({
     id: '/leaderboard',
@@ -316,6 +349,12 @@ const AuthenticatedExplorerCampaignMapRoute =
     path: '/campaign-map',
     getParentRoute: () => AuthenticatedExplorerRouteRoute,
   } as any)
+const AuthenticatedExplorerCrawlsSlugRoute =
+  AuthenticatedExplorerCrawlsSlugRouteImport.update({
+    id: '/$slug',
+    path: '/$slug',
+    getParentRoute: () => AuthenticatedExplorerCrawlsRoute,
+  } as any)
 const AuthenticatedExplorerCampaignIdRoute =
   AuthenticatedExplorerCampaignIdRouteImport.update({
     id: '/campaign/$id',
@@ -344,10 +383,11 @@ export interface FileRoutesByFullPath {
   '/coffee/$slug': typeof CoffeeSlugRoute
   '/campaign-map': typeof AuthenticatedExplorerCampaignMapRoute
   '/campaigns': typeof AuthenticatedExplorerCampaignsRoute
-  '/crawls': typeof AuthenticatedExplorerCrawlsRoute
+  '/crawls': typeof AuthenticatedExplorerCrawlsRouteWithChildren
   '/crew': typeof AuthenticatedExplorerCrewRoute
   '/explore': typeof AuthenticatedExplorerExploreRoute
   '/leaderboard': typeof AuthenticatedExplorerLeaderboardRoute
+  '/moments': typeof AuthenticatedExplorerMomentsRoute
   '/onboarding': typeof AuthenticatedExplorerOnboardingRoute
   '/passport': typeof AuthenticatedExplorerPassportRoute
   '/profile': typeof AuthenticatedExplorerProfileRoute
@@ -355,9 +395,13 @@ export interface FileRoutesByFullPath {
   '/wallet': typeof AuthenticatedExplorerWalletRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/campaigns': typeof AuthenticatedAdminCampaignsRoute
+  '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/admin/revenue': typeof AuthenticatedAdminRevenueRoute
+  '/admin/shops': typeof AuthenticatedAdminShopsRoute
+  '/admin/trust': typeof AuthenticatedAdminTrustRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/gift/$token': typeof AuthenticatedGiftTokenRoute
   '/partner/analytics': typeof AuthenticatedPartnerAnalyticsRoute
   '/partner/billing': typeof AuthenticatedPartnerBillingRoute
   '/partner/campaigns': typeof AuthenticatedPartnerCampaignsRoute
@@ -370,6 +414,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/partner/': typeof AuthenticatedPartnerIndexRoute
   '/campaign/$id': typeof AuthenticatedExplorerCampaignIdRoute
+  '/crawls/$slug': typeof AuthenticatedExplorerCrawlsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -390,10 +435,11 @@ export interface FileRoutesByTo {
   '/coffee/$slug': typeof CoffeeSlugRoute
   '/campaign-map': typeof AuthenticatedExplorerCampaignMapRoute
   '/campaigns': typeof AuthenticatedExplorerCampaignsRoute
-  '/crawls': typeof AuthenticatedExplorerCrawlsRoute
+  '/crawls': typeof AuthenticatedExplorerCrawlsRouteWithChildren
   '/crew': typeof AuthenticatedExplorerCrewRoute
   '/explore': typeof AuthenticatedExplorerExploreRoute
   '/leaderboard': typeof AuthenticatedExplorerLeaderboardRoute
+  '/moments': typeof AuthenticatedExplorerMomentsRoute
   '/onboarding': typeof AuthenticatedExplorerOnboardingRoute
   '/passport': typeof AuthenticatedExplorerPassportRoute
   '/profile': typeof AuthenticatedExplorerProfileRoute
@@ -401,9 +447,13 @@ export interface FileRoutesByTo {
   '/wallet': typeof AuthenticatedExplorerWalletRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/campaigns': typeof AuthenticatedAdminCampaignsRoute
+  '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/admin/revenue': typeof AuthenticatedAdminRevenueRoute
+  '/admin/shops': typeof AuthenticatedAdminShopsRoute
+  '/admin/trust': typeof AuthenticatedAdminTrustRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/gift/$token': typeof AuthenticatedGiftTokenRoute
   '/partner/analytics': typeof AuthenticatedPartnerAnalyticsRoute
   '/partner/billing': typeof AuthenticatedPartnerBillingRoute
   '/partner/campaigns': typeof AuthenticatedPartnerCampaignsRoute
@@ -416,6 +466,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/partner': typeof AuthenticatedPartnerIndexRoute
   '/campaign/$id': typeof AuthenticatedExplorerCampaignIdRoute
+  '/crawls/$slug': typeof AuthenticatedExplorerCrawlsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -441,10 +492,11 @@ export interface FileRoutesById {
   '/coffee/$slug': typeof CoffeeSlugRoute
   '/_authenticated/_explorer/campaign-map': typeof AuthenticatedExplorerCampaignMapRoute
   '/_authenticated/_explorer/campaigns': typeof AuthenticatedExplorerCampaignsRoute
-  '/_authenticated/_explorer/crawls': typeof AuthenticatedExplorerCrawlsRoute
+  '/_authenticated/_explorer/crawls': typeof AuthenticatedExplorerCrawlsRouteWithChildren
   '/_authenticated/_explorer/crew': typeof AuthenticatedExplorerCrewRoute
   '/_authenticated/_explorer/explore': typeof AuthenticatedExplorerExploreRoute
   '/_authenticated/_explorer/leaderboard': typeof AuthenticatedExplorerLeaderboardRoute
+  '/_authenticated/_explorer/moments': typeof AuthenticatedExplorerMomentsRoute
   '/_authenticated/_explorer/onboarding': typeof AuthenticatedExplorerOnboardingRoute
   '/_authenticated/_explorer/passport': typeof AuthenticatedExplorerPassportRoute
   '/_authenticated/_explorer/profile': typeof AuthenticatedExplorerProfileRoute
@@ -452,9 +504,13 @@ export interface FileRoutesById {
   '/_authenticated/_explorer/wallet': typeof AuthenticatedExplorerWalletRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/campaigns': typeof AuthenticatedAdminCampaignsRoute
+  '/_authenticated/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/_authenticated/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/_authenticated/admin/revenue': typeof AuthenticatedAdminRevenueRoute
+  '/_authenticated/admin/shops': typeof AuthenticatedAdminShopsRoute
+  '/_authenticated/admin/trust': typeof AuthenticatedAdminTrustRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/gift/$token': typeof AuthenticatedGiftTokenRoute
   '/_authenticated/partner/analytics': typeof AuthenticatedPartnerAnalyticsRoute
   '/_authenticated/partner/billing': typeof AuthenticatedPartnerBillingRoute
   '/_authenticated/partner/campaigns': typeof AuthenticatedPartnerCampaignsRoute
@@ -467,6 +523,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/partner/': typeof AuthenticatedPartnerIndexRoute
   '/_authenticated/_explorer/campaign/$id': typeof AuthenticatedExplorerCampaignIdRoute
+  '/_authenticated/_explorer/crawls/$slug': typeof AuthenticatedExplorerCrawlsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -495,6 +552,7 @@ export interface FileRouteTypes {
     | '/crew'
     | '/explore'
     | '/leaderboard'
+    | '/moments'
     | '/onboarding'
     | '/passport'
     | '/profile'
@@ -502,9 +560,13 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/admin/analytics'
     | '/admin/campaigns'
+    | '/admin/moderation'
     | '/admin/partners'
     | '/admin/revenue'
+    | '/admin/shops'
+    | '/admin/trust'
     | '/admin/users'
+    | '/gift/$token'
     | '/partner/analytics'
     | '/partner/billing'
     | '/partner/campaigns'
@@ -517,6 +579,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/partner/'
     | '/campaign/$id'
+    | '/crawls/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -541,6 +604,7 @@ export interface FileRouteTypes {
     | '/crew'
     | '/explore'
     | '/leaderboard'
+    | '/moments'
     | '/onboarding'
     | '/passport'
     | '/profile'
@@ -548,9 +612,13 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/admin/analytics'
     | '/admin/campaigns'
+    | '/admin/moderation'
     | '/admin/partners'
     | '/admin/revenue'
+    | '/admin/shops'
+    | '/admin/trust'
     | '/admin/users'
+    | '/gift/$token'
     | '/partner/analytics'
     | '/partner/billing'
     | '/partner/campaigns'
@@ -563,6 +631,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/partner'
     | '/campaign/$id'
+    | '/crawls/$slug'
   id:
     | '__root__'
     | '/'
@@ -591,6 +660,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_explorer/crew'
     | '/_authenticated/_explorer/explore'
     | '/_authenticated/_explorer/leaderboard'
+    | '/_authenticated/_explorer/moments'
     | '/_authenticated/_explorer/onboarding'
     | '/_authenticated/_explorer/passport'
     | '/_authenticated/_explorer/profile'
@@ -598,9 +668,13 @@ export interface FileRouteTypes {
     | '/_authenticated/_explorer/wallet'
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/campaigns'
+    | '/_authenticated/admin/moderation'
     | '/_authenticated/admin/partners'
     | '/_authenticated/admin/revenue'
+    | '/_authenticated/admin/shops'
+    | '/_authenticated/admin/trust'
     | '/_authenticated/admin/users'
+    | '/_authenticated/gift/$token'
     | '/_authenticated/partner/analytics'
     | '/_authenticated/partner/billing'
     | '/_authenticated/partner/campaigns'
@@ -613,6 +687,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/'
     | '/_authenticated/partner/'
     | '/_authenticated/_explorer/campaign/$id'
+    | '/_authenticated/_explorer/crawls/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -853,11 +928,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPartnerAnalyticsRouteImport
       parentRoute: typeof AuthenticatedPartnerRoute
     }
+    '/_authenticated/gift/$token': {
+      id: '/_authenticated/gift/$token'
+      path: '/gift/$token'
+      fullPath: '/gift/$token'
+      preLoaderRoute: typeof AuthenticatedGiftTokenRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/users': {
       id: '/_authenticated/admin/users'
       path: '/users'
       fullPath: '/admin/users'
       preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/trust': {
+      id: '/_authenticated/admin/trust'
+      path: '/trust'
+      fullPath: '/admin/trust'
+      preLoaderRoute: typeof AuthenticatedAdminTrustRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/shops': {
+      id: '/_authenticated/admin/shops'
+      path: '/shops'
+      fullPath: '/admin/shops'
+      preLoaderRoute: typeof AuthenticatedAdminShopsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/revenue': {
@@ -872,6 +968,13 @@ declare module '@tanstack/react-router' {
       path: '/partners'
       fullPath: '/admin/partners'
       preLoaderRoute: typeof AuthenticatedAdminPartnersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/moderation': {
+      id: '/_authenticated/admin/moderation'
+      path: '/moderation'
+      fullPath: '/admin/moderation'
+      preLoaderRoute: typeof AuthenticatedAdminModerationRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/campaigns': {
@@ -923,6 +1026,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedExplorerOnboardingRouteImport
       parentRoute: typeof AuthenticatedExplorerRouteRoute
     }
+    '/_authenticated/_explorer/moments': {
+      id: '/_authenticated/_explorer/moments'
+      path: '/moments'
+      fullPath: '/moments'
+      preLoaderRoute: typeof AuthenticatedExplorerMomentsRouteImport
+      parentRoute: typeof AuthenticatedExplorerRouteRoute
+    }
     '/_authenticated/_explorer/leaderboard': {
       id: '/_authenticated/_explorer/leaderboard'
       path: '/leaderboard'
@@ -965,6 +1075,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedExplorerCampaignMapRouteImport
       parentRoute: typeof AuthenticatedExplorerRouteRoute
     }
+    '/_authenticated/_explorer/crawls/$slug': {
+      id: '/_authenticated/_explorer/crawls/$slug'
+      path: '/$slug'
+      fullPath: '/crawls/$slug'
+      preLoaderRoute: typeof AuthenticatedExplorerCrawlsSlugRouteImport
+      parentRoute: typeof AuthenticatedExplorerCrawlsRoute
+    }
     '/_authenticated/_explorer/campaign/$id': {
       id: '/_authenticated/_explorer/campaign/$id'
       path: '/campaign/$id'
@@ -975,13 +1092,28 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedExplorerCrawlsRouteChildren {
+  AuthenticatedExplorerCrawlsSlugRoute: typeof AuthenticatedExplorerCrawlsSlugRoute
+}
+
+const AuthenticatedExplorerCrawlsRouteChildren: AuthenticatedExplorerCrawlsRouteChildren =
+  {
+    AuthenticatedExplorerCrawlsSlugRoute: AuthenticatedExplorerCrawlsSlugRoute,
+  }
+
+const AuthenticatedExplorerCrawlsRouteWithChildren =
+  AuthenticatedExplorerCrawlsRoute._addFileChildren(
+    AuthenticatedExplorerCrawlsRouteChildren,
+  )
+
 interface AuthenticatedExplorerRouteRouteChildren {
   AuthenticatedExplorerCampaignMapRoute: typeof AuthenticatedExplorerCampaignMapRoute
   AuthenticatedExplorerCampaignsRoute: typeof AuthenticatedExplorerCampaignsRoute
-  AuthenticatedExplorerCrawlsRoute: typeof AuthenticatedExplorerCrawlsRoute
+  AuthenticatedExplorerCrawlsRoute: typeof AuthenticatedExplorerCrawlsRouteWithChildren
   AuthenticatedExplorerCrewRoute: typeof AuthenticatedExplorerCrewRoute
   AuthenticatedExplorerExploreRoute: typeof AuthenticatedExplorerExploreRoute
   AuthenticatedExplorerLeaderboardRoute: typeof AuthenticatedExplorerLeaderboardRoute
+  AuthenticatedExplorerMomentsRoute: typeof AuthenticatedExplorerMomentsRoute
   AuthenticatedExplorerOnboardingRoute: typeof AuthenticatedExplorerOnboardingRoute
   AuthenticatedExplorerPassportRoute: typeof AuthenticatedExplorerPassportRoute
   AuthenticatedExplorerProfileRoute: typeof AuthenticatedExplorerProfileRoute
@@ -995,11 +1127,13 @@ const AuthenticatedExplorerRouteRouteChildren: AuthenticatedExplorerRouteRouteCh
     AuthenticatedExplorerCampaignMapRoute:
       AuthenticatedExplorerCampaignMapRoute,
     AuthenticatedExplorerCampaignsRoute: AuthenticatedExplorerCampaignsRoute,
-    AuthenticatedExplorerCrawlsRoute: AuthenticatedExplorerCrawlsRoute,
+    AuthenticatedExplorerCrawlsRoute:
+      AuthenticatedExplorerCrawlsRouteWithChildren,
     AuthenticatedExplorerCrewRoute: AuthenticatedExplorerCrewRoute,
     AuthenticatedExplorerExploreRoute: AuthenticatedExplorerExploreRoute,
     AuthenticatedExplorerLeaderboardRoute:
       AuthenticatedExplorerLeaderboardRoute,
+    AuthenticatedExplorerMomentsRoute: AuthenticatedExplorerMomentsRoute,
     AuthenticatedExplorerOnboardingRoute: AuthenticatedExplorerOnboardingRoute,
     AuthenticatedExplorerPassportRoute: AuthenticatedExplorerPassportRoute,
     AuthenticatedExplorerProfileRoute: AuthenticatedExplorerProfileRoute,
@@ -1016,8 +1150,11 @@ const AuthenticatedExplorerRouteRouteWithChildren =
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAnalyticsRoute: typeof AuthenticatedAdminAnalyticsRoute
   AuthenticatedAdminCampaignsRoute: typeof AuthenticatedAdminCampaignsRoute
+  AuthenticatedAdminModerationRoute: typeof AuthenticatedAdminModerationRoute
   AuthenticatedAdminPartnersRoute: typeof AuthenticatedAdminPartnersRoute
   AuthenticatedAdminRevenueRoute: typeof AuthenticatedAdminRevenueRoute
+  AuthenticatedAdminShopsRoute: typeof AuthenticatedAdminShopsRoute
+  AuthenticatedAdminTrustRoute: typeof AuthenticatedAdminTrustRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
@@ -1025,8 +1162,11 @@ interface AuthenticatedAdminRouteChildren {
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAnalyticsRoute: AuthenticatedAdminAnalyticsRoute,
   AuthenticatedAdminCampaignsRoute: AuthenticatedAdminCampaignsRoute,
+  AuthenticatedAdminModerationRoute: AuthenticatedAdminModerationRoute,
   AuthenticatedAdminPartnersRoute: AuthenticatedAdminPartnersRoute,
   AuthenticatedAdminRevenueRoute: AuthenticatedAdminRevenueRoute,
+  AuthenticatedAdminShopsRoute: AuthenticatedAdminShopsRoute,
+  AuthenticatedAdminTrustRoute: AuthenticatedAdminTrustRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
@@ -1065,12 +1205,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedExplorerRouteRoute: typeof AuthenticatedExplorerRouteRouteWithChildren
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedPartnerRoute: typeof AuthenticatedPartnerRouteWithChildren
+  AuthenticatedGiftTokenRoute: typeof AuthenticatedGiftTokenRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedExplorerRouteRoute: AuthenticatedExplorerRouteRouteWithChildren,
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedPartnerRoute: AuthenticatedPartnerRouteWithChildren,
+  AuthenticatedGiftTokenRoute: AuthenticatedGiftTokenRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

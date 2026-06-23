@@ -105,6 +105,7 @@ export function useCampaignMapPins(
           )`,
         )
         .eq("status", "active")
+        .or(`starts_at.is.null,starts_at.lte.${nowIso}`)
         .or(`ends_at.is.null,ends_at.gt.${nowIso}`);
 
       if (error) throw error;

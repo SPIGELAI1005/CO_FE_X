@@ -47,4 +47,14 @@ describe("socialProofSubmitSchema", () => {
       }),
     ).toThrow();
   });
+
+  it("accepts screenshot submissions without URL", () => {
+    const parsed = socialProofSubmitSchema.parse({
+      campaignId: "550e8400-e29b-41d4-a716-446655440000",
+      platform: "instagram_story",
+      submissionType: "screenshot",
+      caption: "Great matcha!",
+    });
+    expect(parsed.submissionType).toBe("screenshot");
+  });
 });

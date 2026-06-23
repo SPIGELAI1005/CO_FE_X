@@ -9,6 +9,8 @@ export interface PassportBadge {
   name: string;
   description: string | null;
   criteria: Record<string, unknown> | null;
+  rarity: string;
+  category: string;
 }
 
 export interface PassportCheckIn {
@@ -37,6 +39,7 @@ export interface PassportData {
     display_name: string | null;
     total_points: number;
     total_check_ins: number;
+    total_rewards_redeemed: number;
     avatar_url: string | null;
   } | null;
   badges: PassportBadge[];
@@ -52,7 +55,7 @@ export function usePassport(userId: string | undefined) {
     staleTime: STALE.passport,
     queryFn: async (): Promise<PassportData> => {
       const [{ data: bs }, { data: ubs }, { data: cis }, { data: prof }] = await Promise.all([
-        supabase.from("badges").select("id, slug, name, description, criteria"),
+        supabase.from("badges").select("id, slug, name, description, criteria, rarity, category"),
         supabase.from("user_badges").select("badge_id, earned_at").eq("user_id", userId!).order("earned_at", { ascending: false }),
         supabase
           .from("check_ins")
@@ -63,7 +66,7 @@ export function usePassport(userId: string | undefined) {
           .order("created_at", { ascending: false }),
         supabase
           .from("profiles")
-          .select("display_name, total_points, total_check_ins, avatar_url")
+          .select("display_name, total_points, total_check_ins, total_rewards_redeemed, avatar_url")
           .eq("id", userId!)
           .single(),
       ]);

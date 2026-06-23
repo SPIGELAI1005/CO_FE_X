@@ -25,7 +25,7 @@ function ExplorerCampaignsPage() {
         action={
           <Link
             to="/campaign-map"
-            className="inline-flex items-center gap-2 rounded-full bg-[color:var(--cofex-coffee-deep)] px-4 py-2.5 text-sm font-bold text-white shadow-md transition hover:-translate-y-0.5"
+            className="cofex-onboarding-cta inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold text-white shadow-md"
           >
             <Map className="h-4 w-4" />
             {t("campaignsPage.viewMap")}
@@ -67,12 +67,11 @@ function CampaignCard({ c }: { c: CampaignListItem }) {
     <Link
       to="/campaign/$id"
       params={{ id: c.id }}
-      className="cofex-app-card group overflow-hidden transition-all duration-300 hover:-translate-y-1"
+      className="cofex-campaign-card cofex-app-card group overflow-hidden"
     >
-      <div className="relative h-40 bg-gradient-to-br from-[color:var(--cofex-pastel-blue)] to-[color:var(--cofex-cream)]">
-        {cover && <img src={cover} alt="" className="absolute inset-0 h-full w-full object-cover" />}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <div className="absolute top-3 left-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 text-[color:var(--cofex-coffee-deep)] shadow-sm">
+      <div className="cofex-campaign-card-media relative h-40 bg-gradient-to-br from-[color:var(--cofex-pastel-blue)] to-[color:var(--cofex-cream)]">
+        {cover && <img src={cover} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />}
+        <div className="absolute top-3 left-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white/95 text-[color:var(--cofex-coffee-deep)] shadow-md ring-1 ring-white/80">
           <TypeIcon className="h-5 w-5 text-[color:var(--cofex-cyan)]" />
         </div>
         <div className="absolute right-3 bottom-3 left-3 text-white">

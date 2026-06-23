@@ -29,7 +29,7 @@ export function PartnerKpiCard({
   tint = "from-[color:var(--cofex-coffee)] to-[color:var(--cofex-coffee-deep)]",
 }: PartnerKpiCardProps) {
   return (
-    <div className="cofex-app-card p-5">
+    <div className="cofex-partner-kpi cofex-app-card p-5">
       <div className="flex items-start justify-between">
         <span
           className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${tint} text-white`}
@@ -60,9 +60,11 @@ interface PartnerEmptyStateProps {
 
 export function PartnerEmptyState({ Icon, title, description, action, to, actionLabel }: PartnerEmptyStateProps) {
   return (
-    <div className="cofex-app-card cofex-app-card-dashed p-10 text-center">
-      <Icon className="mx-auto mb-3 h-10 w-10 text-[color:var(--cofex-coffee-deep)]" />
-      <h3 className="text-lg font-extrabold text-[color:var(--cofex-coffee-deep)]">{title}</h3>
+    <div className="cofex-app-card cofex-app-card-dashed cofex-empty-state p-10">
+      <div className="cofex-empty-state-icon">
+        <Icon className="h-8 w-8 text-[color:var(--cofex-coffee-deep)]" />
+      </div>
+      <h3 className="mt-4 text-lg font-extrabold text-[color:var(--cofex-coffee-deep)]">{title}</h3>
       <p className="mx-auto mt-1 max-w-md text-sm text-[color:var(--cofex-black)]/65">{description}</p>
       {action ??
         (to && actionLabel ? (

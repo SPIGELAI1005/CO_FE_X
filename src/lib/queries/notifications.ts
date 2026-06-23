@@ -41,6 +41,31 @@ export function useNotifications(userId: string | undefined) {
     };
   }, [userId, qc]);
 
+  useEffect(() => {
+    if (!userId || typeof window === "undefined") return;
+    const key = `notif-reminders-${userId}-${new Date().toDateString()}`;
+    if (sessionStorage.getItem(key)) return;
+
+    const run = (lat?: number, lng?: number) => {
+      void supabase
+        .rpc("sync_notification_reminders", {
+          _latitude: lat,
+          _longitude: lng,
+        })
+        .then(() => sessionStorage.setItem(key, "1"));
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => run(pos.coords.latitude, pos.coords.longitude),
+        () => run(),
+        { enableHighAccuracy: false, timeout: 5000, maximumAge: 600_000 },
+      );
+    } else {
+      run();
+    }
+  }, [userId]);
+
   return useQuery({
     queryKey: queryKeys.notifications(userId ?? ""),
     enabled: !!userId,

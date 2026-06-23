@@ -8,6 +8,12 @@ export interface CrawlStop {
   shop_name: string;
   shop_slug: string;
   hint: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  campaign_id?: string | null;
+  campaign_title?: string | null;
+  neighborhood?: string | null;
+  done?: boolean;
 }
 
 export interface CoffeeCrawl {
@@ -19,6 +25,18 @@ export interface CoffeeCrawl {
   reward_points: number;
   stop_count: number;
   stops: CrawlStop[];
+  theme?: string | null;
+  estimated_walk_minutes?: number;
+  estimated_distance_m?: number;
+  badge_slug?: string | null;
+  badge_name?: string | null;
+  starts_at?: string | null;
+  ends_at?: string | null;
+  progress_mode?: string;
+  seasonal?: boolean;
+  joined?: boolean;
+  completed?: boolean;
+  stops_done?: number;
 }
 
 export interface CrawlProgress {
@@ -26,8 +44,37 @@ export interface CrawlProgress {
   slug: string;
   title: string;
   completed: boolean;
+  joined: boolean;
   stops_done: number;
   stop_count: number;
+}
+
+export function useTrailDetail(slug: string) {
+  return useQuery({
+    queryKey: ["trailDetail", slug],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_trail_detail", { _slug: slug });
+      if (error) throw error;
+      return data as CoffeeCrawl | null;
+    },
+  });
+}
+
+export function useJoinTrail() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (slug: string) => {
+      const { data, error } = await supabase.rpc("join_trail", { _slug: slug });
+      if (error) throw error;
+      return data as { joined: boolean; slug: string; title: string };
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["coffeeCrawls"] });
+      qc.invalidateQueries({ queryKey: ["crawlProgress"] });
+      qc.invalidateQueries({ queryKey: ["trailDetail"] });
+      qc.invalidateQueries({ queryKey: ["notifications"] });
+    },
+  });
 }
 
 export function useCoffeeCrawls(citySlug?: string) {

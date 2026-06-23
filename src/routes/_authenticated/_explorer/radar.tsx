@@ -103,6 +103,19 @@ function RadarPage() {
     <AppPage>
       <AppPageBody className="pb-8 pt-2">
         <SpawnBanner spawns={spawnsQuery.data ?? []} />
+        <Link
+          to="/moments"
+          className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-[color:var(--cofex-cyan)]/25 bg-gradient-to-r from-[color:var(--cofex-pastel-blue)]/50 to-white px-4 py-3 transition hover:-translate-y-0.5"
+        >
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[color:var(--cofex-cyan)]">
+              {t("moments.eyebrow")}
+            </p>
+            <p className="font-extrabold text-[color:var(--cofex-coffee-deep)]">{t("moments.title")}</p>
+            <p className="text-xs text-[color:var(--cofex-black)]/60">{t("moments.subtitle")}</p>
+          </div>
+          <Sparkles className="h-8 w-8 shrink-0 text-[color:var(--cofex-cyan)]" />
+        </Link>
         {timeBonusHint ? (
           <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900">
             {timeBonusHint}
@@ -137,18 +150,16 @@ function RadarPage() {
             </button>
           </div>
         )}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
+        <div className="cofex-premium-hero mt-2 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="relative min-w-0">
             <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-[color:var(--cofex-cyan)]/30 bg-[color:var(--cofex-pastel-blue)] px-3 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-[color:var(--cofex-coffee-deep)] sm:text-[10px] sm:tracking-[0.3em]">
               <RadioTower className="h-3 w-3 shrink-0 animate-pulse text-[color:var(--cofex-cyan)]" /> {t("radar.liveBadge")}
             </div>
-            <h1 className="mt-3 text-3xl font-extrabold leading-[1.05] text-[color:var(--cofex-coffee-deep)] sm:text-4xl md:text-5xl">
+            <h1 className="relative mt-3 text-3xl font-extrabold leading-[1.05] text-[color:var(--cofex-coffee-deep)] sm:text-4xl md:text-5xl">
               {greeting}.<br />
-              <span className="bg-gradient-to-r from-[color:var(--cofex-cyan)] via-[color:var(--cofex-coffee-deep)] to-[color:var(--cofex-accent-gold)] bg-clip-text text-transparent">
-                {t("radar.pulse")}
-              </span>
+              <span className="cofex-hero-shine">{t("radar.pulse")}</span>
             </h1>
-            <p className="mt-2 max-w-md text-sm text-[color:var(--cofex-black)]/65">
+            <p className="relative mt-2 max-w-md text-sm text-[color:var(--cofex-black)]/65">
               Scanned {data?.free_today.length ?? 0} free-coffee spots, {data?.trending_matcha.length ?? 0} trending matcha bars, {data?.new_campaigns.length ?? 0} fresh campaigns within 5 km.
             </p>
           </div>
@@ -340,24 +351,22 @@ function RadarSweep() {
       <div className="absolute inset-3 rounded-full border border-[color:var(--cofex-cyan)]/20" />
       <div className="absolute inset-6 rounded-full border border-[color:var(--cofex-cyan)]/10" />
       <div
-        className="absolute inset-0 rounded-full"
+        className="cofex-radar-sweep absolute inset-0 rounded-full"
         style={{
           background: "conic-gradient(from 0deg, rgba(0,180,200,0) 0deg, rgba(0,180,200,0.45) 60deg, rgba(0,180,200,0) 90deg)",
-          animation: "radar-spin 3.5s linear infinite",
         }}
       />
       <div className="absolute inset-0 flex items-center justify-center">
         <Coffee className="h-6 w-6 text-[color:var(--cofex-coffee-deep)]" />
       </div>
       <span className="absolute -top-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[color:var(--cofex-cyan)] shadow-[0_0_12px_color-mix(in_oklab,var(--cofex-cyan)_80%,transparent)]" />
-      <style>{`@keyframes radar-spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
 
 function Stat({ icon, label, value, accent }: { icon: React.ReactNode; label: string; value: number | string; accent: string }) {
   return (
-    <div className="relative overflow-hidden rounded-xl bg-[color:var(--cofex-cream)]/60 px-3 py-2">
+    <div className="cofex-stat-tile px-3 py-2">
       <div className={`absolute -right-4 -top-4 h-12 w-12 rounded-full bg-gradient-to-br ${accent} opacity-25 blur-xl`} />
       <div className="relative flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wide text-[color:var(--cofex-black)]/50 sm:text-[10px] sm:tracking-widest">
         <span className="shrink-0">{icon}</span>
@@ -388,7 +397,14 @@ function SectionSkeleton({ grid = false }: { grid?: boolean }) {
 }
 
 function SectionEmpty({ message }: { message: string }) {
-  return <div className="cofex-app-card-dashed cofex-app-card px-4 py-6 text-center text-sm text-[color:var(--cofex-black)]/60">{message}</div>;
+  return (
+    <div className="cofex-app-card cofex-app-card-dashed cofex-empty-state px-6 py-8">
+      <div className="cofex-empty-state-icon">
+        <Coffee className="h-7 w-7 text-[color:var(--cofex-cyan)]" aria-hidden />
+      </div>
+      <p className="mt-3 text-sm font-medium text-[color:var(--cofex-black)]/65">{message}</p>
+    </div>
+  );
 }
 
 function HScroll({ children }: { children: React.ReactNode }) {
@@ -464,9 +480,9 @@ function CampaignCard({ c, now }: { c: Campaign; now: Date }) {
     <Link
       to="/campaign/$id"
       params={{ id: c.id }}
-      className="cofex-app-card group relative w-72 shrink-0 overflow-hidden transition hover:-translate-y-1"
+      className="cofex-campaign-card cofex-app-card group relative w-72 shrink-0 overflow-hidden"
     >
-      <div className="relative h-36 overflow-hidden">
+      <div className="cofex-campaign-card-media relative h-36 overflow-hidden">
         {c.cover_image_url ? (
           <img src={c.cover_image_url} alt="" loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
         ) : (

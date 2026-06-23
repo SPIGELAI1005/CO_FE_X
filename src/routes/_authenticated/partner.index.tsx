@@ -16,6 +16,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { AppPage, AppPageBody, AppPageHeader, AppPageSection } from "@/components/app/AppPageShell";
+import { PartnerCounterOverview } from "@/components/app/partner/PartnerCounterOverview";
 import { PartnerDashboardCharts } from "@/components/app/PartnerDashboardCharts";
 import { Button } from "@/components/ui/button";
 import { usePartnerArrivals } from "@/lib/queries/vision";
@@ -347,6 +348,8 @@ function PartnerDashboard() {
         }
       />
       <AppPageBody className="pb-10">
+        <PartnerCounterOverview />
+
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
           <PartnerKpiCard
             Icon={Eye}

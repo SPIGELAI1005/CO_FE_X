@@ -74,7 +74,12 @@ function PartnerAnalyticsPage() {
   const [to, setTo] = useState(toISODate(today));
   const [rows, setRows] = useState<Row[]>([]);
   const [totals, setTotals] = useState<Totals>({ participants: 0, check_ins: 0, redemptions: 0, used: 0 });
-  const [loading, setLoading] = useState(true);
+  const [insights, setInsights] = useState({
+    conversionPct: 0,
+    repeatVisitors: 0,
+    peakHourLabel: "—",
+    topRewardType: "—",
+  });
 
   function applyPreset(id: string) {
     setPreset(id);
@@ -111,7 +116,7 @@ function PartnerAnalyticsPage() {
 
       const { data: campaigns } = await supabase
         .from("campaigns")
-        .select("id, title, hashtag, status, points_reward, max_participants, required_check_ins, ends_at, coffee_shop_id")
+        .select("id, title, hashtag, status, points_reward, max_participants, required_check_ins, ends_at, coffee_shop_id, reward_type")
         .in("coffee_shop_id", shopIds)
         .order("created_at", { ascending: false });
       const cIds = (campaigns ?? []).map((c) => c.id);
@@ -173,9 +178,58 @@ function PartnerAnalyticsPage() {
           { participants: 0, check_ins: 0, redemptions: 0, used: 0 },
         ),
       );
+
+      const hourCounts = new Map<number, number>();
+      for (const ci of cins ?? []) {
+        const h = new Date(ci.created_at).getHours();
+        hourCounts.set(h, (hourCounts.get(h) ?? 0) + 1);
+      }
+      let peakHour = -1;
+      let peakCount = 0;
+      for (const [h, n] of hourCounts) {
+        if (n > peakCount) {
+          peakCount = n;
+          peakHour = h;
+        }
+      }
+
+      const userVisitCounts = new Map<string, number>();
+      const shopCinsQ = supabase.from("check_ins").select("user_id, created_at").in("coffee_shop_id", shopIds);
+      if (fromISO) shopCinsQ.gte("created_at", fromISO);
+      if (toISO) shopCinsQ.lte("created_at", toISO);
+      const { data: shopCins } = await shopCinsQ;
+      for (const ci of shopCins ?? []) {
+        userVisitCounts.set(ci.user_id, (userVisitCounts.get(ci.user_id) ?? 0) + 1);
+      }
+      const repeatVisitors = [...userVisitCounts.values()].filter((n) => n >= 2).length;
+
+      const rewardTypeCounts = new Map<string, number>();
+      for (const r of reds ?? []) {
+        if (!r.used_at || !r.campaign_id) continue;
+        const camp = (campaigns ?? []).find((c) => c.id === r.campaign_id);
+        const rt = camp?.reward_type ?? "coffee";
+        rewardTypeCounts.set(rt, (rewardTypeCounts.get(rt) ?? 0) + 1);
+      }
+      let topRewardType = "—";
+      let topN = 0;
+      for (const [rt, n] of rewardTypeCounts) {
+        if (n > topN) {
+          topN = n;
+          topRewardType = rt;
+        }
+      }
+
+      const totalP = built.reduce((s, r) => s + r.participants, 0);
+      const totalR = built.reduce((s, r) => s + r.redemptions, 0);
+      setInsights({
+        conversionPct: totalP ? Math.round((totalR / totalP) * 100) : 0,
+        repeatVisitors,
+        peakHourLabel: peakHour >= 0 ? `${String(peakHour).padStart(2, "0")}:00` : t("partnerAnalyticsPage.noData"),
+        topRewardType: topN > 0 ? topRewardType.replace(/_/g, " ") : t("partnerAnalyticsPage.noData"),
+      });
       setLoading(false);
     })();
-  }, [from, to]);
+  }, [from, to, t]);
 
   function exportCSV() {
     if (!canExport) {
@@ -285,6 +339,13 @@ function PartnerAnalyticsPage() {
               />
             </div>
           </div>
+        </div>
+
+        <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <PartnerKpiCard Icon={Users} label={t("partnerAnalyticsPage.conversionRate")} value={`${insights.conversionPct}%`} tint="from-violet-500 to-purple-600" />
+          <PartnerKpiCard Icon={TrendingUp} label={t("partnerAnalyticsPage.repeatVisitors")} value={insights.repeatVisitors} tint="from-emerald-500 to-teal-600" />
+          <PartnerKpiCard Icon={Sparkles} label={t("partnerAnalyticsPage.peakHour")} value={insights.peakHourLabel} tint="from-amber-500 to-orange-600" />
+          <PartnerKpiCard Icon={Gift} label={t("partnerAnalyticsPage.topReward")} value={insights.topRewardType} tint="from-rose-500 to-pink-600" />
         </div>
 
         <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">

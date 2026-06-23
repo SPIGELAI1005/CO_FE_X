@@ -10,21 +10,29 @@ export function useAdminOverview() {
         { count: users },
         { count: shops },
         { count: pendingApps },
+        { count: pendingShops },
         { count: activeCampaigns },
         { count: checkIns },
       ] = await Promise.all([
         supabase.from("profiles").select("id", { count: "exact", head: true }),
         supabase.from("coffee_shops").select("id", { count: "exact", head: true }).eq("status", "approved"),
         supabase.from("partner_applications").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        supabase.from("coffee_shops").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("campaigns").select("id", { count: "exact", head: true }).eq("status", "active"),
         supabase.from("check_ins").select("id", { count: "exact", head: true }),
       ]);
+      const reportsRes = await supabase
+        .from("content_reports")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "open");
       return {
         users: users ?? 0,
         shops: shops ?? 0,
         pendingApps: pendingApps ?? 0,
+        pendingShops: pendingShops ?? 0,
         activeCampaigns: activeCampaigns ?? 0,
         checkIns: checkIns ?? 0,
+        openReports: reportsRes.error ? 0 : (reportsRes.count ?? 0),
       };
     },
   });
@@ -110,9 +118,29 @@ export function useAdminPendingShops() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("coffee_shops")
-        .select("id, name, slug, city, status, partner_id, created_at")
+        .select("id, name, slug, city, status, partner_id, created_at, address, cover_image_url")
         .in("status", ["pending", "suspended"])
         .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+}
+
+export function useAdminShops(status: string, search: string) {
+  return useQuery({
+    queryKey: queryKeys.adminShops(status, search),
+    queryFn: async () => {
+      let q = supabase
+        .from("coffee_shops")
+        .select("id, name, slug, city, status, partner_id, created_at, address, rating, rating_count")
+        .order("created_at", { ascending: false })
+        .limit(80);
+      if (status !== "all") q = q.eq("status", status);
+      if (search.trim()) {
+        q = q.or(`name.ilike.%${search}%,city.ilike.%${search}%,slug.ilike.%${search}%`);
+      }
+      const { data, error } = await q;
       if (error) throw error;
       return data ?? [];
     },
@@ -131,6 +159,7 @@ export function useAdminSetShopStatus() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.adminPendingShops() });
+      qc.invalidateQueries({ queryKey: ["adminShops"] });
       qc.invalidateQueries({ queryKey: queryKeys.adminOverview() });
       qc.invalidateQueries({ queryKey: queryKeys.coffeeShops() });
     },
@@ -164,6 +193,7 @@ export function useAdminSetCampaignStatus() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.adminCampaigns() });
+      qc.invalidateQueries({ queryKey: queryKeys.adminCampaignMetrics() });
       qc.invalidateQueries({ queryKey: queryKeys.adminOverview() });
     },
   });
@@ -175,7 +205,7 @@ export function useAdminUsers(search: string) {
     queryFn: async () => {
       let q = supabase
         .from("profiles")
-        .select("id, display_name, handle, city, total_points, total_check_ins")
+        .select("id, display_name, handle, city, total_points, total_check_ins, trust_status, fraud_score")
         .order("total_points", { ascending: false })
         .limit(50);
       if (search.trim()) {

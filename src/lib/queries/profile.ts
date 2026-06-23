@@ -21,6 +21,7 @@ export interface Profile {
   explorer_level?: string;
   preferred_drink_categories?: string[];
   privacy_preferences?: Record<string, unknown> | null;
+  notification_preferences?: Record<string, unknown> | null;
   onboarding_completed_at: string | null;
   preferences: ProfilePreferences | null;
   map_theme?: string | null;
@@ -34,7 +35,7 @@ export function useProfile(userId: string | undefined) {
       const { data, error } = await supabase
         .from("profiles")
         .select(
-          "id, display_name, handle, avatar_url, bio, city, instagram_handle, x_handle, total_points, total_check_ins, total_rewards_redeemed, explorer_level, preferred_drink_categories, privacy_preferences, onboarding_completed_at, preferences, map_theme, beans_balance",
+          "id, display_name, handle, avatar_url, bio, city, instagram_handle, x_handle, total_points, total_check_ins, total_rewards_redeemed, explorer_level, preferred_drink_categories, privacy_preferences, notification_preferences, onboarding_completed_at, preferences, map_theme, beans_balance",
         )
         .eq("id", userId!)
         .single();
@@ -119,6 +120,44 @@ export function useUpdateProfile() {
     }) => {
       const { userId, ...fields } = payload;
       const { error } = await supabase.from("profiles").update(fields).eq("id", userId);
+      if (error) throw error;
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: queryKeys.profile(vars.userId) });
+    },
+  });
+}
+
+export function useUpdateNotificationPreferences() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: {
+      userId: string;
+      notification_preferences: Record<string, unknown>;
+    }) => {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ notification_preferences: payload.notification_preferences })
+        .eq("id", payload.userId);
+      if (error) throw error;
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: queryKeys.profile(vars.userId) });
+    },
+  });
+}
+
+export function useUpdatePrivacyPreferences() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: {
+      userId: string;
+      privacy_preferences: Record<string, unknown>;
+    }) => {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ privacy_preferences: payload.privacy_preferences })
+        .eq("id", payload.userId);
       if (error) throw error;
     },
     onSuccess: (_data, vars) => {

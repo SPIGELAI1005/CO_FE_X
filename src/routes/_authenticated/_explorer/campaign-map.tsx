@@ -82,16 +82,16 @@ function CampaignMapPage() {
         <div className="pointer-events-auto flex items-center justify-between gap-2">
           <Link
             to="/campaigns"
-            className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-2 text-xs font-semibold text-[color:var(--cofex-coffee-deep)] shadow-md backdrop-blur-sm"
+            className="cofex-cafe-hero-badge inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-2 text-xs font-semibold text-[color:var(--cofex-coffee-deep)]"
           >
             <ArrowLeft className="h-3.5 w-3.5" /> {t("campaignMap.back")}
           </Link>
-          <div className="rounded-full bg-white/95 px-3 py-2 text-xs font-bold text-[color:var(--cofex-coffee-deep)] shadow-md backdrop-blur-sm">
+          <div className="cofex-cafe-hero-badge rounded-full bg-white/95 px-3 py-2 text-xs font-bold text-[color:var(--cofex-coffee-deep)]">
             <MapIcon className="mr-1 inline h-3.5 w-3.5 text-[color:var(--cofex-cyan)]" />
             {t("campaignMap.title")}
           </div>
         </div>
-        <div className="pointer-events-auto rounded-2xl border border-[color:var(--border)] bg-white/95 p-3 shadow-lg backdrop-blur-sm">
+        <div className="pointer-events-auto cofex-app-card rounded-2xl bg-white/95 p-3 backdrop-blur-sm">
           <Suspense fallback={null}>
             <CampaignMapFiltersBar
               filters={filters}
@@ -110,6 +110,9 @@ function CampaignMapPage() {
           </div>
         ) : filteredPins.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center gap-3 bg-[color:var(--cofex-cream)] px-6 text-center">
+            <div className="cofex-empty-state-icon">
+              <MapIcon className="h-8 w-8 text-[color:var(--cofex-cyan)]" aria-hidden />
+            </div>
             <p className="text-lg font-bold text-[color:var(--cofex-coffee-deep)]">
               {t("campaignMap.emptyTitle")}
             </p>
@@ -119,7 +122,7 @@ function CampaignMapPage() {
             <button
               type="button"
               onClick={() => setFilters(DEFAULT_CAMPAIGN_MAP_FILTERS)}
-              className="rounded-full border border-[color:var(--border)] px-4 py-2 text-sm font-semibold"
+              className="cofex-onboarding-cta rounded-full px-4 py-2 text-sm font-semibold text-white"
             >
               {t("campaignMap.clearFilters")}
             </button>

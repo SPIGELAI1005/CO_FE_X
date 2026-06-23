@@ -2,7 +2,7 @@
 
 Persistent context for AI agents and team members working on the brew-quest-app codebase.
 
-**Last updated:** June 21, 2026  
+**Last updated:** June 23, 2026  
 **Repository:** [github.com/SPIGELAI1005/CO_FE_X](https://github.com/SPIGELAI1005/CO_FE_X)
 
 ---
@@ -42,6 +42,7 @@ The memory bank is a set of small, focused documents that capture **what the pro
 | [../PLAN_EEFFOC_SOCIAL_FLOW.md](../PLAN_EEFFOC_SOCIAL_FLOW.md) | EEFFOC social QR + proof flow |
 | [../PLAN_EXPLORER_GAPS.md](../PLAN_EXPLORER_GAPS.md) | Gaps sprint detail |
 | [../PLAN_PARTNER_NEXT_STEPS.md](../PLAN_PARTNER_NEXT_STEPS.md) | Partner sprint (implemented June 2026) |
+| [../QA_CHECKLIST_CORE_FLOWS.md](../QA_CHECKLIST_CORE_FLOWS.md) | Manual QA for explorer/partner core journeys |
 
 ---
 

@@ -32,12 +32,12 @@ export function CoffeeShopCard({
       params={{ slug: shop.slug }}
       onMouseEnter={() => onHover?.(shop.id)}
       onMouseLeave={() => onHover?.(null)}
-      className={`cofex-app-card group block transition-all duration-300 hover:-translate-y-1 ${
+      className={`cofex-campaign-card cofex-app-card group block ${
         active ? "ring-2 ring-[color:var(--cofex-cyan)]" : ""
       }`}
     >
       <div className="cofex-app-card-inner">
-      <div className="relative aspect-[4/3] overflow-hidden bg-[color:var(--cofex-pastel-blue)]">
+      <div className="cofex-campaign-card-media relative aspect-[4/3] overflow-hidden bg-[color:var(--cofex-pastel-blue)]">
         {shop.cover_image_url ? (
           <OptimizedImage
             src={shop.cover_image_url}

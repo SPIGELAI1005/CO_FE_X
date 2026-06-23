@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/hooks/use-user";
 import { usePartnerBilling, billingLimitsForShop } from "@/lib/queries/billing";
-import { useSetCampaignStatus } from "@/lib/queries/partner";
+import { useSetCampaignStatus, useDuplicatePartnerCampaign } from "@/lib/queries/partner";
 import { AppPage, AppPageBody, AppPageHeader } from "@/components/app/AppPageShell";
 import { CampaignWizard } from "@/components/app/CampaignWizard";
 import { CampaignParticipationQr } from "@/components/app/CampaignParticipationQr";
@@ -19,11 +19,14 @@ import {
   Hash,
   Trash2,
   Share2,
+  Sparkles,
   Shield,
   Pencil,
   Pause,
   Play,
   Square,
+  Copy,
+  QrCode,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PARTNER_BTN, PartnerEmptyState, PartnerStatusPill } from "@/components/app/partner/PartnerShell";
@@ -42,6 +45,7 @@ type Campaign = {
   hashtag: string | null;
   points_reward: number;
   max_participants: number | null;
+  available_quantity?: number | null;
   campaign_type: string;
   fulfillment_mode?: CampaignFulfillmentMode;
   participation_token?: string | null;
@@ -53,10 +57,12 @@ type Campaign = {
   participant_count?: number;
 };
 
-function campaignDisplayStatus(c: Campaign): "active" | "paused" | "ended" {
+function campaignDisplayStatus(c: Campaign): "active" | "paused" | "ended" | "draft" | "scheduled" {
+  if (c.status === "draft") return "draft";
   if (c.status === "paused") return "paused";
   if (c.status === "ended") return "ended";
   if (c.ends_at && new Date(c.ends_at) <= new Date()) return "ended";
+  if (c.status === "active" && c.starts_at && new Date(c.starts_at) > new Date()) return "scheduled";
   if (c.status === "active") return "active";
   return "ended";
 }
@@ -66,6 +72,7 @@ function PartnerCampaignsPage() {
   const { user } = useUser();
   const { data: billing } = usePartnerBilling(user?.id);
   const statusMutation = useSetCampaignStatus();
+  const duplicateMutation = useDuplicatePartnerCampaign();
   const primaryShopId = billing?.shops[0]?.coffee_shop_id;
   const atCampaignLimit =
     primaryShopId !== undefined &&
@@ -124,12 +131,22 @@ function PartnerCampaignsPage() {
     load();
   }, []);
 
+  async function duplicate(c: Campaign) {
+    try {
+      const res = await duplicateMutation.mutateAsync(c.id);
+      toast.success(t("partnerCampaignsPage.duplicated", { title: res.title }));
+      load();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message.replace(/^.*?: /, "") : t("partnerCampaignsPage.duplicateFailed"));
+    }
+  }
+
   async function remove(id: string) {
-    if (!confirm("Delete this campaign? This cannot be undone.")) return;
+    if (!confirm(t("partnerCampaignsPage.deleteConfirm"))) return;
     const { error } = await supabase.from("campaigns").delete().eq("id", id);
     if (error) toast.error(error.message);
     else {
-      toast.success("Deleted");
+      toast.success(t("partnerCampaignsPage.deleted"));
       load();
     }
   }
@@ -137,7 +154,13 @@ function PartnerCampaignsPage() {
   async function setStatus(campaignId: string, status: "active" | "paused" | "ended") {
     try {
       await statusMutation.mutateAsync({ campaignId, status });
-      toast.success(status === "ended" ? "Campaign ended" : status === "paused" ? "Campaign paused" : "Campaign resumed");
+      toast.success(
+        status === "ended"
+          ? t("partnerCampaignsPage.ended")
+          : status === "paused"
+            ? t("partnerCampaignsPage.paused")
+            : t("partnerCampaignsPage.resumed"),
+      );
       load();
     } catch (err) {
       toast.error(err instanceof Error ? err.message.replace(/^.*?: /, "") : "Could not update status");
@@ -189,18 +212,18 @@ function PartnerCampaignsPage() {
             disabled={atCampaignLimit}
             className={PARTNER_BTN}
           >
-            <Plus className="mr-1 h-4 w-4" /> New campaign
+            <Plus className="mr-1 h-4 w-4" /> {t("partnerCampaignsPage.newCampaign")}
           </Button>
         }
       />
       <AppPageBody className="pb-10">
         {atCampaignLimit && (
           <div className="cofex-app-card mb-6 border-amber-200 bg-amber-50/80 p-4 text-sm text-amber-900 shadow-none">
-            You&apos;ve reached your plan&apos;s active campaign limit.{" "}
+            {t("partnerCampaignsPage.limitReached")}{" "}
             <Link to="/partner/billing" className="font-semibold underline">
-              Upgrade billing
+              {t("partnerCampaignsPage.upgradeBilling")}
             </Link>{" "}
-            to launch another EEFFOC drop.
+            {t("partnerCampaignsPage.limitReachedSuffix")}
           </div>
         )}
 
@@ -213,11 +236,11 @@ function PartnerCampaignsPage() {
         ) : items.length === 0 ? (
           <PartnerEmptyState
             Icon={Megaphone}
-            title="No campaigns yet"
-            description="Launch your first EEFFOC campaign to bring explorers in. Choose check-in, social proof, or hybrid fulfillment."
+            title={t("partnerCampaignsPage.emptyTitle")}
+            description={t("partnerCampaignsPage.emptyDescription")}
             action={
               <Button className={`mt-4 ${PARTNER_BTN}`} onClick={() => setOpen(true)}>
-                <Plus className="mr-1 h-4 w-4" /> Create your first campaign
+                <Plus className="mr-1 h-4 w-4" /> {t("partnerCampaignsPage.createFirst")}
               </Button>
             }
           />
@@ -225,20 +248,37 @@ function PartnerCampaignsPage() {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {items.map((c) => {
               const display = campaignDisplayStatus(c);
-              const full = c.max_participants ? (c.participant_count ?? 0) >= c.max_participants : false;
+              const cap = c.available_quantity ?? c.max_participants;
+              const remaining = cap != null ? Math.max(0, cap - (c.participant_count ?? 0)) : null;
               const statusTone =
-                display === "active" ? "success" : display === "paused" ? "warn" : "neutral";
+                display === "active"
+                  ? "success"
+                  : display === "paused"
+                    ? "warn"
+                    : display === "scheduled"
+                      ? "info"
+                      : "neutral";
               return (
                 <div key={c.id} className="cofex-app-card p-5">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <PartnerStatusPill tone={statusTone}>
-                          {display === "active" ? "Active" : display === "paused" ? "Paused" : "Ended"}
+                          {display === "active"
+                            ? t("partnerCampaignsPage.statusActive")
+                            : display === "paused"
+                              ? t("partnerCampaignsPage.statusPaused")
+                              : display === "draft"
+                                ? t("partnerCampaignsPage.statusDraft")
+                                : display === "scheduled"
+                                  ? t("partnerCampaignsPage.statusScheduled")
+                                  : t("partnerCampaignsPage.statusEnded")}
                         </PartnerStatusPill>
-                        {full && display === "active" && <PartnerStatusPill tone="danger">Full</PartnerStatusPill>}
+                        {remaining === 0 && display === "active" && (
+                          <PartnerStatusPill tone="danger">{t("partnerCampaignsPage.statusFull")}</PartnerStatusPill>
+                        )}
                         {c.auto_approve_social && (
-                          <PartnerStatusPill tone="info">Auto-approve</PartnerStatusPill>
+                          <PartnerStatusPill tone="info">{t("partnerCampaignsPage.autoApprove")}</PartnerStatusPill>
                         )}
                       </div>
                       <h3 className="mt-2 text-lg font-extrabold text-[color:var(--cofex-coffee-deep)]">{c.title}</h3>
@@ -260,11 +300,26 @@ function PartnerCampaignsPage() {
                     <Meta Icon={Hash} label={c.hashtag ?? "-"} />
                     <Meta
                       Icon={Users}
-                      label={`${c.participant_count ?? 0}${c.max_participants ? ` / ${c.max_participants}` : ""} joined`}
+                      label={t("partnerCampaignsPage.joined", {
+                        count: c.participant_count ?? 0,
+                        max: c.max_participants ?? "∞",
+                      })}
+                    />
+                    <Meta
+                      Icon={Sparkles}
+                      label={
+                        remaining != null
+                          ? t("partnerCampaignsPage.rewardsLeft", { count: remaining })
+                          : t("partnerCampaignsPage.unlimitedRewards")
+                      }
                     />
                     <Meta
                       Icon={Calendar}
-                      label={c.ends_at ? `Ends ${new Date(c.ends_at).toLocaleDateString()}` : "No end"}
+                      label={
+                        c.ends_at
+                          ? t("partnerCampaignsPage.endsOn", { date: new Date(c.ends_at).toLocaleDateString() })
+                          : t("partnerCampaignsPage.noEndDate")
+                      }
                     />
                   </div>
                   <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -285,14 +340,33 @@ function PartnerCampaignsPage() {
                         onClick={() => setQrCampaignId(qrCampaignId === c.id ? null : c.id)}
                         className="text-xs font-semibold text-[color:var(--cofex-coffee-deep)] underline"
                       >
-                        {qrCampaignId === c.id ? "Hide QR" : "Show participation QR"}
+                        {qrCampaignId === c.id ? t("partnerCampaignsPage.hideQr") : t("partnerCampaignsPage.showQr")}
                       </button>
                     )}
                   </div>
 
                   <div className="mt-3 flex flex-wrap gap-2 border-t border-[color:var(--border)] pt-3">
                     <Button type="button" size="sm" variant="outline" className="h-8 rounded-full text-xs" onClick={() => openEdit(c)}>
-                      <Pencil className="mr-1 h-3 w-3" /> Edit
+                      <Pencil className="mr-1 h-3 w-3" /> {t("partnerCampaignsPage.edit")}
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="h-8 rounded-full text-xs"
+                      disabled={duplicateMutation.isPending}
+                      onClick={() => duplicate(c)}
+                    >
+                      <Copy className="mr-1 h-3 w-3" /> {t("partnerCampaignsPage.duplicate")}
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="h-8 rounded-full text-xs"
+                      onClick={() => setQrCampaignId(c.id)}
+                    >
+                      <QrCode className="mr-1 h-3 w-3" /> {t("partnerCampaignsPage.qrTools")}
                     </Button>
                     {display === "active" && (
                       <Button
@@ -303,7 +377,7 @@ function PartnerCampaignsPage() {
                         disabled={statusMutation.isPending}
                         onClick={() => setStatus(c.id, "paused")}
                       >
-                        <Pause className="mr-1 h-3 w-3" /> Pause
+                        <Pause className="mr-1 h-3 w-3" /> {t("partnerCampaignsPage.pause")}
                       </Button>
                     )}
                     {display === "paused" && (
@@ -315,7 +389,7 @@ function PartnerCampaignsPage() {
                         disabled={statusMutation.isPending}
                         onClick={() => setStatus(c.id, "active")}
                       >
-                        <Play className="mr-1 h-3 w-3" /> Resume
+                        <Play className="mr-1 h-3 w-3" /> {t("partnerCampaignsPage.resume")}
                       </Button>
                     )}
                     {(display === "active" || display === "paused") && (
@@ -326,10 +400,10 @@ function PartnerCampaignsPage() {
                         className="h-8 rounded-full text-xs text-rose-700 hover:text-rose-800"
                         disabled={statusMutation.isPending}
                         onClick={() => {
-                          if (confirm("End this campaign? Explorers can no longer join.")) setStatus(c.id, "ended");
+                          if (confirm(t("partnerCampaignsPage.endConfirm"))) setStatus(c.id, "ended");
                         }}
                       >
-                        <Square className="mr-1 h-3 w-3" /> End
+                        <Square className="mr-1 h-3 w-3" /> {t("partnerCampaignsPage.end")}
                       </Button>
                     )}
                   </div>

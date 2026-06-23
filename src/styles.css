@@ -105,6 +105,7 @@
   --cofex-cream-warm: #f3ede1;    /* warm cream alt */
   --cofex-black: #0a0a0a;         /* Black — text/buttons */
   --cofex-gold: #c9a44c;          /* Accent Gold */
+  --cofex-accent-gold: var(--cofex-gold);
   --cofex-gold-soft: #e8cf86;     /* soft gold highlight */
   --cofex-red: #ff2d2d;
   --cofex-magenta: #ff2db5;
@@ -361,6 +362,7 @@ html[data-cofex-auth-busy] body::before {
 
 /* ── App shell (explorer) ── */
 .cofex-app-page {
+  position: relative;
   background: linear-gradient(180deg, var(--cofex-pastel-blue) 0%, var(--cofex-cream) 38%, #fff 100%);
 }
 
@@ -380,6 +382,37 @@ html[data-cofex-auth-busy] body::before {
 .cofex-app-card-dashed {
   border-style: dashed;
   background: color-mix(in oklab, #fff 88%, var(--cofex-pastel-blue));
+}
+
+@keyframes cofex-stamp-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.cofex-passport-stamp {
+  position: relative;
+  animation: cofex-stamp-enter 0.5s ease-out both;
+}
+
+.cofex-passport-stamp::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 2px dashed color-mix(in oklab, var(--cofex-coffee) 18%, transparent);
+  border-radius: 1rem;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cofex-passport-stamp {
+    animation: none;
+  }
 }
 
 .cofex-explore-panels {
@@ -788,7 +821,12 @@ html[data-cofex-auth-busy] body::before {
 }
 
 .cofex-nav-link-active {
+  position: relative;
   color: var(--cofex-coffee-deep) !important;
+  background: color-mix(in oklab, var(--cofex-pastel-blue) 65%, #fff);
+  box-shadow:
+    0 4px 14px -6px color-mix(in oklab, var(--cofex-cyan) 45%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--cofex-cyan) 18%, transparent);
 }
 
 .cofex-nav-link-active svg {
@@ -803,4 +841,416 @@ html[data-cofex-auth-busy] body::before {
 
 .cofex-partner-nav-link-active svg {
   color: var(--cofex-cyan);
+}
+
+/* ── Premium exploration layer ── */
+
+.cofex-app-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% -10%, color-mix(in oklab, var(--cofex-pastel-blue) 70%, transparent), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 95% 5%, color-mix(in oklab, var(--cofex-pastel-pink) 45%, transparent), transparent 50%),
+    radial-gradient(ellipse 50% 35% at 50% 100%, color-mix(in oklab, var(--cofex-cream-warm) 80%, transparent), transparent 60%);
+}
+
+.cofex-premium-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.75rem;
+  border: 1px solid color-mix(in oklab, var(--cofex-cyan) 22%, var(--border));
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--cofex-pastel-blue) 55%, #fff) 0%, #fff 45%, color-mix(in oklab, var(--cofex-cream-warm) 40%, #fff) 100%);
+  box-shadow: var(--shadow-premium);
+  padding: 1.25rem 1.5rem;
+}
+
+.cofex-premium-hero::after {
+  content: "";
+  position: absolute;
+  right: -2rem;
+  top: -2rem;
+  width: 10rem;
+  height: 10rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in oklab, var(--cofex-cyan) 25%, transparent), transparent 70%);
+  pointer-events: none;
+}
+
+.cofex-hero-shine {
+  background: linear-gradient(
+    105deg,
+    var(--cofex-cyan) 0%,
+    var(--cofex-coffee-deep) 42%,
+    var(--cofex-gold) 78%,
+    var(--cofex-cyan) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Coffee steam micro-animation */
+@keyframes cofex-steam-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scaleX(1);
+  }
+  15% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-28px) scaleX(1.35);
+  }
+}
+
+.cofex-coffee-steam {
+  position: absolute;
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+  justify-content: center;
+  width: 48px;
+  height: 36px;
+}
+
+.cofex-steam-wisp {
+  display: block;
+  width: 10px;
+  height: 18px;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: linear-gradient(180deg, color-mix(in oklab, #fff 70%, var(--cofex-cream-warm)), transparent);
+  filter: blur(1px);
+  animation: cofex-steam-rise 2.8s ease-out infinite;
+}
+
+.cofex-steam-wisp--1 { animation-delay: 0s; height: 16px; }
+.cofex-steam-wisp--2 { animation-delay: 0.9s; height: 22px; }
+.cofex-steam-wisp--3 { animation-delay: 1.6s; height: 14px; }
+
+/* Confetti burst (badge unlock) */
+@keyframes cofex-confetti-fall {
+  0% {
+    opacity: 1;
+    transform: translateY(-10px) rotate(0deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(120px) rotate(540deg) scale(0.6);
+  }
+}
+
+.cofex-confetti-burst {
+  z-index: 20;
+}
+
+.cofex-confetti-piece {
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  animation: cofex-confetti-fall 1.4s ease-out forwards;
+}
+
+/* Collectible badge cards */
+.cofex-badge-card {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.28s ease;
+}
+
+.cofex-badge-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, color-mix(in oklab, var(--cofex-gold) 12%, transparent), transparent 55%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+
+.cofex-badge-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    var(--shadow-premium),
+    0 0 0 1px color-mix(in oklab, var(--cofex-gold) 25%, transparent);
+}
+
+.cofex-badge-card:hover::before {
+  opacity: 1;
+}
+
+.cofex-badge-card--earned {
+  box-shadow:
+    var(--shadow-premium),
+    0 0 24px -6px color-mix(in oklab, var(--cofex-gold) 35%, transparent);
+}
+
+/* Passport book cover */
+.cofex-passport-cover {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  border: 1px solid color-mix(in oklab, var(--cofex-gold) 30%, var(--cofex-coffee-deep));
+  background: var(--gradient-coffee);
+  box-shadow:
+    var(--shadow-premium),
+    inset 0 1px 0 color-mix(in oklab, #fff 15%, transparent);
+}
+
+.cofex-passport-cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 3px,
+      color-mix(in oklab, #fff 4%, transparent) 3px,
+      color-mix(in oklab, #fff 4%, transparent) 4px
+    );
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Reward / QR scan zone */
+.cofex-reward-qr {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  border: 2px solid color-mix(in oklab, var(--cofex-gold) 55%, var(--cofex-coffee));
+  background:
+    linear-gradient(160deg, color-mix(in oklab, var(--cofex-cream-warm) 80%, #fff) 0%, #fff 50%, color-mix(in oklab, var(--cofex-gold-soft) 25%, #fff) 100%);
+  box-shadow:
+    var(--shadow-gold),
+    var(--shadow-premium);
+}
+
+.cofex-reward-qr::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, color-mix(in oklab, var(--cofex-gold) 15%, transparent), transparent 55%);
+  pointer-events: none;
+}
+
+.cofex-scan-frame {
+  position: relative;
+  border-radius: 1.25rem;
+  border: 2px dashed color-mix(in oklab, var(--cofex-cyan) 45%, var(--cofex-gold));
+  background: color-mix(in oklab, #fff 92%, var(--cofex-pastel-blue));
+  box-shadow: inset 0 0 0 4px color-mix(in oklab, var(--cofex-cream) 80%, #fff);
+}
+
+.cofex-scan-frame::before,
+.cofex-scan-frame::after {
+  content: "";
+  position: absolute;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-color: var(--cofex-cyan);
+  border-style: solid;
+  pointer-events: none;
+}
+
+.cofex-scan-frame::before {
+  top: 0.5rem;
+  left: 0.5rem;
+  border-width: 3px 0 0 3px;
+  border-radius: 4px 0 0 0;
+}
+
+.cofex-scan-frame::after {
+  bottom: 0.5rem;
+  right: 0.5rem;
+  border-width: 0 3px 3px 0;
+  border-radius: 0 0 4px 0;
+}
+
+.cofex-verify-code {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.35em;
+  background: linear-gradient(180deg, var(--cofex-coffee-deep), var(--cofex-coffee));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Premium empty states */
+.cofex-empty-state {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.cofex-empty-state-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin-inline: auto;
+  border-radius: 1.25rem;
+  background: linear-gradient(145deg, var(--cofex-pastel-blue), color-mix(in oklab, var(--cofex-cream-warm) 60%, #fff));
+  box-shadow: var(--shadow-premium);
+}
+
+.cofex-empty-state-icon svg {
+  position: relative;
+  z-index: 1;
+}
+
+/* Campaign card glow accent */
+.cofex-campaign-card {
+  position: relative;
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease;
+}
+
+.cofex-campaign-card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, color-mix(in oklab, var(--cofex-cyan) 30%, transparent), color-mix(in oklab, var(--cofex-gold) 20%, transparent));
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.cofex-campaign-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    var(--shadow-premium),
+    0 0 28px -8px color-mix(in oklab, var(--cofex-cyan) 35%, transparent);
+}
+
+.cofex-campaign-card:hover::after {
+  opacity: 1;
+}
+
+.cofex-campaign-card-media {
+  position: relative;
+}
+
+.cofex-campaign-card-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, color-mix(in oklab, var(--cofex-coffee-deep) 75%, transparent) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+/* Cafe profile hero */
+.cofex-cafe-hero {
+  position: relative;
+}
+
+.cofex-cafe-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, color-mix(in oklab, var(--cofex-coffee-deep) 85%, transparent) 0%, transparent 45%),
+    linear-gradient(135deg, color-mix(in oklab, var(--cofex-cyan) 12%, transparent), transparent 50%);
+  pointer-events: none;
+}
+
+.cofex-cafe-hero-badge {
+  backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in oklab, #fff 50%, transparent);
+  box-shadow: var(--shadow-premium);
+}
+
+/* Badge unlock sheet */
+@keyframes cofex-badge-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.85) translateY(12px);
+  }
+  60% {
+    transform: scale(1.03) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.cofex-badge-unlock-item {
+  animation: cofex-badge-pop 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.cofex-badge-unlock-icon {
+  animation: cofex-badge-pop 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  box-shadow:
+    var(--shadow-gold),
+    0 0 0 4px color-mix(in oklab, var(--cofex-gold) 25%, transparent);
+}
+
+/* Radar sweep (global) */
+@keyframes cofex-radar-spin {
+  to { transform: rotate(360deg); }
+}
+
+.cofex-radar-sweep {
+  animation: cofex-radar-spin 3.5s linear infinite;
+}
+
+/* Partner KPI polish */
+.cofex-partner-kpi {
+  position: relative;
+  overflow: hidden;
+}
+
+.cofex-partner-kpi::after {
+  content: "";
+  position: absolute;
+  right: -1rem;
+  bottom: -1rem;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in oklab, var(--cofex-cyan) 12%, transparent), transparent 70%);
+  pointer-events: none;
+}
+
+/* Stat strip on home */
+.cofex-stat-tile {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: color-mix(in oklab, #fff 75%, var(--cofex-cream-warm));
+  border: 1px solid color-mix(in oklab, var(--border) 80%, var(--cofex-coffee) 10%);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.cofex-stat-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -12px color-mix(in oklab, var(--cofex-coffee) 25%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cofex-steam-wisp,
+  .cofex-confetti-piece,
+  .cofex-badge-unlock-item,
+  .cofex-badge-unlock-icon,
+  .cofex-radar-sweep {
+    animation: none !important;
+  }
+  .cofex-badge-card:hover,
+  .cofex-campaign-card:hover,
+  .cofex-stat-tile:hover {
+    transform: none;
+  }
 }

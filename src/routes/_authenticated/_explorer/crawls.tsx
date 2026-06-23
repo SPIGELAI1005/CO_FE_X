@@ -1,18 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { MapPin, Check } from "lucide-react";
-import { AppPage, AppPageBody, AppPageHeader, AppPageSection } from "@/components/app/AppPageShell";
+import { Award, Check, Clock, Footprints, MapPin, Sparkles } from "lucide-react";
+import { AppPage, AppPageBody, AppPageHeader } from "@/components/app/AppPageShell";
 import { QueryBoundary } from "@/components/patterns/QueryBoundary";
 import { useUser } from "@/hooks/use-user";
 import { useCoffeeCrawls, useCrawlProgress } from "@/lib/queries/vision";
+import { formatTrailDistance, formatTrailDuration, trailProgressPct, trailThemeLabelKey } from "@/lib/trails";
 
 export const Route = createFileRoute("/_authenticated/_explorer/crawls")({
-  head: () => ({ meta: [{ title: "Coffee crawls · CO:FE(X)" }] }),
-  component: CrawlsPage,
+  head: () => ({ meta: [{ title: "Trails · CO:FE(X)" }] }),
+  component: TrailsPage,
 });
 
-function CrawlsPage() {
-  const { t } = useTranslation();
+function TrailsPage() {
+  const { t, i18n } = useTranslation();
   const { user } = useUser();
   const crawlsQuery = useCoffeeCrawls();
   const progressQuery = useCrawlProgress(user?.id);
@@ -22,59 +23,96 @@ function CrawlsPage() {
   return (
     <AppPage>
       <AppPageHeader
-        eyebrow={t("crawls.eyebrow")}
-        title={t("crawls.title")}
-        subtitle={t("crawls.subtitle")}
+        eyebrow={t("trails.eyebrow")}
+        title={t("trails.title")}
+        subtitle={t("trails.subtitle")}
       />
-      <AppPageBody className="mx-auto max-w-2xl space-y-6 pb-10">
-        <QueryBoundary query={crawlsQuery} loadingLabel={t("crawls.loading")}>
+      <AppPageBody className="mx-auto max-w-2xl space-y-4 pb-10">
+        <QueryBoundary query={crawlsQuery} loadingLabel={t("trails.loading")}>
           {(crawls) =>
             crawls.length === 0 ? (
-              <p className="text-center text-sm text-[color:var(--cofex-black)]/55">{t("crawls.empty")}</p>
+              <p className="text-center text-sm text-[color:var(--cofex-black)]/55">{t("trails.empty")}</p>
             ) : (
-              crawls.map((crawl) => {
-                const prog = progressMap.get(crawl.id);
+              crawls.map((trail) => {
+                const prog = progressMap.get(trail.id);
+                const done = prog?.stops_done ?? trail.stops_done ?? 0;
+                const total = prog?.stop_count ?? trail.stop_count ?? trail.stops.length;
+                const pct = trailProgressPct(done, total);
+                const joined = prog?.joined ?? trail.joined ?? false;
+                const completed = prog?.completed ?? trail.completed ?? false;
+
                 return (
-                  <AppPageSection key={crawl.id} title={crawl.title} subtitle={crawl.description ?? undefined}>
-                    <div className="mb-2 flex items-center justify-between text-xs text-[color:var(--cofex-black)]/55">
-                      <span>{crawl.city_slug}</span>
-                      <span>{crawl.reward_points} pts reward</span>
-                    </div>
-                    {prog ? (
-                      <div className="mb-3 text-sm font-semibold text-[color:var(--cofex-cyan)]">
-                        {prog.completed
-                          ? t("crawls.completed")
-                          : t("crawls.progress", { done: prog.stops_done, total: prog.stop_count })}
-                      </div>
-                    ) : null}
-                    <ol className="space-y-2">
-                      {crawl.stops.map((stop) => (
-                        <li key={stop.shop_id} className="cofex-app-card flex items-center gap-3 p-3">
-                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[color:var(--cofex-cream)] text-sm font-bold">
-                            {stop.order}
+                  <Link
+                    key={trail.id}
+                    to="/crawls/$slug"
+                    params={{ slug: trail.slug }}
+                    className="cofex-app-card block overflow-hidden transition hover:-translate-y-0.5"
+                  >
+                    <div className="bg-gradient-to-br from-[color:var(--cofex-coffee-deep)] to-[#2a1810] px-5 py-4 text-white">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-amber-200/70">
+                            {t(trailThemeLabelKey(trail.theme))}
+                          </p>
+                          <h2 className="mt-1 text-lg font-extrabold">{trail.title}</h2>
+                          {trail.description && (
+                            <p className="mt-1 line-clamp-2 text-sm text-white/75">{trail.description}</p>
+                          )}
+                        </div>
+                        {completed && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-1 text-[10px] font-bold uppercase text-emerald-100">
+                            <Check className="h-3 w-3" /> {t("trails.completed")}
                           </span>
-                          <div className="min-w-0 flex-1">
-                            <Link
-                              to="/coffee/$slug"
-                              params={{ slug: stop.shop_slug }}
-                              className="font-semibold text-[color:var(--cofex-coffee-deep)] hover:underline"
-                            >
-                              {stop.shop_name}
-                            </Link>
-                            {stop.hint ? (
-                              <p className="text-xs text-[color:var(--cofex-black)]/55">{stop.hint}</p>
-                            ) : null}
-                          </div>
-                          <MapPin className="h-4 w-4 shrink-0 text-[color:var(--cofex-cyan)]" />
-                        </li>
-                      ))}
-                    </ol>
-                    {prog?.completed ? (
-                      <div className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-emerald-700">
-                        <Check className="h-4 w-4" /> {t("crawls.completed")}
+                        )}
                       </div>
-                    ) : null}
-                  </AppPageSection>
+                      <div className="mt-3 flex flex-wrap gap-3 text-xs text-amber-100/85">
+                        <span className="inline-flex items-center gap-1">
+                          <MapPin className="h-3.5 w-3.5" />
+                          {total} {t("trails.stops")}
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <Footprints className="h-3.5 w-3.5" />
+                          {formatTrailDistance(trail.estimated_distance_m ?? 2500, i18n.language)}
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <Clock className="h-3.5 w-3.5" />
+                          {formatTrailDuration(trail.estimated_walk_minutes ?? 45, i18n.language)}
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <Sparkles className="h-3.5 w-3.5" />
+                          {trail.reward_points} XP
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 p-4">
+                      {trail.badge_slug && (
+                        <div className="inline-flex items-center gap-1.5 rounded-full bg-[color:var(--cofex-cream)] px-3 py-1 text-xs font-semibold text-[color:var(--cofex-coffee-deep)]">
+                          <Award className="h-3.5 w-3.5" />
+                          {t("trails.badgeUnlock", { badge: trail.badge_slug.replace(/-/g, " ") })}
+                        </div>
+                      )}
+
+                      {joined && !completed && (
+                        <div>
+                          <div className="mb-1 flex justify-between text-xs font-semibold text-[color:var(--cofex-black)]/60">
+                            <span>{t("trails.progress", { done, total })}</span>
+                            <span>{pct}%</span>
+                          </div>
+                          <div className="h-2 overflow-hidden rounded-full bg-[color:var(--cofex-cream)]">
+                            <div
+                              className="h-full bg-gradient-to-r from-[color:var(--cofex-cyan)] to-sky-500"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {!joined && (
+                        <p className="text-sm font-semibold text-[color:var(--cofex-cyan)]">{t("trails.viewTrail")} →</p>
+                      )}
+                    </div>
+                  </Link>
                 );
               })
             )

@@ -77,6 +77,24 @@ Ordering prioritizes incomplete high-value CTAs.
 
 ---
 
+## Core journey test modules
+
+Pure helpers with Vitest coverage for end-to-end logic without live Supabase:
+
+| Module | Covers |
+|--------|--------|
+| `campaign-availability.ts` | Join/discovery eligibility, expiry, quantity caps |
+| `campaign-fulfillment.ts` | Explorer phase, social vs check-in modes |
+| `campaign-mission.ts` | Mission step progress |
+| `verify-redemption.ts` | Partner verify result parsing, duplicate detection |
+| `partner-dashboard-metrics.ts` | Café KPI counters |
+| `auth-roles.ts` | Admin/partner route access rules |
+| `campaign-journey.test.ts` | Cross-module journey scenarios |
+
+Manual device QA: [QA_CHECKLIST_CORE_FLOWS.md](../QA_CHECKLIST_CORE_FLOWS.md)
+
+---
+
 ## Explorer analytics
 
 `src/lib/explorer-analytics.ts`:

@@ -64,11 +64,19 @@ export function usePartnerVerifyAudit(userId: string | undefined) {
   });
 }
 
+import { parseVerifyInput } from "@/lib/parse-verify-code";
+
 export function useVerifyRedemptionCode(userId: string | undefined) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (code: string) => {
-      const { data, error } = await supabase.rpc("verify_redemption_code", { _code: code.trim(), _ip: undefined });
+    mutationFn: async (raw: string) => {
+      const parsed = parseVerifyInput(raw);
+      if (!parsed) throw new Error("Invalid code format");
+      const { data, error } = await supabase.rpc("verify_redemption_code", {
+        _code: parsed.code,
+        _ip: undefined,
+        _rotating_token: parsed.rotatingToken ?? undefined,
+      });
       if (error) throw error;
       return data as Record<string, unknown>;
     },
@@ -152,6 +160,23 @@ export function useUpdatePartnerCampaign() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["partnerCampaigns"] });
+    },
+  });
+}
+
+export function useDuplicatePartnerCampaign() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (campaignId: string) => {
+      const { data, error } = await supabase.rpc("partner_duplicate_campaign", {
+        _campaign_id: campaignId,
+      });
+      if (error) throw error;
+      return data as { id: string; title: string };
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["partnerCampaigns"] });
+      qc.invalidateQueries({ queryKey: ["partnerDashboardOverview"] });
     },
   });
 }

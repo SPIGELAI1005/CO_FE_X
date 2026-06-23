@@ -3,6 +3,7 @@ import {
   buildCaptionTemplate,
   getCampaignExplorerPhase,
   needsSocialProof,
+  parseSocialRequirements,
 } from "./campaign-fulfillment";
 
 describe("campaign-fulfillment", () => {
@@ -34,5 +35,44 @@ describe("campaign-fulfillment", () => {
         socialStatus: "approved",
       }),
     ).toBe("reward");
+  });
+
+  it("returns ended before full for joined explorers", () => {
+    expect(
+      getCampaignExplorerPhase({
+        joined: true,
+        ended: true,
+        full: true,
+        fulfillmentMode: "check_in",
+        myCheckIns: 0,
+        requiredCheckIns: 1,
+        redemptionCode: null,
+        socialStatus: "none",
+      }),
+    ).toBe("ended");
+  });
+
+  it("returns full only for non-joined explorers", () => {
+    expect(
+      getCampaignExplorerPhase({
+        joined: false,
+        ended: false,
+        full: true,
+        fulfillmentMode: "check_in",
+        myCheckIns: 0,
+        requiredCheckIns: 1,
+        redemptionCode: null,
+        socialStatus: "none",
+      }),
+    ).toBe("full");
+  });
+
+  it("parses social requirements JSON", () => {
+    expect(
+      parseSocialRequirements({
+        platforms: ["instagram_post"],
+        caption_template: "Visit {shop_name}",
+      }).caption_template,
+    ).toBe("Visit {shop_name}");
   });
 });

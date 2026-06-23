@@ -15,6 +15,8 @@ import {
   usePartnerReferralCode,
 } from "@/lib/queries/partner";
 import { PARTNER_BTN, PARTNER_CHIP, PARTNER_CHIP_ACTIVE, PartnerStatusPill } from "@/components/app/partner/PartnerShell";
+import { NotificationPreferencesCard } from "@/components/app/NotificationPreferencesCard";
+import { useProfile } from "@/lib/queries/profile";
 import { Copy, Key, Link2, Loader2, Trash2, Users } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/partner/settings")({
@@ -25,6 +27,7 @@ export const Route = createFileRoute("/_authenticated/partner/settings")({
 function PartnerSettingsPage() {
   const { t } = useTranslation();
   const { user } = useUser();
+  const profileQuery = useProfile(user?.id);
   const keysQuery = usePartnerApiKeys(user?.id);
   const referralsQuery = usePartnerReferrals(user?.id);
   const codeQuery = usePartnerReferralCode(user?.id);
@@ -69,6 +72,13 @@ function PartnerSettingsPage() {
         subtitle={t("pages.partnerSettings.subtitle")}
       />
       <AppPageBody className="max-w-3xl space-y-8 pb-10">
+        {user && (
+          <NotificationPreferencesCard
+            userId={user.id}
+            notificationPreferences={profileQuery.data?.notification_preferences as Record<string, unknown> | undefined}
+            variant="partner"
+          />
+        )}
         <AppPageSection eyebrow="API" title="API keys" subtitle="Requires Growth or Pro plan with API access.">
           <div className="cofex-app-card space-y-4 p-5">
             <div className="grid gap-3 sm:grid-cols-2">

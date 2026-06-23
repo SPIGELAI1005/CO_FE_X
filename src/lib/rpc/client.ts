@@ -6,7 +6,7 @@ export interface CheckInRpcResult {
   points_awarded: number;
   total_points: number;
   total_check_ins: number;
-  new_badges: { slug: string; name: string }[];
+  new_badges: { slug: string; name: string; rarity?: string }[];
   time_bonus?: string | null;
   multiplier?: number;
   beverage_tag?: string | null;
@@ -17,8 +17,8 @@ export async function rpcPerformCheckIn(
   client: SupabaseClient<Database>,
   payload: {
     shopId: string;
-    latitude: number;
-    longitude: number;
+    latitude?: number | null;
+    longitude?: number | null;
     campaignId?: string;
     beverageTag?: string;
   },
@@ -26,18 +26,42 @@ export async function rpcPerformCheckIn(
   return client.rpc("perform_check_in", {
     _shop_id: payload.shopId,
     _campaign_id: payload.campaignId ?? undefined,
-    _latitude: payload.latitude,
-    _longitude: payload.longitude,
+    _latitude: payload.latitude ?? undefined,
+    _longitude: payload.longitude ?? undefined,
     _beverage_tag: payload.beverageTag ?? undefined,
   });
 }
 
-export async function rpcJoinCampaign(client: SupabaseClient<Database>, campaignId: string) {
-  return client.rpc("join_campaign", { _campaign_id: campaignId });
+export async function rpcJoinCampaign(
+  client: SupabaseClient<Database>,
+  campaignId: string,
+  options?: {
+    joinSource?: string;
+    termsAccepted?: boolean;
+    disclosureAcknowledged?: boolean;
+  },
+) {
+  return client.rpc("join_campaign", {
+    _campaign_id: campaignId,
+    _join_source: options?.joinSource ?? undefined,
+    _terms_accepted: options?.termsAccepted ?? false,
+    _disclosure_acknowledged: options?.disclosureAcknowledged ?? false,
+  });
 }
 
 export async function rpcRedeemCampaign(client: SupabaseClient<Database>, campaignId: string) {
   return client.rpc("redeem_campaign", { _campaign_id: campaignId });
+}
+
+export async function rpcVerifyRedemptionCode(
+  client: SupabaseClient<Database>,
+  payload: { code: string; rotatingToken?: string; ip?: string },
+) {
+  return client.rpc("verify_redemption_code", {
+    _code: payload.code,
+    _rotating_token: payload.rotatingToken ?? undefined,
+    _ip: payload.ip ?? undefined,
+  });
 }
 
 export interface ClaimChallengeRpcResult {

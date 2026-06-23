@@ -5,7 +5,7 @@ export const privacyPreferencesSchema = z.object({
   show_on_leaderboard: z.boolean().optional(),
   allow_arrival_signals: z.boolean().optional(),
   allow_gift_receipt: z.boolean().optional(),
-  marketing_emails: z.boolean().optional(),
+  share_moments_publicly: z.boolean().optional(),
 });
 
 export const openingHoursDaySchema = z.object({
@@ -82,10 +82,32 @@ export const socialProofSubmitSchema = z.object({
 export const rewardStatusSchema = z.enum(["locked", "unlocked", "redeemed", "expired"]);
 
 export const badgeCriteriaSchema = z.object({
-  type: z.enum(["check_ins", "unique_shops", "tag", "city", "country", "region_countries", "beverage"]),
+  type: z.enum([
+    "check_ins",
+    "unique_shops",
+    "tag",
+    "city",
+    "country",
+    "region_countries",
+    "beverage",
+    "campaigns_completed",
+    "reward_type_redeemed",
+    "unique_local_shops",
+    "low_discovery_shops",
+    "social_posts",
+    "gifts_sent",
+    "campaign_sunday",
+    "campaign_rainy",
+    "neighborhood_completed",
+    "munich_districts",
+    "campaign_before_hour",
+    "campaign_after_hour",
+  ]),
   threshold: z.number().int().min(1).optional(),
   value: z.string().optional(),
   countries: z.array(z.string()).optional(),
+  max_shop_check_ins: z.number().int().optional(),
+  hour: z.number().int().optional(),
 });
 
 export type CampaignCreateInput = z.infer<typeof campaignCreateSchema>;

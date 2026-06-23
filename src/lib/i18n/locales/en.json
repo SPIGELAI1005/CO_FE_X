@@ -22,8 +22,9 @@
     "rank": "Rank",
     "wallet": "Wallet",
     "profile": "Profile",
-    "crawls": "Crawls",
-    "rewardsMenuAria": "Passport, rank, and wallet",
+    "crawls": "Trails",
+    "moments": "Moments",
+    "rewardsMenuAria": "Passport, moments, rank, and wallet",
     "home": "Home",
     "verify": "Verify",
     "posts": "Posts",
@@ -45,7 +46,7 @@
   },
   "notifications": {
     "title": "Inbox",
-    "subtitle": "Applications, rewards, and activity updates",
+    "subtitle": "Campaigns, rewards, badges, and café activity — tuned to your preferences.",
     "ariaLabel": "Notifications inbox",
     "markAllRead": "Mark all read",
     "empty": "No messages yet",
@@ -72,6 +73,14 @@
       "title": "Coffee gift received",
       "body": "Someone sent you a drink credit. Redeem at any partner café."
     },
+    "reward_gift_received": {
+      "title": "Campaign reward gifted to you",
+      "body": "A friend wrapped a coffee moment for you — tap to accept."
+    },
+    "reward_gift_accepted": {
+      "title": "Gift update",
+      "body": "Your gifted reward was claimed or is ready to use."
+    },
     "beans_earned": {
       "title": "Beans earned",
       "body": "You earned {{beans}} Beans from your streak milestone."
@@ -83,6 +92,107 @@
     "spawn_nearby": {
       "title": "Rare spawn nearby",
       "body": "A limited-time bonus is active at {{shop_name}}."
+    },
+    "campaign_nearby": {
+      "title": "New EEFFOC campaign nearby",
+      "body": "A fresh campaign is live at {{shop_name}} — join before rewards run out."
+    },
+    "reward_unlocked": {
+      "title": "Reward unlocked",
+      "body": "Your reward is ready — show your QR at the counter."
+    },
+    "reward_expiring_soon": {
+      "title": "Reward expiring soon",
+      "body": "Your reward at {{shop_name}} expires soon. Don't miss your free drink."
+    },
+    "submission_approved": {
+      "title": "Social proof approved",
+      "body": "Your post was approved — your reward is unlocked."
+    },
+    "submission_rejected": {
+      "title": "Social proof needs a fix",
+      "body": "Your submission was rejected. Review the notes and resubmit if the campaign is still active."
+    },
+    "badge_unlocked": {
+      "title": "Badge unlocked: {{badge_name}}",
+      "body": "You earned a new badge — see it on your passport."
+    },
+    "trail_progress": {
+      "title": "Trail progress",
+      "body": "You're making progress on {{crawl_title}} — keep going!"
+    },
+    "trail_complete": {
+      "title": "Trail complete!",
+      "body": "You finished {{crawl_title}} — XP and badges await."
+    },
+    "trail_joined": {
+      "title": "Trail joined",
+      "body": "You joined {{crawl_title}}. Visit each stop to complete the route."
+    },
+    "seasonal_event_started": {
+      "title": "Seasonal event started",
+      "body": "{{crawl_title}} is live — join the route while it lasts."
+    },
+    "campaign_joined": {
+      "title": "Campaign joined",
+      "body": "You're in — follow the mission steps to unlock your reward."
+    },
+    "partner_check_in": {
+      "title": "New check-in",
+      "body": "{{explorer_name}} checked in at {{shop_name}}."
+    },
+    "social_submission": {
+      "title": "Social proof to review",
+      "body": "An explorer submitted a post for your campaign."
+    },
+    "partner_reward_redeemed": {
+      "title": "Reward redeemed at counter",
+      "body": "{{explorer_name}} redeemed a reward ({{code}})."
+    },
+    "campaign_low_quantity": {
+      "title": "Campaign rewards running low",
+      "body": "Only {{remaining}} rewards left for {{campaign_title}}."
+    },
+    "campaign_expired": {
+      "title": "Campaign ended",
+      "body": "{{campaign_title}} has ended — review your results in analytics."
+    },
+    "analytics_summary": {
+      "title": "Your weekly café pulse",
+      "body": "{{check_ins}} check-ins · {{redemptions}} redemptions · {{social_proofs}} social proofs this week."
+    },
+    "campaign_code_redeemed": {
+      "title": "Reward redeemed",
+      "body": "Your code {{code}} was used at {{shop_name}}. Enjoy!"
+    }
+  },
+  "notificationPrefs": {
+    "title": "Notification preferences",
+    "subtitle": "Choose which updates appear in your inbox. We keep reminders useful, not spammy.",
+    "inApp": "In-app notifications",
+    "inAppHint": "Master switch for the bell inbox.",
+    "saved": "Notification preferences saved",
+    "saveFailed": "Could not save preferences",
+    "pushNote": "Push notifications are optional and only sent when you enable them in your browser — delivery is not yet wired for all event types.",
+    "categories": {
+      "campaigns": "Campaigns & events",
+      "rewards": "Rewards & expiry",
+      "social": "Social proof",
+      "badges": "Badges & points",
+      "trails": "Trails & progress",
+      "gifts": "Gifts",
+      "partnerActivity": "Café activity",
+      "analytics": "Weekly summaries"
+    },
+    "hints": {
+      "campaigns": "Nearby EEFFOC campaigns, joins, seasonal trails",
+      "rewards": "Unlocks, expiring codes, redemptions",
+      "social": "Proof approved or rejected",
+      "badges": "Badge unlocks and milestone points",
+      "trails": "Trail progress and completions",
+      "gifts": "Friends gifting rewards",
+      "partner_activity": "Check-ins, social reviews, counter redemptions",
+      "analytics": "Weekly performance digest"
     }
   },
   "auth": {
@@ -213,14 +323,66 @@
     }
   },
   "levels": {
-    "rookie": "Rookie Explorer",
-    "seeker": "Coffee Seeker",
-    "hunter": "Espresso Hunter",
-    "master": "Cappuccino Master",
-    "nomad": "Coffee Nomad",
-    "legend": "Coffee Legend",
+    "coffee_rookie": "Coffee Rookie",
+    "espresso_explorer": "Espresso Explorer",
+    "cappuccino_collector": "Cappuccino Collector",
+    "matcha_hunter": "Matcha Hunter",
+    "local_supporter": "Local Supporter",
+    "hidden_gem_finder": "Hidden Gem Finder",
+    "eeffoc_pro": "EEFFOC Pro",
+    "city_explorer": "City Explorer",
+    "cofex_ambassador": "CO:FE(X) Ambassador",
+    "local_legend": "Local Legend",
     "levelN": "Level {{n}} · {{name}}",
-    "pointsToNext": "{{points}} pts to {{name}}"
+    "pointsToNext": "{{points}} XP to {{name}}"
+  },
+  "xpEvents": {
+    "generic": "Explorer activity",
+    "checkIn": "Café check-in",
+    "firstCheckIn": "First check-in",
+    "newCafe": "New café discovered",
+    "newNeighborhood": "New neighborhood",
+    "campaignComplete": "Campaign completed",
+    "rewardRedeemed": "Reward redeemed",
+    "proofPosted": "Proof submitted",
+    "socialPost": "Social post approved",
+    "trailComplete": "Trail completed",
+    "badgeUnlock": "Badge unlocked",
+    "friendInvite": "Friend invited",
+    "friendJoined": "Joined via invite",
+    "giftSent": "Gift sent",
+    "review": "Café review",
+    "challengeReward": "Challenge claimed"
+  },
+  "explorerCard": {
+    "eyebrow": "Explorer identity",
+    "levelProgress": "Level progress",
+    "cafesVisited": "Cafés",
+    "badges": "Badges",
+    "favoriteDrink": "Favorite drink",
+    "recentAchievements": "Recent XP",
+    "viewAll": "Wallet",
+    "noXpYet": "Check in, complete campaigns, and explore to earn your first XP.",
+    "changeAvatar": "Change avatar"
+  },
+  "badges": {
+    "unlockTitleOne": "Badge unlocked!",
+    "unlockTitleMany": "{{count}} badges unlocked!",
+    "unlockSubtitle": "New achievement added to your Coffee Passport",
+    "viewInPassport": "View in passport",
+    "continue": "Continue",
+    "unlocked": "Unlocked",
+    "unlockedOn": "Unlocked {{date}}",
+    "lockedHint": "Keep exploring to unlock this badge.",
+    "progress": "Progress",
+    "progressPct": "{{pct}}% complete",
+    "rarity": {
+      "common": "Common",
+      "uncommon": "Uncommon",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
+    }
   },
   "query": {
     "loading": "Loading…",
@@ -322,6 +484,7 @@
     "unlocking": "Unlocking…",
     "checkInCta": "Head to the café and check in to continue your mission.",
     "goToCafe": "Go to {{name}}",
+    "hostCafe": "Host café",
     "toastJoined": "Mission started! Follow the steps below.",
     "toastJoinedQr": "Welcome! You're in this EEFFOC mission.",
     "toastJoinError": "Could not start mission",
@@ -404,7 +567,31 @@
     "noCountryStampsHint": "Visit cafés in new countries to expand your map.",
     "beverageEyebrow": "Sips",
     "beverageTitle": "Beverage passport",
-    "crawlCta": "Try a coffee crawl"
+    "crawlCta": "Try a coffee crawl",
+    "rewardsCollected": "Rewards collected",
+    "neighborhoods": "Neighborhoods",
+    "favoriteReward": "Favorite reward",
+    "stampCollectionEyebrow": "Collectibles",
+    "stampCollectionTitle": "Reward stamp collection",
+    "stampCollectionSubtitle": "Every redeemed campaign becomes a collectible café stamp.",
+    "loadingStamps": "Loading your stamps…",
+    "noRewardStamps": "No reward stamps yet",
+    "noRewardStampsHint": "Complete a campaign and redeem your reward at the counter to earn your first stamp.",
+    "exploreCampaigns": "Explore campaigns",
+    "sharePassport": "Share passport",
+    "shareTitle": "My CO:FE(X) Coffee Passport",
+    "shareCopied": "Passport summary copied",
+    "shareFailed": "Could not copy — try again",
+    "categories": {
+      "all": "All",
+      "coffee": "Coffee",
+      "matcha": "Matcha",
+      "iceCream": "Ice cream",
+      "juice": "Juice",
+      "seasonal": "Seasonal",
+      "hiddenGems": "Hidden gems",
+      "localHeroes": "Local heroes"
+    }
   },
   "walletPage": {
     "loading": "Loading wallet…",
@@ -537,6 +724,15 @@
     "pushOn": "Notifications enabled",
     "pushEnabled": "Push notifications enabled"
   },
+  "profilePrivacy": {
+    "title": "Privacy",
+    "shareLocation": "Share location for check-ins",
+    "shareLocationHint": "When off, you can check in without GPS. Cafés may apply extra verification at the counter.",
+    "saved": "Privacy settings saved",
+    "saveFailed": "Could not save privacy settings",
+    "shareMoments": "Share moments in the community feed",
+    "shareMomentsHint": "When on, badge unlocks, trail completions and uploads can appear in Moments. Social proof requires a separate opt-in per post."
+  },
   "leaderboardPage": {
     "loading": "Loading explorers…",
     "global": "Global",
@@ -658,23 +854,401 @@
     "shopProfile": "Shop profile",
     "campaigns": "Campaigns",
     "rewards": "Rewards",
-    "fullLoopSubtitle": "The full loop from discovery to redemption."
+    "fullLoopSubtitle": "The full loop from discovery to redemption.",
+    "counter": {
+      "eyebrow": "Behind the counter",
+      "title": "Today's snapshot",
+      "activeCampaigns": "Active campaigns",
+      "pendingProofs": "Posts to review",
+      "redeemedToday": "Redeemed today",
+      "newExplorers": "New explorers today",
+      "socialReach": "Est. reach today",
+      "socialReachHint": "From approved posts",
+      "rewardsLeft": "Rewards left"
+    }
+  },
+  "partnerCampaignsPage": {
+    "newCampaign": "New campaign",
+    "limitReached": "You've reached your plan's active campaign limit.",
+    "upgradeBilling": "Upgrade billing",
+    "limitReachedSuffix": "to launch another EEFFOC drop.",
+    "emptyTitle": "No campaigns yet",
+    "emptyDescription": "Launch your first EEFFOC campaign. Pick a template, print a QR, and welcome explorers.",
+    "createFirst": "Create your first campaign",
+    "statusActive": "Active",
+    "statusPaused": "Paused",
+    "statusEnded": "Ended",
+    "statusDraft": "Draft",
+    "statusScheduled": "Scheduled",
+    "statusFull": "Full",
+    "autoApprove": "Auto-approve",
+    "joined": "{{count}} / {{max}} joined",
+    "rewardsLeft": "{{count}} rewards left",
+    "unlimitedRewards": "Unlimited spots",
+    "endsOn": "Ends {{date}}",
+    "noEndDate": "No end date",
+    "showQr": "Show participation QR",
+    "hideQr": "Hide QR",
+    "edit": "Edit",
+    "duplicate": "Duplicate",
+    "qrTools": "QR tools",
+    "pause": "Pause",
+    "resume": "Resume",
+    "end": "End",
+    "endConfirm": "End this campaign? Explorers can no longer join.",
+    "deleteConfirm": "Delete this campaign? This cannot be undone.",
+    "deleted": "Campaign deleted",
+    "duplicated": "Copied as “{{title}}” (paused — review & publish)",
+    "duplicateFailed": "Could not duplicate campaign",
+    "ended": "Campaign ended",
+    "paused": "Campaign paused",
+    "resumed": "Campaign resumed",
+    "pickTemplate": "Pick an EEFFOC template",
+    "pickTemplateHint": "All templates use the “We give EEFFOC!” family — choose by purpose, then customize.",
+    "allTemplates": "All",
+    "qrTitle": "Participation QR",
+    "qrHint": "Print or display at your counter. Explorers scan to join {{title}}.",
+    "qrScanLabel": "Scan to join campaign",
+    "openJoinPage": "Open join page",
+    "downloadPdf": "Download PDF",
+    "printQr": "Print QR",
+    "pdfDownloaded": "PDF downloaded",
+    "pdfFailed": "Could not generate PDF",
+    "categories": {
+      "classic": "Classic",
+      "limitedDrop": "Limited drop",
+      "timeWindow": "Time window",
+      "friend": "Bring a friend",
+      "repeatVisitor": "Repeat visitor",
+      "discovery": "Discovery",
+      "premium": "Premium",
+      "weather": "Weather",
+      "weeklyRitual": "Weekly ritual",
+      "creator": "Creator",
+      "custom": "Custom"
+    }
+  },
+  "campaignWizard": {
+    "subtitle": "We Give EEFFOC — guided campaign setup for your café.",
+    "editTitle": "Edit campaign",
+    "stepIdeas": "Campaign ideas",
+    "stepReward": "Choose reward",
+    "stepQuantity": "Define quantity",
+    "stepTiming": "Define timing",
+    "stepSocial": "Social action",
+    "stepText": "Add text",
+    "stepPreview": "Preview",
+    "stepPublish": "Publish",
+    "stepOf": "Step {{current}} of {{total}}",
+    "coffeeShop": "Coffee shop",
+    "suggestionsHeading": "Smart suggestions",
+    "suggestionsHint": "Pick a ready-made idea — you can adjust every step before publishing.",
+    "startScratch": "Start from scratch",
+    "browseTemplates": "Browse EEFFOC templates",
+    "hideTemplates": "Hide templates",
+    "quantityExample": "Example: {{example}}",
+    "perExplorer": "Reward per explorer",
+    "totalLimit": "Total campaign limit (spots)",
+    "dailyLimit": "Daily redemption limit",
+    "dailyLimitPlaceholder": "No daily cap",
+    "bonusPoints": "Bonus points",
+    "timing": {
+      "today_only": "Today only",
+      "this_week": "This week",
+      "custom": "Custom dates"
+    },
+    "startDate": "Start date",
+    "endDate": "End date",
+    "specificHours": "Specific hours",
+    "specificHoursHint": "Limit redemptions to a daily time window (e.g. slow afternoon).",
+    "hoursFrom": "From",
+    "hoursTo": "To",
+    "timingSummary": "Runs {{start}} → {{end}}",
+    "social": {
+      "instagram_story": "Instagram Story",
+      "instagram_storyHint": "Explorers share a story tagging your café.",
+      "instagram_post": "Instagram Post",
+      "instagram_postHint": "Photo post with your hashtag.",
+      "tiktok": "TikTok",
+      "tiktokHint": "Short video about their visit.",
+      "any_social": "Any social post",
+      "any_socialHint": "Instagram, TikTok, or Facebook — explorer picks.",
+      "manual_proof": "Manual proof",
+      "manual_proofHint": "Check-in plus proof shown at the counter."
+    },
+    "autoApprove": "Auto-approve posts",
+    "autoApproveHint": "Instantly unlock rewards when proof is submitted.",
+    "campaignTitle": "Campaign title",
+    "description": "Description",
+    "hashtags": "Required hashtags",
+    "cafeHandle": "Café handle",
+    "requirements": "Participation requirements",
+    "terms": "Terms & conditions",
+    "scheduledStart": "Go live at",
+    "publish": {
+      "draft": "Save as draft",
+      "draftHint": "Not visible on the map until you publish.",
+      "active": "Publish now",
+      "activeHint": "Live on the map immediately.",
+      "scheduled": "Schedule",
+      "scheduledHint": "Active status — appears on map when start time arrives."
+    },
+    "back": "Back",
+    "next": "Next",
+    "saving": "Saving…",
+    "saveDraft": "Save draft",
+    "schedule": "Schedule campaign",
+    "save": "Save changes",
+    "publish": "Publish campaign",
+    "saved": "Campaign updated",
+    "savedDraft": "Draft saved",
+    "savedScheduled": "Campaign scheduled",
+    "published": "Campaign published — explorers can find it on the map!",
+    "preview": {
+      "explorer": "Explorer view",
+      "map": "Map card",
+      "qr": "QR code",
+      "reward": "Reward card",
+      "explorerHint": "How explorers see your campaign",
+      "mapHint": "Pin and map sheet preview",
+      "qrHint": "Participation QR after publish",
+      "qrLabel": "Scan to join",
+      "qrPlaceholder": "Reward QR appears after explorers join",
+      "untitled": "Your campaign",
+      "noDescription": "Add a description in the previous step.",
+      "reward": "Reward",
+      "shop": "Café",
+      "spots": "Spots",
+      "ends": "Ends",
+      "points": "pts"
+    },
+    "suggestions": {
+      "slowAfternoon": {
+        "title": "Slow afternoon boost",
+        "description": "Free cappuccinos during quiet afternoon hours."
+      },
+      "weekendDiscovery": {
+        "title": "Weekend discovery",
+        "description": "Welcome weekend wanderers with a free coffee."
+      },
+      "newMatcha": {
+        "title": "New matcha launch",
+        "description": "Celebrate your matcha menu with a social post reward."
+      },
+      "rainyDay": {
+        "title": "Rainy day coffee",
+        "description": "Warm cups when the weather turns grey."
+      },
+      "localHero": {
+        "title": "Local hero campaign",
+        "description": "Reward neighbours who shout you out."
+      }
+    },
+    "errors": {
+      "quantity": "1–100 per explorer",
+      "totalLimit": "1–10,000 total spots",
+      "dailyLimit": "Daily limit cannot exceed total spots",
+      "startDate": "Pick a start date",
+      "endDate": "Pick an end date",
+      "scheduledStart": "Pick when the campaign should go live",
+      "fixFields": "Please fix the highlighted fields",
+      "pickShop": "Pick a coffee shop"
+    }
+  },
+  "partnerAnalyticsPage": {
+    "conversionRate": "Conversion rate",
+    "conversionHint": "Redemptions ÷ participants",
+    "repeatVisitors": "Repeat visitors",
+    "repeatHint": "Explorers with 2+ check-ins",
+    "peakHour": "Busiest hour",
+    "peakHint": "Most check-ins in range",
+    "topReward": "Top reward type",
+    "topRewardHint": "Most redeemed category",
+    "noData": "—"
+  },
+  "rewardCard": {
+    "status": {
+      "unlocked": "Your reward is ready!",
+      "redeemed": "Reward redeemed",
+      "expired": "Reward expired",
+      "locked": "Reward locked"
+    },
+    "campaign": "Campaign",
+    "showToTeam": "Show this to the café team",
+    "qrLabel": "Scan at the counter",
+    "liveCode": "Live code",
+    "backupCode": "Backup code",
+    "scanHint": "Staff scans QR or enters your backup code at verify",
+    "expiresAt": "Valid until {{date}}",
+    "expiredAt": "Expired {{date}}",
+    "expiredHint": "This reward code is no longer valid. Contact the café if you think this is a mistake.",
+    "redeemedAt": "Redeemed at counter on {{date}}",
+    "bonusPoints": "bonus XP awarded",
+    "giftPendingTitle": "Gift in flight",
+    "giftPendingHint": "This reward is waiting for a friend to accept. Cancel the gift to use it yourself."
   },
   "partnerVerifyPage": {
     "history": "History",
     "noVerifications": "No verifications yet.",
+    "manualHint": "Enter the 8-character backup code, or code + live 6-digit token (e.g. ABC12345 123456).",
     "catalogConfirmed": "Catalog reward confirmed",
-    "redemptionConfirmed": "Redemption confirmed",
+    "redemptionConfirmed": "Valid reward — enjoy!",
     "alreadyRedeemed": "Already redeemed",
-    "codeNotFound": "Code not found",
-    "wrongShop": "Code belongs to another café",
+    "codeNotFound": "Invalid reward code",
+    "wrongShop": "Wrong café or campaign",
+    "expired": "Reward expired",
+    "invalidToken": "Live code mismatch",
+    "rateLimited": "Too many attempts",
+    "giftPending": "This reward is being gifted — ask the explorer to cancel or complete the gift first",
     "catalog": "Catalog",
     "pointsSpent": "{{count}} points spent from wallet",
     "markedUsed": "Marked used at {{time}}",
+    "expiredOn": "Expired on {{date}}",
     "catalogVerified": "Catalog reward verified",
-    "codeVerified": "Code verified",
-    "alreadyRedeemedToast": "Code already redeemed",
-    "verificationFailed": "Verification failed"
+    "codeVerified": "Valid reward verified",
+    "alreadyRedeemedToast": "This reward was already redeemed",
+    "expiredToast": "This reward code has expired",
+    "invalidTokenToast": "Live code does not match — ask the explorer to show the current 6-digit code",
+    "wrongShopToast": "This code belongs to another café",
+    "codeNotFoundToast": "Code not found",
+    "verificationFailed": "Verification failed",
+    "results": {
+      "ok": "Valid reward",
+      "already_used": "Already redeemed",
+      "not_found": "Invalid reward",
+      "not_yours": "Wrong café / campaign",
+      "expired": "Expired reward",
+      "invalid_token": "Live code mismatch",
+      "rate_limited": "Rate limited",
+      "gift_pending": "Gift pending"
+    }
+  },
+  "compliance": {
+    "disclosureTitle": "Advertising disclosure required",
+    "copyAllTags": "Copy all tags",
+    "copied": "{{label}} copied",
+    "termsHeading": "Platform terms",
+    "cafeTermsHeading": "Café terms",
+    "acceptTermsShort": "I accept the platform and café campaign terms shown above.",
+    "understandRequirements": "I understand the campaign requirements and will follow them.",
+    "acknowledgeDisclosure": "I will clearly disclose this collaboration in my social post (e.g. #ad, #Anzeige, or #Werbung).",
+    "qrScannedHint": "You scanned the café QR — review the terms below before joining.",
+    "privacyTitle": "What we store for this campaign",
+    "optional": "(optional — only if you enable location sharing)",
+    "privacyFallback": "You can limit location sharing in your profile. Full details:",
+    "privacyLink": "Privacy policy",
+    "dataPoints": {
+      "check_ins": "Check-ins at the café (date and shop, not continuous tracking)",
+      "rewards": "Reward status and redemption codes for this campaign",
+      "social_proof": "Social proof you submit (URL or screenshot) and review status",
+      "location": "Approximate location only when you opt in during check-in"
+    },
+    "voluntaryProof": "I am submitting this proof voluntarily and understand the campaign requirements.",
+    "disclosureBanner": "Ad · CO:FE(X) reward"
+  },
+  "moments": {
+    "eyebrow": "Community",
+    "title": "Moments",
+    "subtitle": "Café discoveries, beautiful drinks, badges and explorer stories — permission-based and inspiring.",
+    "loading": "Loading moments…",
+    "loadingMore": "Loading more…",
+    "loadMore": "Load more",
+    "loadError": "Could not load the feed. Try again.",
+    "emptyTitle": "No moments yet",
+    "emptyDescription": "Join campaigns, complete trails, or share a drink photo when you opt in. Café highlights appear here too.",
+    "privacyNote": "Only content you opt into appears publicly. Approved social proof needs per-post consent. Café campaign images follow café settings.",
+    "optInHint": "Turn on sharing in your profile to post your own moments.",
+    "profileLink": "Profile privacy",
+    "enableLocation": "Use my location for nearby",
+    "shareTitle": "CO:FE(X) moment",
+    "copiedShare": "Moment text copied",
+    "uploadTitle": "Share a moment",
+    "uploadButton": "Publish to Moments",
+    "uploading": "Publishing…",
+    "uploadSuccess": "Moment published!",
+    "uploadFailed": "Could not publish moment",
+    "uploadDisabled": "Enable “Share moments in the community feed” in Profile → Privacy to upload.",
+    "photoRequired": "Choose a photo first",
+    "captionPlaceholder": "What made this sip special?",
+    "publicFeedOptIn": "If approved, show my screenshot in the public Moments feed (optional).",
+    "filters": {
+      "trending": "Trending",
+      "nearby": "Nearby",
+      "newCafes": "New cafés",
+      "coffee": "Coffee",
+      "matcha": "Matcha",
+      "iceCream": "Ice cream",
+      "friends": "Friends"
+    },
+    "source": {
+      "social_proof": "Campaign moment",
+      "user_moment": "Explorer upload",
+      "campaign_highlight": "Café campaign",
+      "badge_unlock": "Badge unlocked",
+      "trail_complete": "Trail completed"
+    }
+  },
+  "socialAssistant": {
+    "title": "Social post assistant",
+    "subtitle": "Create a beautiful post, copy the caption kit, then submit proof for your reward.",
+    "pickPlatform": "1 · Choose platform",
+    "contentKit": "2 · Content kit",
+    "visualTemplate": "Story frame preview",
+    "submitProof": "3 · Submit proof",
+    "captionPlaceholder": "Edit your caption before posting…",
+    "copyCaption": "Caption",
+    "copyHashtags": "Hashtags",
+    "copyDisclosure": "Disclosure",
+    "copyCafeHandle": "Café handle",
+    "copyLocation": "Location tag",
+    "copyAll": "Copy full post",
+    "copied": "{{label}} copied",
+    "copyFailed": "Could not copy",
+    "captionCopiedCompose": "Caption kit copied — paste in your app",
+    "templateHint": "Screenshot this frame as a story background, then add your photo on top.",
+    "pasteUrl": "Paste your post URL",
+    "uploadScreenshot": "Upload screenshot (max 8MB)",
+    "notePlaceholder": "Optional note for the café (e.g. private account, story highlight)",
+    "submitButton": "Submit proof for review",
+    "submitting": "Submitting…",
+    "pendingReview": "Submission pending review",
+    "submitSuccess": "Submitted! The café will review your post soon.",
+    "submitFailed": "Submission failed",
+    "screenshotRequired": "Pick a screenshot",
+    "screenshotTooLarge": "Max 8MB",
+    "urlRequired": "Paste your post link",
+    "urlInvalid": "Invalid URL",
+    "yourSubmissions": "Your submissions",
+    "statusApproved": "Approved",
+    "statusRejected": "Rejected",
+    "statusPending": "Pending",
+    "copyDisclosureShort": "Short disclosure",
+    "copyDisclosureTags": "Disclosure hashtags"
+  },
+  "partnerSubmissionsReview": {
+    "explorerFallback": "Explorer",
+    "submittedAt": "Submitted {{date}}",
+    "platform": "Platform",
+    "checkIn": "Last check-in",
+    "noCheckIn": "No check-in recorded yet",
+    "postUrl": "Post URL",
+    "caption": "Caption / hashtags",
+    "explorerNote": "Explorer note",
+    "yourNote": "Your note",
+    "rewardUnlocked": "Reward unlocked",
+    "verifyAtCounter": "Verify at counter",
+    "openScreenshot": "Open full screenshot",
+    "openPost": "Open post",
+    "rejectPlaceholder": "Rejection reason (required if you reject) — e.g. missing hashtag, wrong café tag",
+    "approve": "Approve & unlock reward",
+    "approving": "Unlocking…",
+    "reject": "Reject",
+    "approveHint": "Approve generates a unique reward code and notifies the explorer.",
+    "rejectReasonRequired": "Add a short reason so the explorer can fix and resubmit.",
+    "toastApproved": "Approved — reward unlocked!",
+    "toastApprovedWithCode": "Approved! Reward code {{code}}",
+    "toastRejected": "Rejected — explorer can resubmit if the campaign is still active.",
+    "toastError": "Could not update submission"
   },
   "submissionsPage": {
     "pending": "Pending",
@@ -853,8 +1427,8 @@
     },
     "partnerSubmissions": {
       "eyebrow": "Social proof",
-      "title": "Social submissions",
-      "subtitle": "Approve explorer posts to unlock their campaign reward and generate a redemption code."
+      "title": "Review social posts",
+      "subtitle": "Approve explorer posts to unlock rewards. One tap — no spreadsheets."
     },
     "partnerRewards": {
       "eyebrow": "Rewards",
@@ -888,6 +1462,51 @@
     "cola": "Cola",
     "juice": "Juice"
   },
+  "drinkTracker": {
+    "eyebrow": "Sip journal",
+    "title": "Today's flavor fuel",
+    "todayShort": "today",
+    "today": "Today",
+    "thisWeek": "This week",
+    "favorite": "All-time favorite",
+    "mostVisited": "Top this week",
+    "times": "{{count}}× collected",
+    "thisWeekCount": "{{count}} this week",
+    "collectedToday": "Collected today",
+    "weekBreakdown": "This week's mix",
+    "energyHint": "A playful vibe meter — not a health score.",
+    "softGoal": "{{current}} of your {{count}}-drink soft goal",
+    "noLimitSet": "Optional: set a personal soft goal below.",
+    "disclaimer": "This is a playful tracker, not medical advice. Listen to your body and enjoy responsibly.",
+    "setLimit": "Set a soft daily goal",
+    "editLimit": "Edit soft goal",
+    "limitPlaceholder": "e.g. 4",
+    "saveLimit": "Save",
+    "cancel": "Cancel",
+    "limitSaved": "Soft goal saved",
+    "limitCleared": "Soft goal cleared",
+    "limitInvalid": "Enter a number between 1 and 20",
+    "limitFailed": "Could not save goal",
+    "vibes": {
+      "sleepy": "Just waking up…",
+      "warmingUp": "Warming up nicely",
+      "cozyBuzz": "Cozy buzz mode",
+      "fullyBrewed": "Fully brewed energy",
+      "espressoMode": "Espresso mode activated"
+    },
+    "categories": {
+      "espresso": "Espresso",
+      "cappuccino": "Cappuccino",
+      "latte": "Latte",
+      "americano": "Americano",
+      "matcha": "Matcha",
+      "tea": "Tea",
+      "cola": "Cola",
+      "juice": "Juice",
+      "iceCream": "Ice cream",
+      "other": "Other"
+    }
+  },
   "mood": {
     "label": "Mood",
     "cozy": "Cozy",
@@ -907,6 +1526,45 @@
     "busy": "Checking in…",
     "alreadyToday": "You're checked in here today.",
     "viewSummary": "View summary"
+  },
+  "trails": {
+    "eyebrow": "Curated routes",
+    "title": "Coffee trails",
+    "subtitle": "Themed multi-stop quests — check in or redeem campaigns to progress.",
+    "loading": "Loading trails…",
+    "empty": "No trails in your area yet — new routes drop every season.",
+    "completed": "Complete",
+    "completedCelebrate": "Trail complete! XP and badges are in your passport.",
+    "progress": "{{done}} of {{total}} stops",
+    "progressHint": "Check in or redeem your campaign reward at each stop.",
+    "stops": "stops",
+    "distance": "Distance",
+    "duration": "Walk time",
+    "reward": "Reward",
+    "badgeUnlock": "Unlocks {{badge}} badge",
+    "badgeUnlockNamed": "Unlocks: {{badge}}",
+    "viewTrail": "View trail",
+    "startTrail": "Start trail",
+    "started": "Trail started — happy exploring!",
+    "startFailed": "Could not start trail",
+    "backToList": "All trails",
+    "notFound": "Trail not found",
+    "mapRoute": "Route map",
+    "stopsTitle": "Stops",
+    "campaignAtStop": "Campaign",
+    "openCampaign": "Campaign",
+    "seasonalUntil": "Seasonal trail · ends {{date}}",
+    "themes": {
+      "explore": "Explore",
+      "neighborhood": "Neighborhood",
+      "cappuccino": "Cappuccino",
+      "matcha": "Matcha",
+      "seasonal": "Seasonal",
+      "hidden_gem": "Hidden gems",
+      "rainy": "Rainy day",
+      "local_hero": "Local heroes",
+      "classic": "Classic"
+    }
   },
   "crawls": {
     "eyebrow": "City routes",
@@ -930,14 +1588,68 @@
     "joined": "Welcome to the crew!"
   },
   "gift": {
-    "title": "Gift a coffee",
-    "subtitle": "Send a one-way drink credit to another explorer.",
+    "title": "Gift beans credit",
+    "subtitle": "Spend points to send a wallet drink credit — separate from gifting campaign rewards.",
     "recipientPlaceholder": "Recipient user ID",
     "messagePlaceholder": "Optional message",
     "sendBtn": "Send gift",
     "sent": "Gift sent!",
     "failed": "Could not send gift",
     "codeReady": "Share this redemption code"
+  },
+  "rewardGift": {
+    "title": "Gift this reward",
+    "subtitle": "Share an unlocked campaign reward with a friend. They redeem at the same café.",
+    "giftBtn": "Gift this reward",
+    "manageGift": "Manage gift",
+    "youAreGifting": "You are gifting",
+    "friendOptional": "Send to a friend (optional)",
+    "handlePlaceholder": "@explorer handle",
+    "linkOnlyHint": "Leave blank to share a gift link instead.",
+    "messagePlaceholder": "Add a warm note…",
+    "sendBtn": "Wrap it up & send",
+    "confirmTitle": "Gift ready to share",
+    "confirmSubtitle": "Copy the link or wait for your friend to accept in-app.",
+    "shareMoment": "A coffee moment, wrapped with love.",
+    "copyLink": "Copy gift link",
+    "linkCopied": "Gift link copied",
+    "pendingNote": "The reward is paused until accepted or you cancel the gift.",
+    "alreadyPending": "You already started gifting this reward.",
+    "cancelGift": "Cancel gift",
+    "cancelled": "Gift cancelled — your reward is yours again.",
+    "sentCelebrate": "Gift sent! Share the link when you are ready.",
+    "failed": "Could not send gift",
+    "friendNotFound": "Explorer not found — check the handle.",
+    "loading": "Loading gift…",
+    "notFound": "This gift link is not valid.",
+    "acceptEyebrow": "Coffee moment",
+    "acceptTitle": "You have been gifted!",
+    "acceptBtn": "Accept this gift",
+    "acceptedCelebrate": "Gift accepted — your reward is in your wallet!",
+    "acceptFailed": "Could not accept gift",
+    "alreadyAccepted": "Already accepted",
+    "viewReward": "View my reward",
+    "cancelledHint": "This gift was cancelled or expired.",
+    "ownGiftHint": "This is your gift link — share it with a friend.",
+    "notForYou": "This gift is reserved for someone else.",
+    "restrictionsNote": "Same café & campaign rules apply after you accept.",
+    "rewardLabel": "Your reward",
+    "historyTitle": "Gift history",
+    "historyLoading": "Loading gifts…",
+    "historyEmpty": "No gifts yet",
+    "historyEmptyHint": "Gift an unlocked campaign reward from any mission page.",
+    "sentTitle": "Sent",
+    "receivedTitle": "Received",
+    "fromSomeone": "From {{name}}",
+    "toSomeone": "To {{name}}",
+    "aFriend": "A friend",
+    "linkRecipient": "Link recipient",
+    "acceptCta": "Accept gift",
+    "status": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "cancelled": "Cancelled"
+    }
   },
   "shopPage": {
     "moreInCity": "More cafés in {{city}}",

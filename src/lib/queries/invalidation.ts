@@ -4,6 +4,13 @@ import { queryKeys } from "./keys";
 export function afterCheckIn(qc: QueryClient, userId: string) {
   qc.invalidateQueries({ queryKey: queryKeys.profile(userId) });
   qc.invalidateQueries({ queryKey: queryKeys.passport(userId) });
+  qc.invalidateQueries({ queryKey: queryKeys.passportStamps(userId) });
+  qc.invalidateQueries({ queryKey: ["xpEvents", userId] });
+  qc.invalidateQueries({ queryKey: ["badgeStats", userId] });
+  qc.invalidateQueries({ queryKey: ["crawlProgress"] });
+  qc.invalidateQueries({ queryKey: ["coffeeCrawls"] });
+  qc.invalidateQueries({ queryKey: ["trailDetail"] });
+  qc.invalidateQueries({ queryKey: ["drinkTracker"] });
   qc.invalidateQueries({ queryKey: queryKeys.wallet(userId) });
   qc.invalidateQueries({ queryKey: queryKeys.coffeeShops() });
   qc.invalidateQueries({ queryKey: queryKeys.challengeClaims(userId) });
@@ -18,6 +25,12 @@ export function afterChallengeClaim(qc: QueryClient, userId: string) {
   qc.invalidateQueries({ queryKey: queryKeys.challengeClaims(userId) });
   qc.invalidateQueries({ queryKey: queryKeys.wallet(userId) });
   qc.invalidateQueries({ queryKey: queryKeys.profile(userId) });
+  qc.invalidateQueries({ queryKey: ["xpEvents", userId] });
+  qc.invalidateQueries({ queryKey: ["badgeStats", userId] });
+  qc.invalidateQueries({ queryKey: ["crawlProgress"] });
+  qc.invalidateQueries({ queryKey: ["coffeeCrawls"] });
+  qc.invalidateQueries({ queryKey: ["trailDetail"] });
+  qc.invalidateQueries({ queryKey: ["drinkTracker"] });
   qc.invalidateQueries({ queryKey: ["coffeeRadar"] });
   qc.invalidateQueries({ queryKey: ["leaderboard"] });
   qc.invalidateQueries({ queryKey: ["myLeaderboardRank"] });
@@ -42,4 +55,11 @@ export function afterCampaignAction(qc: QueryClient, userId: string, campaignId:
   qc.invalidateQueries({ queryKey: queryKeys.activeCampaigns() });
   qc.invalidateQueries({ queryKey: queryKeys.wallet(userId) });
   qc.invalidateQueries({ queryKey: queryKeys.passport(userId) });
+  qc.invalidateQueries({ queryKey: queryKeys.passportStamps(userId) });
+  qc.invalidateQueries({ queryKey: ["xpEvents", userId] });
+  qc.invalidateQueries({ queryKey: ["badgeStats", userId] });
+  qc.invalidateQueries({ queryKey: ["crawlProgress"] });
+  qc.invalidateQueries({ queryKey: ["coffeeCrawls"] });
+  qc.invalidateQueries({ queryKey: ["trailDetail"] });
+  qc.invalidateQueries({ queryKey: ["drinkTracker"] });
 }

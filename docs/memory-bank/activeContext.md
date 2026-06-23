@@ -1,15 +1,16 @@
 # Active Context (Memory Bank)
 
-**Last updated:** June 21, 2026
+**Last updated:** June 23, 2026
 
 ---
 
 ## Current focus
 
-**Latest ship batch:** Vision Waves 1–4 + campaign/reward domain model + deep i18n (wallet, partner dashboard, landing).
+**Latest ship batch:** Core flow test coverage + manual QA checklist for explorer/partner journeys.
 
 Recent work includes:
 
+- **Test & QA sprint:** 143 Vitest tests covering campaign discovery/join, check-in, social proof, verify/redemption, XP/badges, passport stamps, partner dashboard metrics, RBAC helpers — see [QA_CHECKLIST_CORE_FLOWS.md](../QA_CHECKLIST_CORE_FLOWS.md)
 - **Vision Waves 1–4:** crawls, beverage passport, time bonuses, door QR, mood explore, origin stories, photo reviews, spawns, mayor, Beans, shop stories, map themes, crews, gifts, arrivals, push hook, health log stub — see [PLAN_VISION_FEATURES.md](../PLAN_VISION_FEATURES.md)
 - **Campaign/reward domain:** `20260621120000_campaign_reward_domain.sql`, Zod schemas, mission steps UI, campaign discovery map — see [DATA_MODEL_CAMPAIGN_REWARD.md](../DATA_MODEL_CAMPAIGN_REWARD.md)
 - **i18n depth:** wallet ledger/referrals, partner dashboard KPIs/charts/activity, landing Features/Testimonials/Download
@@ -32,7 +33,9 @@ Recent work includes:
 | Rank under Rewards dropdown, not standalone tab | Avoid 6-item nav crowding on small phones |
 | Partner verify via camera + manual tabs | Fast counter UX; `html5-qrcode` + `parseVerifyCode` |
 | Lazy import Stripe server fns on billing | Prevent client bundle crash on `/partner/billing` |
-| Extend existing tables for campaign domain | Backward-compatible spec mapping; views for `cafe_listings`, `explorer_rewards` |
+| Centralized journey tests | `campaign-journey.test.ts` exercises full explorer/partner flows via pure helpers |
+| Partner metrics extraction | `partner-dashboard-metrics.ts` — testable counters without Supabase |
+| Manual QA doc | Device GPS/camera flows documented in `QA_CHECKLIST_CORE_FLOWS.md` |
 | HealthKit / NFC / AR deferred to Wave 4 doc | Web-first ship; platform stubs documented in VISION_WAVE4_PLATFORM.md |
 
 ---
@@ -87,3 +90,5 @@ Migrations through `20260621120000_campaign_reward_domain.sql` (apply with `db:p
 | Partner verify | `partner.verify.tsx`, `VerifyQrScanner.tsx`, `lib/queries/partner.ts` |
 | Domain schemas | `src/lib/domain/schemas.ts`, `campaign-reward-model.ts` |
 | New migration | `supabase/migrations/`, then `db:push` + `db:types` |
+| Core flow QA | [QA_CHECKLIST_CORE_FLOWS.md](../QA_CHECKLIST_CORE_FLOWS.md) |
+| Journey unit tests | `src/lib/campaign-journey.test.ts`, `campaign-availability.ts`, `verify-redemption.ts` |

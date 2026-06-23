@@ -29,11 +29,14 @@ export function AppPageHeader({ eyebrow, title, subtitle, accent = "var(--cofex-
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 pb-4 pt-5 sm:flex-row sm:items-start sm:justify-between sm:px-5 sm:pt-8">
       <div className="min-w-0 flex-1">
         {eyebrow && (
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] sm:text-xs sm:tracking-[0.25em]" style={{ color: accent }}>
+          <p
+            className="inline-flex items-center gap-2 rounded-full border border-[color:var(--cofex-cyan)]/20 bg-[color:var(--cofex-pastel-blue)]/40 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.2em] sm:text-xs sm:tracking-[0.25em]"
+            style={{ color: accent }}
+          >
             {eyebrow}
           </p>
         )}
-        <h1 className="mt-1 text-xl font-extrabold tracking-tight text-[color:var(--cofex-black)] sm:text-2xl md:text-3xl">
+        <h1 className="mt-2 text-xl font-extrabold tracking-tight text-[color:var(--cofex-coffee-deep)] sm:text-2xl md:text-3xl">
           {title}
         </h1>
         {subtitle && (

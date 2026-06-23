@@ -1,7 +1,7 @@
 # Latest Changes — CO:FE(X)
 
-**Last updated:** June 21, 2026  
-**Status:** Vision Waves 1–4 + campaign/reward domain shipped; i18n (EN/DE) + mobile pass; committed to [CO_FE_X](https://github.com/SPIGELAI1005/CO_FE_X).
+**Last updated:** June 23, 2026  
+**Status:** Core flow tests + QA checklist; vision waves + campaign domain shipped; committed to [CO_FE_X](https://github.com/SPIGELAI1005/CO_FE_X).
 
 This document summarizes the most recent product and engineering work. For sprint-level detail, see [SPRINT_EXPLORER_ENGAGEMENT.md](./SPRINT_EXPLORER_ENGAGEMENT.md), [PLAN_EXPLORER_GAPS.md](./PLAN_EXPLORER_GAPS.md), and [PLAN_PARTNER_NEXT_STEPS.md](./PLAN_PARTNER_NEXT_STEPS.md). For a full system review, see [AUDIT.md](./AUDIT.md).
 
@@ -11,6 +11,7 @@ This document summarizes the most recent product and engineering work. For sprin
 
 | Batch | Scope |
 |-------|--------|
+| **Core flow tests & QA** | 143 Vitest tests; manual checklist for explorer/partner journeys — [QA_CHECKLIST_CORE_FLOWS.md](./QA_CHECKLIST_CORE_FLOWS.md) |
 | **Campaign/reward domain** | Spec-aligned schema extensions, Zod schemas, mission steps UI, campaign discovery map — [DATA_MODEL_CAMPAIGN_REWARD.md](./DATA_MODEL_CAMPAIGN_REWARD.md) |
 | **Vision plan (Waves 1–4)** | 20-feature audit doc + migrations + UI: crawls, beverage passport, time bonuses, door QR, wallet/campaign rotating verify, mood explore, origin stories, photo reviews, spawns, mayor, Beans, stories, map themes, crews, gifts, arrivals, push hook, health log stub — see [PLAN_VISION_FEATURES.md](./PLAN_VISION_FEATURES.md) |
 | **i18n (EN / DE)** | `i18next` + `react-i18next`; locale files; `LanguageToggle` (EN/DE) in headers; auth bridge for `cofex-auth.js`; page headers, nav, explore filters/sort, passport, radar, partner routes |
@@ -24,7 +25,30 @@ This document summarizes the most recent product and engineering work. For sprin
 
 ---
 
-## Internationalization (EN / DE)
+## Core flow tests & QA (June 23, 2026)
+
+**Checklist:** [QA_CHECKLIST_CORE_FLOWS.md](./QA_CHECKLIST_CORE_FLOWS.md)
+
+| Area | Automated coverage |
+|------|-------------------|
+| Campaign creation | `campaign-wizard.test.ts`, `domain/schemas.test.ts` |
+| Campaign discovery | `campaign-availability.test.ts`, `campaign-journey.test.ts` |
+| QR check-in | `check-in.test.ts`, `parse-verify-code.test.ts`, RPC integration |
+| Social proof submission | `social-post-assistant.test.ts`, `campaign-compliance.test.ts`, schemas |
+| Café proof approval | `campaign-fulfillment.test.ts`, `campaign-mission.test.ts` |
+| Reward unlock / redemption | `shop-door.test.ts`, `verify-redemption.test.ts`, RPC integration |
+| XP / badges | `xp-system.test.ts`, `badges.test.ts` |
+| Passport stamps | `passport-stamps.test.ts` |
+| Café dashboard metrics | `partner-dashboard-metrics.test.ts` |
+| Role-based access | `auth-roles.test.ts` |
+| Expired / full campaigns | `campaign-availability.test.ts` |
+| Duplicate redemption | `verify-redemption.test.ts`, `anti-fraud.test.ts` |
+
+**New pure modules:** `campaign-availability.ts`, `verify-redemption.ts`, `partner-dashboard-metrics.ts`, `auth-roles.ts`, `campaign-journey.test.ts`
+
+**Run:** `npm run test` (143 tests, 36 files)
+
+---
 
 **Libraries:** `i18next`, `react-i18next`  
 **Locale storage:** `localStorage` key `cofex-locale` (`en` \| `de`); synced to `<html lang>`
@@ -303,7 +327,7 @@ Run `npm run db:push` then `npm run db:types` after pulling.
 
 | Check | Result |
 |-------|--------|
-| Unit tests (`npm test`) | 61 passing (17 files) |
+| Unit tests (`npm test`) | 143 passing (36 files) |
 | Build (`npm run build`) | Passing |
 | Partner E2E (`npm run test:e2e:partner`) | 12 passing |
 | Migrations in repo | Through `20260621120000_campaign_reward_domain.sql` |

@@ -38,7 +38,7 @@ Mobile-first platform for discovering independent coffee shops, joining campaign
 | -------------- | ------------------------ |
 | `npm run dev`  | Start development server |
 | `npm run build`| Production build         |
-| `npm run test` | Run unit tests (Vitest, 61 tests) |
+| `npm run test` | Run unit tests (Vitest, 143 tests) |
 | `npm run test:e2e` | Run all Playwright smoke tests |
 | `npm run test:e2e:partner` | Partner routes E2E (12 tests) |
 | `npm run lint` | ESLint                   |
@@ -92,7 +92,7 @@ See **[docs/DEVELOPMENT_PLAN.md](./docs/DEVELOPMENT_PLAN.md)** for the full 12-w
 | [docs/PLAN_PARTNER_NEXT_STEPS.md](./docs/PLAN_PARTNER_NEXT_STEPS.md) | Partner sprint: QR verify, multi-shop, campaign lifecycle (shipped) |
 | [docs/PLAN_EEFFOC_SOCIAL_FLOW.md](./docs/PLAN_EEFFOC_SOCIAL_FLOW.md) | EEFFOC social campaigns: QR, proof, reward flow |
 | [docs/SPRINT_EXPLORER_ENGAGEMENT.md](./docs/SPRINT_EXPLORER_ENGAGEMENT.md) | Engagement sprint plan & outcomes |
-| [docs/PLAN_EXPLORER_GAPS.md](./docs/PLAN_EXPLORER_GAPS.md) | Gaps sprint plan and deliverables |
+| [docs/QA_CHECKLIST_CORE_FLOWS.md](./docs/QA_CHECKLIST_CORE_FLOWS.md) | Manual QA checklist for core explorer/partner flows |
 
 ## Roles
 

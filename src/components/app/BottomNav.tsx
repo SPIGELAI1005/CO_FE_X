@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
-import { Map as MapIcon, Megaphone, BookOpen, Wallet, User, RadioTower, ChevronUp, Trophy, Compass } from "lucide-react";
+import { Map as MapIcon, Megaphone, BookOpen, Wallet, User, RadioTower, ChevronUp, Trophy, Compass, Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   DropdownMenu,
@@ -17,6 +17,7 @@ const navItemKeys = [
 
 const rewardsLinkKeys = [
   { to: "/passport", labelKey: "nav.passport", Icon: BookOpen },
+  { to: "/moments", labelKey: "nav.moments", Icon: Sparkles },
   { to: "/crawls", labelKey: "nav.crawls", Icon: Compass },
   { to: "/leaderboard", labelKey: "nav.rank", Icon: Trophy },
   { to: "/wallet", labelKey: "nav.wallet", Icon: Wallet },
@@ -49,10 +50,11 @@ function NavLink({
 
 function rewardsActiveState(pathname: string, rewardsLabel: string) {
   const onPassport = pathname.startsWith("/passport");
+  const onMoments = pathname.startsWith("/moments");
   const onCrawls = pathname.startsWith("/crawls");
   const onWallet = pathname.startsWith("/wallet");
   const onRank = pathname.startsWith("/leaderboard");
-  const active = onPassport || onCrawls || onWallet || onRank;
+  const active = onPassport || onMoments || onCrawls || onWallet || onRank;
   const activeLink = rewardsLinkKeys.find(({ to }) => pathname === to || pathname.startsWith(`${to}/`));
   const ActiveIcon = activeLink?.Icon ?? BookOpen;
   const labelKey = activeLink?.labelKey ?? null;
@@ -111,7 +113,7 @@ export function BottomNav() {
   const profileActive = pathname === "/profile" || pathname.startsWith("/profile/");
 
   return (
-    <nav className="cofex-bottom-nav fixed inset-x-0 bottom-0 z-[100] border-t pb-[env(safe-area-inset-bottom)] backdrop-blur">
+    <nav className="cofex-bottom-nav fixed inset-x-0 bottom-0 z-[100] border-t pb-[env(safe-area-inset-bottom)] backdrop-blur-md">
       <ul className="mx-auto flex max-w-2xl items-stretch justify-between px-1 pt-1 sm:px-2">
         {navItemKeys.map(({ to, labelKey, Icon }) => (
           <li key={to} className="flex min-w-0 flex-1">

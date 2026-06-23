@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, redirect, useNavigate, Link } from "@tanstack/react-router";
-import { LogOut, LayoutDashboard, Store, Megaphone, Users, BarChart3, DollarSign } from "lucide-react";
+import { LogOut, LayoutDashboard, Store, Megaphone, Users, BarChart3, DollarSign, ShieldAlert, Coffee, Image } from "lucide-react";
 import { SideNav } from "@/components/app/SideNav";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -19,9 +19,12 @@ export const Route = createFileRoute("/_authenticated/admin")({
 
 const items = [
   { to: "/admin", label: "Overview", Icon: LayoutDashboard },
+  { to: "/admin/users", label: "Users", Icon: Users },
+  { to: "/admin/shops", label: "Cafés", Icon: Coffee },
   { to: "/admin/partners", label: "Partners", Icon: Store },
   { to: "/admin/campaigns", label: "Campaigns", Icon: Megaphone },
-  { to: "/admin/users", label: "Users", Icon: Users },
+  { to: "/admin/trust", label: "Trust & fraud", Icon: ShieldAlert },
+  { to: "/admin/moderation", label: "Moderation", Icon: Image },
   { to: "/admin/analytics", label: "Analytics", Icon: BarChart3 },
   { to: "/admin/revenue", label: "Revenue", Icon: DollarSign },
 ];

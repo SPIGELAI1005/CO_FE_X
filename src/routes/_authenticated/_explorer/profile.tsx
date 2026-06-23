@@ -16,13 +16,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { usePassport } from "@/lib/queries/passport";
-import { Camera, Coffee, Sparkles, Loader2, Trophy, ChevronRight, Award, Users, Bell } from "lucide-react";
-import { levelFor, levelDisplayName } from "@/lib/explorer-levels";
-import { HealthLogRing } from "@/components/app/HealthLogRing";
+import { Coffee, Loader2, Trophy, ChevronRight, Award, Users, Bell } from "lucide-react";
+import { ExplorerProfileCard } from "@/components/app/ExplorerProfileCard";
+import { useRecentXpEvents } from "@/lib/queries/xp-events";
+import { DrinkTrackerCard } from "@/components/app/DrinkTrackerCard";
+import { ProfilePrivacyCard } from "@/components/app/ProfilePrivacyCard";
+import { NotificationPreferencesCard } from "@/components/app/NotificationPreferencesCard";
 import { MapThemeToggle } from "@/components/app/MapThemeToggle";
 import { GiftCoffeeDialog } from "@/components/app/GiftCoffeeDialog";
 import { useSetMapTheme } from "@/lib/queries/vision";
@@ -45,6 +46,7 @@ function ProfilePage() {
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const { data: myRank } = useMyLeaderboardRank("points", user?.id);
   const { data: passport } = usePassport(user?.id);
+  const { data: recentXp = [] } = useRecentXpEvents(user?.id);
   const setMapTheme = useSetMapTheme(user?.id);
   const push = usePushSubscription();
 
@@ -76,8 +78,9 @@ function ProfilePage() {
     );
   }
 
-  const points = profile?.total_points ?? 0;
-  const { level, next, progress } = levelFor(points);
+  const uniqueCafes = passport
+    ? new Set(passport.checkIns.map((c) => c.coffee_shop_id)).size
+    : 0;
 
   async function saveProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -136,48 +139,19 @@ function ProfilePage() {
         eyebrow={t("pages.profile.eyebrow")}
         title={profile?.display_name ?? t("pages.profile.titleFallback")}
         subtitle={user?.email ?? undefined}
-        action={
-          <button
-            type="button"
-            className="relative shrink-0 group"
-            onClick={() => avatarInputRef.current?.click()}
-            disabled={uploadAvatar.isPending}
-            aria-label="Change avatar"
-          >
-            <Avatar className="h-16 w-16 border-2 border-[color:var(--border)] sm:h-20 sm:w-20">
-              <AvatarImage src={profile?.avatar_url ?? undefined} alt="" />
-              <AvatarFallback className="bg-[color:var(--cofex-cream)] text-lg font-semibold text-[color:var(--cofex-coffee-deep)]">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-            <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
-              {uploadAvatar.isPending ? (
-                <Loader2 className="h-5 w-5 animate-spin text-white" />
-              ) : (
-                <Camera className="h-5 w-5 text-white" />
-              )}
-            </span>
-            <input ref={avatarInputRef} type="file" accept="image/*" className="sr-only" onChange={onAvatarSelected} />
-          </button>
-        }
       />
       <AppPageBody className="mx-auto max-w-2xl space-y-2 pb-8">
-        <div className="cofex-app-card p-5">
-          <div className="flex items-center gap-2 text-sm font-semibold text-[color:var(--cofex-coffee-deep)]">
-            <Sparkles className="h-4 w-4 text-[color:var(--cofex-accent-gold)]" />
-            {levelDisplayName(level, t)}
-          </div>
-          <div className="mt-2 flex items-baseline justify-between text-xs text-[color:var(--cofex-black)]/55">
-            <span>{t("profilePage.points", { count: points.toLocaleString() })}</span>
-            <span>{t("profilePage.checkIns", { count: profile?.total_check_ins ?? 0 })}</span>
-          </div>
-          <Progress value={progress} className="mt-2 h-2" />
-          {next && (
-            <p className="mt-2 text-xs text-[color:var(--cofex-black)]/55">
-              {t("levels.pointsToNext", { points: next.min - points, name: levelDisplayName(next, t) })}
-            </p>
-          )}
-        </div>
+        <ExplorerProfileCard
+          profile={profile}
+          email={user?.email}
+          uniqueCafes={uniqueCafes}
+          badgeCount={passport?.earnedBadges.length ?? 0}
+          recentXp={recentXp}
+          initials={initials}
+          onAvatarClick={() => avatarInputRef.current?.click()}
+          avatarUploading={uploadAvatar.isPending}
+        />
+        <input ref={avatarInputRef} type="file" accept="image/*" className="sr-only" onChange={onAvatarSelected} />
 
         {myRank?.rank ? (
           <Link
@@ -228,7 +202,16 @@ function ProfilePage() {
           </Link>
         )}
 
-        <HealthLogRing />
+        <DrinkTrackerCard />
+
+        {user && <ProfilePrivacyCard userId={user.id} privacyPreferences={profile?.privacy_preferences} />}
+        {user && (
+          <NotificationPreferencesCard
+            userId={user.id}
+            notificationPreferences={profile?.notification_preferences as Record<string, unknown> | undefined}
+            variant="explorer"
+          />
+        )}
 
         <AppPageSection title={t("profilePage.mapTheme")}>
           <MapThemeToggle

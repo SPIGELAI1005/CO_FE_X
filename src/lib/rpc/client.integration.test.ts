@@ -7,7 +7,9 @@ import {
   rpcJoinCampaign,
   rpcPerformCheckIn,
   rpcRedeemCampaign,
+  rpcVerifyRedemptionCode,
 } from "./client";
+import { parseVerifyRedemptionResult } from "@/lib/verify-redemption";
 
 function mockClient(rpcImpl: (...args: unknown[]) => unknown) {
   return { rpc: vi.fn(rpcImpl) } as unknown as Parameters<typeof rpcPerformCheckIn>[0];
@@ -69,10 +71,15 @@ describe("rpc client wrappers", () => {
       return Promise.resolve({ data: { points_awarded: 25 }, error: null });
     });
 
-    await rpcJoinCampaign(client, "camp-1");
+    await rpcJoinCampaign(client, "camp-1", { termsAccepted: true });
     const redeem = await rpcRedeemCampaign(client, "camp-1");
 
-    expect(client.rpc).toHaveBeenCalledWith("join_campaign", { _campaign_id: "camp-1" });
+    expect(client.rpc).toHaveBeenCalledWith("join_campaign", {
+      _campaign_id: "camp-1",
+      _join_source: undefined,
+      _terms_accepted: true,
+      _disclosure_acknowledged: false,
+    });
     expect(client.rpc).toHaveBeenCalledWith("redeem_campaign", { _campaign_id: "camp-1" });
     expect(redeem.data).toEqual({ points_awarded: 25 });
   });
@@ -122,5 +129,59 @@ describe("rpc client wrappers", () => {
 
     const { error } = await rpcClaimExplorerChallenge(client, "weekly");
     expect(parseRpcErrorMessage(error)).toBe("Already claimed");
+  });
+
+  it("verifies redemption codes with optional rotating token", async () => {
+    const client = mockClient((name: unknown, args: unknown) => {
+      if (name === "verify_redemption_code") {
+        return Promise.resolve({
+          data: {
+            result: "ok",
+            redemption_code: "ABC12345",
+            kind: "campaign",
+            points_awarded: 30,
+          },
+          error: null,
+        });
+      }
+      return Promise.resolve({ data: null, error: null });
+    });
+
+    const { data, error } = await rpcVerifyRedemptionCode(client, {
+      code: "ABC12345",
+      rotatingToken: "654321",
+    });
+
+    expect(error).toBeNull();
+    expect(client.rpc).toHaveBeenCalledWith("verify_redemption_code", {
+      _code: "ABC12345",
+      _rotating_token: "654321",
+      _ip: undefined,
+    });
+    expect(parseVerifyRedemptionResult(data)?.result).toBe("ok");
+  });
+
+  it("surfaces duplicate redemption errors from verify RPC", async () => {
+    const client = mockClient(() =>
+      Promise.resolve({
+        data: { result: "already_used", redemption_code: "ABC12345" },
+        error: null,
+      }),
+    );
+
+    const { data } = await rpcVerifyRedemptionCode(client, { code: "ABC12345" });
+    expect(parseVerifyRedemptionResult(data)?.result).toBe("already_used");
+  });
+
+  it("surfaces expired campaign errors from redeem RPC", async () => {
+    const client = mockClient(() =>
+      Promise.resolve({
+        data: null,
+        error: { message: "Campaign has ended" },
+      }),
+    );
+
+    const { error } = await rpcRedeemCampaign(client, "camp-ended");
+    expect(parseRpcErrorMessage(error)).toContain("ended");
   });
 });

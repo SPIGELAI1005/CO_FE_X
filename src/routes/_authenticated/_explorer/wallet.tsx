@@ -28,6 +28,7 @@ import {
 import { EmptyState } from "@/components/patterns/EmptyState";
 import { RewardCatalogIcon } from "@/components/app/RewardCatalogIcon";
 import { WalletRewardQr } from "@/components/app/WalletRewardQr";
+import { GiftHistorySection } from "@/components/app/GiftHistorySection";
 import { QueryBoundary } from "@/components/patterns/QueryBoundary";
 import { useUser } from "@/hooks/use-user";
 import {
@@ -535,6 +536,10 @@ function WalletPage() {
               </div>
             )}
           </QueryBoundary>
+        </AppPageSection>
+
+        <AppPageSection title={t("rewardGift.historyTitle")} icon={<Gift className="h-5 w-5 text-rose-500" />}>
+          <GiftHistorySection />
         </AppPageSection>
       </AppPageBody>
     </AppPage>

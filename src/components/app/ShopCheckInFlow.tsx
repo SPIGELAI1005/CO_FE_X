@@ -2,10 +2,13 @@ import { useState } from "react";
 import { Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { getCurrentPosition } from "@/lib/geo";
 import { rpcPerformCheckIn, parseCheckInResult, parseRpcErrorMessage, type CheckInRpcResult } from "@/lib/rpc/client";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/hooks/use-user";
+import { useProfile } from "@/lib/queries/profile";
+import { userSharesLocation } from "@/lib/anti-fraud";
 import { PostCheckInSheet } from "@/components/app/PostCheckInSheet";
 import { BadgeUnlockSheet } from "@/components/app/BadgeUnlockSheet";
 import { BeveragePicker } from "@/components/app/BeveragePicker";
@@ -36,6 +39,7 @@ export function ShopCheckInFlow({
 }: ShopCheckInFlowProps) {
   const { t } = useTranslation();
   const { user } = useUser();
+  const { data: profile } = useProfile(user?.id);
   const qc = useQueryClient();
   const [beverageTag, setBeverageTag] = useState("coffee");
   const [busy, setBusy] = useState(false);
@@ -49,7 +53,14 @@ export function ShopCheckInFlow({
     setBusy(true);
     setError(null);
     try {
-      const { latitude, longitude } = await getCurrentPosition();
+      const shareLocation = userSharesLocation(profile?.privacy_preferences);
+      let latitude: number | null = null;
+      let longitude: number | null = null;
+      if (shareLocation) {
+        const pos = await getCurrentPosition();
+        latitude = pos.latitude;
+        longitude = pos.longitude;
+      }
       const { data, error: rpcError } = await rpcPerformCheckIn(supabase, {
         shopId,
         latitude,

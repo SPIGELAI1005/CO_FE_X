@@ -33,11 +33,11 @@ export function MapCampaignSheet({ pin, onClose }: MapCampaignSheetProps) {
     <Sheet open={!!pin} onOpenChange={(open) => !open && onClose()}>
       <SheetContent
         side="bottom"
-        className="z-[1200] max-h-[85dvh] overflow-y-auto rounded-t-3xl border-[color:var(--border)] bg-white px-5 pb-8 pt-2"
+        className="z-[1200] max-h-[85dvh] overflow-y-auto rounded-t-3xl border-[color:var(--border)] bg-gradient-to-b from-[color:var(--cofex-cream-warm)] to-white px-5 pb-8 pt-2"
       >
         {pin && (
           <>
-            <div className="relative -mx-5 mb-4 h-36 overflow-hidden rounded-t-3xl bg-gradient-to-br from-[color:var(--cofex-pastel-blue)] to-[color:var(--cofex-cream)]">
+            <div className="cofex-campaign-card-media relative -mx-5 mb-4 h-36 overflow-hidden rounded-t-3xl bg-gradient-to-br from-[color:var(--cofex-pastel-blue)] to-[color:var(--cofex-cream)]">
               {(pin.coverImageUrl || pin.logoUrl) && (
                 <img
                   src={pin.coverImageUrl ?? pin.logoUrl ?? ""}

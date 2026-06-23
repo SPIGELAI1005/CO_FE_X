@@ -6,13 +6,24 @@
 /** App roles: `partner` = spec's cafe_owner */
 export type AppRole = "explorer" | "partner" | "admin";
 
-export type ExplorerLevel = "rookie" | "seeker" | "hunter" | "master" | "nomad" | "legend";
+export type ExplorerLevel =
+  | "coffee_rookie"
+  | "espresso_explorer"
+  | "cappuccino_collector"
+  | "matcha_hunter"
+  | "local_supporter"
+  | "hidden_gem_finder"
+  | "eeffoc_pro"
+  | "city_explorer"
+  | "cofex_ambassador"
+  | "local_legend";
 
 export interface PrivacyPreferences {
   show_on_leaderboard?: boolean;
   allow_arrival_signals?: boolean;
   allow_gift_receipt?: boolean;
   marketing_emails?: boolean;
+  share_location?: boolean;
 }
 
 export interface ExplorerProfile {

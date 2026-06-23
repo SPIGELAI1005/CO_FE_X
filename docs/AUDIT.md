@@ -1,6 +1,6 @@
 # CO:FE(X) — Comprehensive Application Audit
 
-**Audit date:** June 21, 2026  
+**Audit date:** June 23, 2026  
 **Scope:** brew-quest-app full stack — product, engineering, security, compliance, operations  
 **Auditor:** Engineering review (codebase + docs analysis)
 
@@ -294,7 +294,7 @@ Layout, bottom nav, sheets (`PostCheckInSheet`, `BadgeUnlockSheet`), and horizon
 
 ### 6.1 Unit / integration (Vitest)
 
-**12 test files, 41 tests passing**
+**36 test files, 143 tests passing**
 
 | Area | Covered |
 |------|---------|
@@ -302,16 +302,25 @@ Layout, bottom nav, sheets (`PostCheckInSheet`, `BadgeUnlockSheet`), and horizon
 | Check-in client validation | ✅ |
 | Post-check-in action ordering | ✅ |
 | Explorer challenges | ✅ |
-| RPC integration (check-in, claim) | ✅ |
+| RPC integration (check-in, join, redeem, verify, claim) | ✅ |
+| Campaign journey (discovery → reward) | ✅ |
+| Campaign availability (expired, full) | ✅ |
+| Verify redemption / duplicate blocking | ✅ |
+| Partner dashboard metrics | ✅ |
+| Auth role helpers | ✅ |
+| Social proof / compliance / wizard | ✅ |
+| XP, badges, passport stamps | ✅ |
 | Cache invalidation | ✅ |
 | Billing plans | ✅ |
 | Auth errors | ✅ |
+
+**Manual QA:** [QA_CHECKLIST_CORE_FLOWS.md](./QA_CHECKLIST_CORE_FLOWS.md)
 
 | Gap | Priority |
 |-----|----------|
 | `BadgeUnlockSheet` component test | Medium |
 | `PostCheckInSheet` component test | Medium |
-| `limited-expired` claim RPC test | Medium |
+| Live Supabase integration tests (service role) | Low |
 | City collection progress helpers | Low |
 
 ### 6.2 E2E (Playwright)

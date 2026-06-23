@@ -12,6 +12,7 @@ import { ShopStoriesReel } from "@/components/app/ShopStoriesReel";
 import { SoundscapePlayer } from "@/components/app/SoundscapePlayer";
 import { ArrivalButton } from "@/components/app/ArrivalButton";
 import { MayorBadge } from "@/components/app/MayorBadge";
+import { CoffeeSteam } from "@/components/app/CofexDecor";
 import { useUser } from "@/hooks/use-user";
 import { useShopMayor, useShopStories } from "@/lib/queries/vision";
 import type { CoffeeShopDetail } from "@/lib/queries/coffee-shops";
@@ -49,8 +50,8 @@ export function CoffeeShopPage({
   }, [doorScan]);
 
   return (
-    <div style={{ background: "var(--cofex-cream, #f5efe6)" }} className="min-h-full pb-10">
-      <div className="relative">
+    <div className="cofex-app-page min-h-full pb-10">
+      <div className="cofex-cafe-hero relative">
         <div className="aspect-[16/9] sm:aspect-[21/9] w-full overflow-hidden bg-muted">
           <OptimizedImage
             src={shop.cover_image_url}
@@ -60,24 +61,29 @@ export function CoffeeShopPage({
             priority
             className="h-full w-full object-cover"
           />
+          <div className="cofex-cafe-hero-overlay" />
         </div>
         <Link
           to={backTo as "/explore"}
-          className="absolute left-4 top-4 inline-flex items-center gap-1 rounded-full bg-white/95 px-3 py-1.5 text-xs font-medium shadow"
+          className="cofex-cafe-hero-badge absolute left-4 top-4 inline-flex items-center gap-1 rounded-full bg-white/95 px-3 py-1.5 text-xs font-semibold text-[color:var(--cofex-coffee-deep)]"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> {backLabel}
         </Link>
+        <CoffeeSteam className="absolute bottom-8 right-8 hidden opacity-60 sm:flex" />
       </div>
 
       <div className="mx-auto max-w-3xl space-y-6 px-5 py-6">
-        <div className="space-y-2">
+        <div className="cofex-app-card space-y-2 p-5">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-bold" style={{ color: "var(--cofex-coffee-deep)" }}>
+              <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[color:var(--cofex-cyan)]">
+                {t("shopPage.eyebrow", { defaultValue: "Local café" })}
+              </p>
+              <h1 className="mt-1 text-2xl font-extrabold text-[color:var(--cofex-coffee-deep)]">
                 {shop.name}
               </h1>
-              <p className="mt-1 text-sm text-muted-foreground inline-flex items-center gap-1">
-                <MapPin className="h-3.5 w-3.5" /> {shop.address}, {shop.city}
+              <p className="mt-1 text-sm text-[color:var(--cofex-black)]/60 inline-flex items-center gap-1">
+                <MapPin className="h-3.5 w-3.5 text-[color:var(--cofex-cyan)]" /> {shop.address}, {shop.city}
               </p>
               {shop.city && (
                 <Link
@@ -89,8 +95,8 @@ export function CoffeeShopPage({
                 </Link>
               )}
             </div>
-            <span className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-sm font-semibold shadow-sm">
-              <Star className="h-4 w-4 fill-current" style={{ color: "var(--cofex-accent-gold, #c8a063)" }} />
+            <span className="cofex-cafe-hero-badge inline-flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-sm font-bold text-[color:var(--cofex-coffee-deep)]">
+              <Star className="h-4 w-4 fill-[color:var(--cofex-gold)] text-[color:var(--cofex-gold)]" />
               {Number(shop.rating).toFixed(1)}
               <span className="text-xs text-muted-foreground font-normal">({shop.rating_count})</span>
             </span>
@@ -104,8 +110,8 @@ export function CoffeeShopPage({
             ) : null}
             {shop.free_coffee_available && (
               <span
-                className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold text-white"
-                style={{ background: "var(--cofex-accent-gold, #c8a063)" }}
+                className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold text-white shadow-md"
+                style={{ background: "var(--gradient-coffee)" }}
               >
                 <Gift className="h-3 w-3" /> {t("shopPage.freeCoffeeToday")}
               </span>

@@ -1,6 +1,6 @@
 # Progress (Memory Bank)
 
-**Last updated:** June 21, 2026
+**Last updated:** June 23, 2026
 
 ---
 
@@ -88,7 +88,8 @@
 
 ### Testing
 
-- [x] Vitest: 61 tests in 17 files (geo, check-in, challenges, campaign-mission, domain schemas, notification-display, parse-verify-code, partner-campaign-edit, RPC)
+- [x] Vitest: **143 tests** in **36 files** — core journey, campaign availability, verify redemption, partner dashboard metrics, auth roles, RPC wrappers
+- [x] Manual QA checklist — [QA_CHECKLIST_CORE_FLOWS.md](../QA_CHECKLIST_CORE_FLOWS.md)
 - [x] Playwright: landing, auth, public, PWA, authenticated explorer, **partner (12 tests)**
 - [x] CI: lint + test + build + e2e + partner e2e on `main` / `develop`
 
@@ -131,7 +132,7 @@
 
 - [ ] `BadgeUnlockSheet` / `PostCheckInSheet` component tests
 - [ ] Notifications: Realtime or email instead of polling only
-- [ ] Campaign duplicate from existing template
+- [ ] Live Supabase integration tests (requires test project + service role)
 
 ---
 
@@ -139,9 +140,10 @@
 
 | Layer | Count | Notes |
 |-------|-------|-------|
-| Vitest | 17 files, 61 tests | Includes campaign-mission, domain schemas, notification-display |
+| Vitest | 36 files, 143 tests | `campaign-journey`, `campaign-availability`, `verify-redemption`, `partner-dashboard-metrics`, `auth-roles`, RPC integration |
 | Playwright | 8 specs | + partner setup, routes, guest |
 | Partner E2E | 12 tests | `npm run test:e2e:partner` |
+| Manual QA | 1 checklist | [QA_CHECKLIST_CORE_FLOWS.md](../QA_CHECKLIST_CORE_FLOWS.md) |
 
 ---
 

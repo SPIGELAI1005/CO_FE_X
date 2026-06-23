@@ -1,42 +1,39 @@
-import type { TFunction } from "i18next";
-
-export interface NotificationDisplayInput {
-  type: string;
-  title: string;
-  body: string | null;
-  payload: Record<string, unknown> | null;
-}
-
-const LOCALIZED_TYPES = new Set([
-  "partner_application_received",
-  "partner_application_approved",
-  "partner_application_rejected",
-  "crawl_complete",
-  "gift_received",
-  "beans_earned",
-  "explorer_arriving",
-  "spawn_nearby",
-]);
-
-export function getNotificationDisplay(
-  notification: NotificationDisplayInput,
-  t: TFunction,
-): { title: string; body: string | null } {
-  if (!LOCALIZED_TYPES.has(notification.type)) {
-    return { title: notification.title, body: notification.body };
-  }
-
-  const vars = {
-    business_name: String(notification.payload?.business_name ?? ""),
-    crawl_title: String(notification.payload?.crawl_title ?? ""),
-    shop_name: String(notification.payload?.shop_name ?? ""),
-    explorer_name: String(notification.payload?.explorer_name ?? ""),
-    beans: String(notification.payload?.beans ?? ""),
-  };
-  const base = `notificationTypes.${notification.type}`;
-
-  return {
-    title: t(`${base}.title`, vars),
-    body: notification.body ? t(`${base}.body`, vars) : t(`${base}.body`, vars),
-  };
-}
+import type { TFunction } from "i18next";
+
+export interface NotificationDisplayInput {
+  type: string;
+  title: string;
+  body: string | null;
+  payload: Record<string, unknown> | null;
+}
+
+export function notificationDisplayVars(payload: Record<string, unknown> | null) {
+  const p = payload ?? {};
+  return {
+    business_name: String(p.business_name ?? ""),
+    crawl_title: String(p.crawl_title ?? p.title ?? ""),
+    shop_name: String(p.shop_name ?? ""),
+    explorer_name: String(p.explorer_name ?? ""),
+    beans: String(p.beans ?? ""),
+    campaign_title: String(p.campaign_title ?? p.title ?? ""),
+    code: String(p.code ?? ""),
+    remaining: String(p.remaining ?? ""),
+    check_ins: String(p.check_ins ?? ""),
+    redemptions: String(p.redemptions ?? ""),
+    social_proofs: String(p.social_proofs ?? ""),
+    badge_name: String(p.name ?? ""),
+  };
+}
+
+export function getNotificationDisplay(
+  notification: NotificationDisplayInput,
+  t: TFunction,
+): { title: string; body: string | null } {
+  const base = `notificationTypes.${notification.type}`;
+  const vars = notificationDisplayVars(notification.payload);
+
+  return {
+    title: t(`${base}.title`, { defaultValue: notification.title, ...vars }),
+    body: t(`${base}.body`, { defaultValue: notification.body ?? "", ...vars }) || notification.body,
+  };
+}

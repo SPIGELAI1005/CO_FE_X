@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { Bell, Check, Loader2, Mail } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -69,6 +69,8 @@ export function NotificationsBell() {
   const markRead = useMarkNotificationRead(user?.id);
   const markAllRead = useMarkAllNotificationsRead(user?.id);
   const [open, setOpen] = useState(false);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const prefsLink = pathname.startsWith("/partner") ? "/partner/settings" : "/profile";
 
   const unread = items.filter((i) => !i.read_at).length;
 
@@ -124,6 +126,11 @@ export function NotificationsBell() {
             ))
           )}
         </div>
+        <p className="border-t px-4 py-2 text-center text-[10px] text-zinc-400">
+          <Link to={prefsLink} onClick={() => setOpen(false)} className="underline hover:text-zinc-600">
+            {t("notificationPrefs.title")}
+          </Link>
+        </p>
       </PopoverContent>
     </Popover>
   );

@@ -288,4 +288,6 @@ See [Explorer gaps plan](./PLAN_EXPLORER_GAPS.md) for full sequencing. Summary:
 - [x] `explorer-analytics.ts` event hooks
 - [x] E2e: Rank nav + post-check-in sheet assertions
 - [x] RPC integration test for `claim_explorer_challenge`
+- [x] Core journey unit tests (`campaign-journey.test.ts`, 143 total Vitest tests)
+- [x] Manual QA checklist — [QA_CHECKLIST_CORE_FLOWS.md](./QA_CHECKLIST_CORE_FLOWS.md)
 - [x] Narrow-screen nav: hide inactive labels below 360px

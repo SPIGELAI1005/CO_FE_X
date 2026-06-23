@@ -6,28 +6,36 @@ export interface SocialPlatformMeta {
   type: "link" | "screenshot";
   composeLabel: string;
   placeholder?: string;
+  emoji: string;
+  aspectHint?: "story" | "feed" | "video";
 }
 
 export const SOCIAL_PLATFORMS: SocialPlatformMeta[] = [
+  {
+    id: "instagram_story",
+    label: "Instagram Story",
+    type: "screenshot",
+    composeLabel: "Open Instagram Stories",
+    emoji: "📸",
+    aspectHint: "story",
+  },
+  {
+    id: "instagram_post",
+    label: "Instagram Post",
+    type: "link",
+    composeLabel: "Create on Instagram",
+    placeholder: "https://instagram.com/p/...",
+    emoji: "🖼️",
+    aspectHint: "feed",
+  },
   {
     id: "tiktok",
     label: "TikTok",
     type: "link",
     composeLabel: "Create on TikTok",
     placeholder: "https://www.tiktok.com/@you/video/...",
-  },
-  {
-    id: "instagram_post",
-    label: "Instagram post",
-    type: "link",
-    composeLabel: "Create on Instagram",
-    placeholder: "https://instagram.com/p/...",
-  },
-  {
-    id: "instagram_story",
-    label: "Instagram story",
-    type: "screenshot",
-    composeLabel: "Open Instagram Stories",
+    emoji: "🎵",
+    aspectHint: "video",
   },
   {
     id: "facebook_post",
@@ -35,12 +43,15 @@ export const SOCIAL_PLATFORMS: SocialPlatformMeta[] = [
     type: "link",
     composeLabel: "Create on Facebook",
     placeholder: "https://facebook.com/...",
+    emoji: "📘",
+    aspectHint: "feed",
   },
   {
     id: "screenshot",
-    label: "Other",
+    label: "Other / manual",
     type: "screenshot",
     composeLabel: "Take a photo",
+    emoji: "📎",
   },
 ];
 

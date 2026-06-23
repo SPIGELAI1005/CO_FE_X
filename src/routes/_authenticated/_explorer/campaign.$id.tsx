@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useParams, useSearch } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AppPage } from "@/components/app/AppPageShell";
 import { Button } from "@/components/ui/button";
@@ -7,13 +7,15 @@ import { toast } from "sonner";
 import {
   ArrowLeft,
   Camera,
+  Gift,
   Map as MapIcon,
   QrCode,
-  Rocket,
   Sparkles,
 } from "lucide-react";
+import { CampaignJoinConsent } from "@/components/app/CampaignJoinConsent";
 import { SocialProofSubmit } from "@/components/app/SocialProofSubmit";
 import { CampaignRewardQr } from "@/components/app/CampaignRewardQr";
+import { GiftRewardDialog } from "@/components/app/GiftRewardDialog";
 import { CampaignMissionInfo } from "@/components/app/CampaignMissionInfo";
 import {
   getCampaignMissionMicrocopy,
@@ -35,6 +37,8 @@ import {
 import { resolveMissionSteps, formatExpiryCountdown } from "@/lib/campaign-mission";
 import { REWARD_MARKER_STYLES } from "@/lib/map/campaign-markers";
 import { trackExplorerEvent } from "@/lib/explorer-analytics";
+import { canGiftCampaignReward } from "@/lib/reward-gifts";
+import { usePendingRewardGift } from "@/lib/queries/reward-gifts";
 
 type CampaignSearch = {
   src?: string;
@@ -56,26 +60,12 @@ function CampaignDetailPage() {
   const search = useSearch({ from: "/_authenticated/_explorer/campaign/$id" });
   const { user } = useUser();
   const detailQuery = useCampaignDetail(id, user?.id);
-  const joinMutation = useJoinCampaign(user?.id);
-  const qrJoinAttempted = useRef(false);
 
   useEffect(() => {
-    if (search.src !== "qr" || !user?.id || joinMutation.isPending || qrJoinAttempted.current) return;
+    if (search.src !== "qr" || !user?.id) return;
     if (detailQuery.isLoading || !detailQuery.data?.campaign) return;
-    if (detailQuery.data.user.joined) return;
-    qrJoinAttempted.current = true;
     trackExplorerEvent("post_checkin_action", { action: "campaign_qr_scanned", campaign_id: id });
-    joinMutation.mutate(
-      { campaignId: id, source: "qr" },
-      {
-        onSuccess: () => toast.success(t("campaignMission.toastJoinedQr")),
-        onError: (err) => {
-          qrJoinAttempted.current = false;
-          toast.error(err instanceof Error ? err.message.replace(/^.*?: /, "") : t("campaignMission.toastJoinError"));
-        },
-      },
-    );
-  }, [search.src, user?.id, detailQuery.isLoading, detailQuery.data, id, joinMutation, t]);
+  }, [search.src, user?.id, detailQuery.isLoading, detailQuery.data, id]);
 
   return (
     <QueryBoundary query={detailQuery} loadingLabel={t("campaignMission.loading")}>
@@ -116,6 +106,7 @@ function CampaignDetailView({
   const { t } = useTranslation();
   const joinMutation = useJoinCampaign(userId);
   const redeemMutation = useRedeemCampaign(userId);
+  const [giftOpen, setGiftOpen] = useState(false);
 
   const required = Math.max(1, c.required_check_ins ?? 1);
   const cover = c.cover_image_url ?? c.coffee_shops?.cover_image_url;
@@ -125,6 +116,17 @@ function CampaignDetailView({
   const qualified = userState.myCheckIns >= required;
   const busy = joinMutation.isPending || redeemMutation.isPending;
   const redemption = userState.redemption;
+  const pendingGiftQuery = usePendingRewardGift(redemption?.id);
+  const pendingGift = pendingGiftQuery.data;
+  const canGift =
+    !!redemption?.id &&
+    canGiftCampaignReward({
+      rewardStatus: redemption.reward_status,
+      usedAt: redemption.used_at,
+      expiresAt: redemption.expires_at,
+      giftingEnabled: c.gifting_enabled,
+      hasPendingGift: !!pendingGift,
+    });
   const expiryLabel = formatExpiryCountdown(c.ends_at);
 
   const cap = c.available_quantity ?? c.max_participants;
@@ -160,10 +162,15 @@ function CampaignDetailView({
 
   const microcopyKey = getCampaignMissionMicrocopy(phase, userState.joined);
 
-  async function join() {
+  async function join(consent: { termsAccepted: boolean; disclosureAcknowledged: boolean }) {
     try {
-      await joinMutation.mutateAsync({ campaignId: c.id });
-      toast.success(t("campaignMission.toastJoined"));
+      await joinMutation.mutateAsync({
+        campaignId: c.id,
+        source: scannedViaQr ? "qr" : undefined,
+        termsAccepted: consent.termsAccepted,
+        disclosureAcknowledged: consent.disclosureAcknowledged,
+      });
+      toast.success(scannedViaQr ? t("campaignMission.toastJoinedQr") : t("campaignMission.toastJoined"));
     } catch (err) {
       toast.error(err instanceof Error ? err.message.replace(/^.*?: /, "") : t("campaignMission.toastJoinError"));
     }
@@ -256,38 +263,55 @@ function CampaignDetailView({
 
       <div className="mx-auto max-w-2xl space-y-5 px-4 py-6 sm:px-5">
         {!userState.joined && (
-          <div className="cofex-app-card border-2 border-[color:var(--cofex-cyan)]/30 bg-gradient-to-br from-[color:var(--cofex-pastel-blue)]/30 to-white p-5 text-center">
-            <Rocket className="mx-auto h-8 w-8 text-[color:var(--cofex-cyan)]" />
-            <p className="mt-2 text-lg font-extrabold text-[color:var(--cofex-coffee-deep)]">
-              {t("campaignMission.readyTitle")}
-            </p>
-            <p className="mt-1 text-sm text-[color:var(--cofex-black)]/65">{t("campaignMission.readySubtitle")}</p>
-            <Button
-              disabled={busy || full || ended}
-              onClick={join}
-              className="mt-4 w-full rounded-full bg-[color:var(--cofex-coffee-deep)] py-6 text-base font-bold hover:bg-[color:var(--cofex-black)]"
-              size="lg"
-            >
-              {full
-                ? t("campaignMission.campaignFull")
-                : ended
-                  ? t("campaignMission.campaignEnded")
-                  : busy
-                    ? t("campaignMission.starting")
-                    : t("campaignMission.startMission")}
-            </Button>
-          </div>
+          <CampaignJoinConsent
+            fulfillmentMode={c.fulfillment_mode}
+            cafeTerms={c.terms_and_conditions}
+            requirements={c.requirements}
+            scannedViaQr={scannedViaQr}
+            disabled={full || ended}
+            disabledReason={full ? "full" : ended ? "ended" : undefined}
+            busy={busy}
+            onJoin={join}
+          />
         )}
 
         <CampaignMissionSteps steps={missionSteps} microcopyKey={microcopyKey} />
 
         {redemption ? (
-          <CampaignRewardQr
-            redemptionCode={redemption.redemption_code}
-            rewardDescription={c.reward_description}
-            pointsAwarded={redemption.points_awarded}
-            usedAt={redemption.used_at}
-          />
+          <>
+            <CampaignRewardQr
+              redemptionCode={redemption.redemption_code}
+              campaignTitle={c.title}
+              shopName={c.coffee_shops?.name ?? t("campaignMission.hostCafe")}
+              rewardDescription={c.reward_description}
+              pointsAwarded={redemption.points_awarded}
+              usedAt={redemption.used_at}
+              expiresAt={redemption.expires_at}
+              rewardStatus={redemption.reward_status}
+              giftPending={!!pendingGift}
+            />
+            {(canGift || pendingGift) && redemption.id ? (
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full rounded-full border-rose-200 text-rose-700 hover:bg-rose-50"
+                onClick={() => setGiftOpen(true)}
+              >
+                <Gift className="mr-2 h-4 w-4" />
+                {pendingGift ? t("rewardGift.manageGift") : t("rewardGift.giftBtn")}
+              </Button>
+            ) : null}
+            {redemption.id ? (
+              <GiftRewardDialog
+                open={giftOpen}
+                onOpenChange={setGiftOpen}
+                redemptionId={redemption.id}
+                campaignTitle={c.title}
+                shopName={c.coffee_shops?.name ?? t("campaignMission.hostCafe")}
+                pendingGift={pendingGift}
+              />
+            ) : null}
+          </>
         ) : (
           userState.joined && (
             <div className="cofex-app-card p-5">
@@ -330,8 +354,16 @@ function CampaignDetailView({
           <SocialProofSubmit
             campaignId={c.id}
             hashtag={c.hashtag}
+            hashtags={c.hashtags}
             shopName={c.coffee_shops?.name}
+            shopCity={c.coffee_shops?.city}
+            shopAddress={c.coffee_shops?.address}
             campaignTitle={c.title}
+            campaignSlogan={c.slogan}
+            rewardType={c.reward_type}
+            rewardDescription={c.reward_description}
+            coverImageUrl={cover ?? c.coffee_shops?.cover_image_url}
+            socialLinks={c.coffee_shops?.social_links ?? null}
             socialRequirements={c.social_requirements}
           />
         )}

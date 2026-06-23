@@ -9,6 +9,7 @@ export const queryKeys = {
   walletLedger: (userId: string, from: string, to: string) =>
     ["wallet", userId, "ledger", from, to] as const,
   passport: (userId: string) => ["passport", userId] as const,
+  passportStamps: (userId: string) => ["passportStamps", userId] as const,
   activeCampaigns: () => ["campaigns", "active"] as const,
   campaign: (id: string) => ["campaign", id] as const,
   adminOverview: () => ["adminOverview"] as const,
@@ -16,6 +17,10 @@ export const queryKeys = {
   adminPendingShops: () => ["adminPendingShops"] as const,
   adminCampaigns: () => ["adminCampaigns"] as const,
   adminUsers: (search: string) => ["adminUsers", search] as const,
+  adminUserDetail: (userId: string) => ["adminUserDetail", userId] as const,
+  adminShops: (status: string, search: string) => ["adminShops", status, search] as const,
+  adminCampaignMetrics: () => ["adminCampaignMetrics"] as const,
+  adminModeration: () => ["adminModeration"] as const,
   adminEngagement: () => ["adminEngagement"] as const,
   notifications: (userId: string) => ["notifications", userId] as const,
   partnerBilling: (userId: string) => ["partnerBilling", userId] as const,
@@ -25,6 +30,7 @@ export const queryKeys = {
   partnerReferrals: (userId: string) => ["partnerReferrals", userId] as const,
   partnerReferralCode: (userId: string) => ["partnerReferralCode", userId] as const,
   partnerCampaigns: (userId: string) => ["partnerCampaigns", userId] as const,
+  partnerSocialSubmissions: (status: string) => ["partnerSocialSubmissions", status] as const,
   coffeeRadar: (lat: number, lng: number) => ["coffeeRadar", lat, lng] as const,
   leaderboard: (metric: string) => ["leaderboard", metric] as const,
   myLeaderboardRank: (metric: string) => ["myLeaderboardRank", metric] as const,
@@ -33,4 +39,6 @@ export const queryKeys = {
   cityCollection: (citySlug: string) => ["cityCollection", citySlug] as const,
   userCityCollections: (userId: string) => ["userCityCollections", userId] as const,
   explorerFunnelKpis: (days: number) => ["explorerFunnelKpis", days] as const,
+  momentsFeed: (filter: string, lat?: number, lng?: number) =>
+    ["momentsFeed", filter, lat ?? null, lng ?? null] as const,
 };

@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import { Camera, CameraOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { parseVerifyCode } from "@/lib/parse-verify-code";
+import { parseVerifyInput } from "@/lib/parse-verify-code";
 
 interface VerifyQrScannerProps {
   onCode: (code: string) => void;
@@ -41,10 +41,9 @@ export function VerifyQrScanner({ onCode, disabled, cooldownMs = 2000 }: VerifyQ
         (decoded) => {
           const now = Date.now();
           if (now - lastScanRef.current < cooldownMs) return;
-          const code = parseVerifyCode(decoded);
-          if (!code) return;
+          if (!parseVerifyInput(decoded)) return;
           lastScanRef.current = now;
-          onCode(code);
+          onCode(decoded);
         },
         () => undefined,
       );
@@ -81,7 +80,7 @@ export function VerifyQrScanner({ onCode, disabled, cooldownMs = 2000 }: VerifyQ
     <div className="space-y-3">
       <div
         id={regionId}
-        className="relative mx-auto max-w-sm overflow-hidden rounded-2xl border border-[color:var(--border)] bg-[color:var(--cofex-black)]/5"
+        className="cofex-scan-frame relative mx-auto max-w-sm overflow-hidden bg-[color:var(--cofex-black)]/5"
         style={{ minHeight: active ? 280 : 200 }}
       >
         {!active && (
