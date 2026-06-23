@@ -2,10 +2,15 @@ import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { CoffeeSteam } from "@/components/app/CofexDecor";
+import { CofexIconTile } from "@/components/app/CofexIconTile";
+import type { RewardIconMeta } from "@/lib/reward-icons";
+
+type IconTileMeta = Pick<RewardIconMeta, "Icon" | "from" | "to">;
 
 interface EmptyStateProps {
   icon?: LucideIcon;
+  iconMeta?: IconTileMeta;
+  rewardType?: string;
   title: string;
   description?: string;
   actionLabel?: string;
@@ -16,6 +21,8 @@ interface EmptyStateProps {
 
 export function EmptyState({
   icon: Icon,
+  iconMeta,
+  rewardType,
   title,
   description,
   actionLabel,
@@ -23,12 +30,19 @@ export function EmptyState({
   onAction,
   children,
 }: EmptyStateProps) {
+  const hasIcon = rewardType || iconMeta || Icon;
+
   return (
     <div className="cofex-app-card cofex-app-card-dashed cofex-empty-state px-8 py-10 sm:px-10">
-      {Icon && (
-        <div className="cofex-empty-state-icon">
-          <Icon className="h-8 w-8 text-[color:var(--cofex-cyan)]" aria-hidden />
-          <CoffeeSteam className="absolute -top-2 left-1/2 -translate-x-1/2" />
+      {hasIcon && (
+        <div className="mx-auto w-fit">
+          {rewardType ? (
+            <CofexIconTile rewardType={rewardType} size="xl" />
+          ) : iconMeta ? (
+            <CofexIconTile meta={iconMeta} size="xl" />
+          ) : Icon ? (
+            <CofexIconTile meta={{ Icon, from: "from-cyan-400", to: "to-teal-600" }} size="xl" />
+          ) : null}
         </div>
       )}
       <h3 className="mt-4 font-extrabold text-[color:var(--cofex-coffee-deep)]">{title}</h3>

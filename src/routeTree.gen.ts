@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SocialMediaRouteImport } from './routes/social-media'
 import { Route as RewardsRouteImport } from './routes/rewards'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PartnersRouteImport } from './routes/partners'
@@ -67,6 +68,11 @@ import { Route as AuthenticatedExplorerCampaignIdRouteImport } from './routes/_a
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SocialMediaRoute = SocialMediaRouteImport.update({
+  id: '/social-media',
+  path: '/social-media',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RewardsRoute = RewardsRouteImport.update({
@@ -374,6 +380,7 @@ export interface FileRoutesByFullPath {
   '/partners': typeof PartnersRoute
   '/privacy': typeof PrivacyRoute
   '/rewards': typeof RewardsRoute
+  '/social-media': typeof SocialMediaRoute
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/partner': typeof AuthenticatedPartnerRouteWithChildren
@@ -428,6 +435,7 @@ export interface FileRoutesByTo {
   '/partners': typeof PartnersRoute
   '/privacy': typeof PrivacyRoute
   '/rewards': typeof RewardsRoute
+  '/social-media': typeof SocialMediaRoute
   '/terms': typeof TermsRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/reset': typeof AuthResetRoute
@@ -482,6 +490,7 @@ export interface FileRoutesById {
   '/partners': typeof PartnersRoute
   '/privacy': typeof PrivacyRoute
   '/rewards': typeof RewardsRoute
+  '/social-media': typeof SocialMediaRoute
   '/terms': typeof TermsRoute
   '/_authenticated/_explorer': typeof AuthenticatedExplorerRouteRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -539,6 +548,7 @@ export interface FileRouteTypes {
     | '/partners'
     | '/privacy'
     | '/rewards'
+    | '/social-media'
     | '/terms'
     | '/admin'
     | '/partner'
@@ -593,6 +603,7 @@ export interface FileRouteTypes {
     | '/partners'
     | '/privacy'
     | '/rewards'
+    | '/social-media'
     | '/terms'
     | '/auth/forgot'
     | '/auth/reset'
@@ -646,6 +657,7 @@ export interface FileRouteTypes {
     | '/partners'
     | '/privacy'
     | '/rewards'
+    | '/social-media'
     | '/terms'
     | '/_authenticated/_explorer'
     | '/_authenticated/admin'
@@ -703,6 +715,7 @@ export interface RootRouteChildren {
   PartnersRoute: typeof PartnersRoute
   PrivacyRoute: typeof PrivacyRoute
   RewardsRoute: typeof RewardsRoute
+  SocialMediaRoute: typeof SocialMediaRoute
   TermsRoute: typeof TermsRoute
   CityCityRoute: typeof CityCityRoute
   CoffeeSlugRoute: typeof CoffeeSlugRoute
@@ -716,6 +729,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/social-media': {
+      id: '/social-media'
+      path: '/social-media'
+      fullPath: '/social-media'
+      preLoaderRoute: typeof SocialMediaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/rewards': {
@@ -1243,6 +1263,7 @@ const rootRouteChildren: RootRouteChildren = {
   PartnersRoute: PartnersRoute,
   PrivacyRoute: PrivacyRoute,
   RewardsRoute: RewardsRoute,
+  SocialMediaRoute: SocialMediaRoute,
   TermsRoute: TermsRoute,
   CityCityRoute: CityCityRoute,
   CoffeeSlugRoute: CoffeeSlugRoute,

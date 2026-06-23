@@ -9,7 +9,7 @@ export const Route = createFileRoute("/partners")({
       { title: "Partner Terms · CO:FE(X)" },
       {
         name: "description",
-        content: "Terms for café partners, subscriptions, campaigns, and analytics on CO:FE(X).",
+        content: "Terms for café partners, subscriptions, campaigns and analytics on CO:FE(X).",
       },
     ],
   }),
@@ -20,7 +20,7 @@ function PartnersPage() {
   return (
     <LegalPageShell
       title="Partner Terms"
-      subtitle="Responsibilities, billing, campaigns, and data use for independent café partners."
+      subtitle="Responsibilities, billing, campaigns and data use for independent café partners."
       lastUpdated={LAST_UPDATED}
     >
       <LegalCallout>
@@ -35,8 +35,8 @@ function PartnersPage() {
         <LegalList
           items={[
             "You represent a registered café, roastery, or hospitality business with authority to bind the organization.",
-            "Shop profile information must be accurate, including address, hours, allergens policy links where required, and contact details.",
-            "You comply with local food safety, advertising, consumer, and employment laws.",
+            "Shop profile information must be accurate, including address, hours, allergens policy links where required and contact details.",
+            "You comply with local food safety, advertising, consumer and employment laws.",
           ]}
         />
       </LegalSection>
@@ -44,7 +44,7 @@ function PartnersPage() {
       <LegalSection title="2. Campaign responsibilities">
         <LegalList
           items={[
-            "Set clear campaign rules, capacity, reward type, and redemption method before publishing.",
+            "Set clear campaign rules, capacity, reward type and redemption method before publishing.",
             "Honor approved rewards during the campaign period and any stated grace period.",
             "Review social submissions promptly and fairly.",
             "Do not encourage Explorers to omit required advertising disclosures.",
@@ -71,7 +71,7 @@ function PartnersPage() {
 
       <LegalSection title="4. Data and analytics">
         <p>
-          Partners receive analytics about their own campaigns, submissions, and shop performance. You may not use
+          Partners receive analytics about their own campaigns, submissions and shop performance. You may not use
           Explorer personal data for unrelated marketing without a lawful basis and, where required, consent.
         </p>
         <p>
@@ -97,7 +97,7 @@ function PartnersPage() {
 
       <LegalSection title="6. Content and trademarks">
         <p>
-          You grant CO:FE(X) a license to display your shop name, logo, photos, and campaign copy on the platform and in
+          You grant CO:FE(X) a license to display your shop name, logo, photos and campaign copy on the platform and in
           marketing materials promoting CO:FE(X) or your listing. You confirm you have rights to all uploaded assets.
         </p>
       </LegalSection>

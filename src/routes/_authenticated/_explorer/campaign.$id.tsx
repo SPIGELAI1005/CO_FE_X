@@ -35,8 +35,10 @@ import {
   needsSocialProof,
 } from "@/lib/campaign-fulfillment";
 import { resolveMissionSteps, formatExpiryCountdown } from "@/lib/campaign-mission";
-import { REWARD_MARKER_STYLES } from "@/lib/map/campaign-markers";
+import { RewardTypeChip } from "@/components/app/CofexIconTile";
+import { canJoinCampaign } from "@/lib/campaign-availability";
 import { trackExplorerEvent } from "@/lib/explorer-analytics";
+import { mapJoinCampaignErrorMessage } from "@/lib/rpc/client";
 import { canGiftCampaignReward } from "@/lib/reward-gifts";
 import { usePendingRewardGift } from "@/lib/queries/reward-gifts";
 
@@ -110,9 +112,17 @@ function CampaignDetailView({
 
   const required = Math.max(1, c.required_check_ins ?? 1);
   const cover = c.cover_image_url ?? c.coffee_shops?.cover_image_url;
-  const rewardStyle = REWARD_MARKER_STYLES[c.reward_type];
-  const full = c.max_participants ? userState.participantCount >= c.max_participants : false;
-  const ended = c.ends_at ? new Date(c.ends_at) < new Date() : false;
+  const joinEligibility = canJoinCampaign({
+    status: c.status,
+    startsAt: c.starts_at,
+    endsAt: c.ends_at,
+    availableQuantity: c.available_quantity,
+    maxParticipants: c.max_participants,
+    participantCount: userState.participantCount,
+  });
+  const ended = !joinEligibility.ok && joinEligibility.reason === "expired";
+  const full = !joinEligibility.ok && joinEligibility.reason === "full";
+  const notStarted = !joinEligibility.ok && joinEligibility.reason === "not_started";
   const qualified = userState.myCheckIns >= required;
   const busy = joinMutation.isPending || redeemMutation.isPending;
   const redemption = userState.redemption;
@@ -127,7 +137,12 @@ function CampaignDetailView({
       giftingEnabled: c.gifting_enabled,
       hasPendingGift: !!pendingGift,
     });
-  const expiryLabel = formatExpiryCountdown(c.ends_at);
+  const expiryLabel =
+    notStarted && c.starts_at
+      ? t("campaignMission.startsOn", {
+          date: new Date(c.starts_at).toLocaleDateString(),
+        })
+      : formatExpiryCountdown(c.ends_at);
 
   const cap = c.available_quantity ?? c.max_participants;
   const remaining =
@@ -172,7 +187,8 @@ function CampaignDetailView({
       });
       toast.success(scannedViaQr ? t("campaignMission.toastJoinedQr") : t("campaignMission.toastJoined"));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message.replace(/^.*?: /, "") : t("campaignMission.toastJoinError"));
+      const raw = err instanceof Error ? err.message : "";
+      toast.error(mapJoinCampaignErrorMessage(raw, t));
     }
   }
 
@@ -241,11 +257,8 @@ function CampaignDetailView({
           )}
 
           <div className="mt-4 flex flex-wrap items-center gap-2">
-            <span
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold"
-              style={{ background: rewardStyle.color }}
-            >
-              {rewardStyle.emoji} {t(`campaignMap.rewardTypes.${c.reward_type}`)}
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white backdrop-blur-sm">
+              <RewardTypeChip type={c.reward_type} label={t(`campaignMap.rewardTypes.${c.reward_type}`)} />
             </span>
             {expiryLabel && (
               <span className="rounded-full bg-amber-500/90 px-3 py-1 text-xs font-bold text-white">
@@ -268,8 +281,11 @@ function CampaignDetailView({
             cafeTerms={c.terms_and_conditions}
             requirements={c.requirements}
             scannedViaQr={scannedViaQr}
-            disabled={full || ended}
-            disabledReason={full ? "full" : ended ? "ended" : undefined}
+            disabled={!joinEligibility.ok}
+            disabledReason={
+              full ? "full" : ended ? "ended" : notStarted ? "not_started" : undefined
+            }
+            startsAt={c.starts_at}
             busy={busy}
             onJoin={join}
           />

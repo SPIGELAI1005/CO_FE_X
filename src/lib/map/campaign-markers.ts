@@ -1,22 +1,16 @@
 import L from "leaflet";
 import type { CampaignRewardType } from "@/lib/domain/campaign-reward-model";
+import { REWARD_ICON_META } from "@/lib/reward-icons";
+import { rewardMarkerIconHtml } from "@/lib/map/reward-marker-icon";
 
 export interface CampaignMarkerVisual {
-  emoji: string;
   color: string;
   ring: string;
 }
 
-export const REWARD_MARKER_STYLES: Record<CampaignRewardType, CampaignMarkerVisual> = {
-  coffee: { emoji: "☕", color: "#3d2417", ring: "#c8a063" },
-  espresso: { emoji: "☕", color: "#2c1810", ring: "#e8b86d" },
-  cappuccino: { emoji: "🥛", color: "#5c4033", ring: "#f5deb3" },
-  matcha: { emoji: "🍵", color: "#2d5016", ring: "#7cb342" },
-  ice_cream: { emoji: "🍦", color: "#c2185b", ring: "#f8bbd0" },
-  juice: { emoji: "🧃", color: "#f57c00", ring: "#ffe082" },
-  cola: { emoji: "🥤", color: "#b71c1c", ring: "#ef9a9a" },
-  other: { emoji: "🎁", color: "#455a64", ring: "#80cbc4" },
-};
+export const REWARD_MARKER_STYLES: Record<CampaignRewardType, CampaignMarkerVisual> = Object.fromEntries(
+  Object.entries(REWARD_ICON_META).map(([type, meta]) => [type, { color: meta.color, ring: meta.ring }]),
+) as Record<CampaignRewardType, CampaignMarkerVisual>;
 
 export function inferRewardType(
   rewardType: string | null | undefined,
@@ -71,7 +65,7 @@ export function createCampaignMarkerIcon(state: CampaignMarkerState): L.DivIcon 
       <div class="${classes}" style="--pin-color:${style.color};--pin-ring:${style.ring}">
         <div class="cofex-campaign-pin__glow"></div>
         <div class="cofex-campaign-pin__body">
-          <span class="cofex-campaign-pin__emoji">${style.emoji}</span>
+          <span class="cofex-campaign-pin__icon">${rewardMarkerIconHtml(state.rewardType)}</span>
         </div>
         ${check}
       </div>`,

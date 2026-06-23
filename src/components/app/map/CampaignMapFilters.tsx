@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { SlidersHorizontal, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { REWARD_MARKER_STYLES } from "@/lib/map/campaign-markers";
+import { RewardTypeChip } from "@/components/app/CofexIconTile";
 import { REWARD_TYPES } from "@/lib/domain/campaign-reward-model";
 import type { CampaignMapFilters } from "@/lib/queries/campaign-map";
 import type { CampaignRewardType } from "@/lib/domain/campaign-reward-model";
@@ -111,8 +112,7 @@ export function CampaignMapFiltersBar({
                   active={filters.drinkTypes.includes(type)}
                   onClick={() => toggleDrink(type)}
                 >
-                  {REWARD_MARKER_STYLES[type].emoji}{" "}
-                  {t(`campaignMap.rewardTypes.${type}`)}
+                  <RewardTypeChip type={type} label={t(`campaignMap.rewardTypes.${type}`)} />
                 </FilterChip>
               ))}
             </div>

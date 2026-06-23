@@ -5,7 +5,7 @@ import { AppPageSection } from "@/components/app/AppPageShell";
 
 export function AppLegalLinks() {
   return (
-    <AppPageSection title="Legal & policies">
+    <AppPageSection title="Legal & Policies">
       <div className="cofex-app-card grid gap-6 p-5 sm:grid-cols-2">
         {LEGAL_LINK_GROUPS.map((group) => (
           <div key={group.title}>

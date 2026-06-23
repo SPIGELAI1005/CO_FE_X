@@ -1,23 +1,26 @@
 import { useEffect, useState } from "react";
-import QRCode from "qrcode";
+import { generateBrandedQrDataUrl } from "@/lib/qr-code-brand";
 
 interface CampaignQrCodeProps {
   value: string;
   label?: string;
   size?: number;
   className?: string;
+  showLogo?: boolean;
 }
 
-export function CampaignQrCode({ value, label, size = 180, className = "" }: CampaignQrCodeProps) {
+export function CampaignQrCode({
+  value,
+  label,
+  size = 180,
+  className = "",
+  showLogo = true,
+}: CampaignQrCodeProps) {
   const [dataUrl, setDataUrl] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    QRCode.toDataURL(value, {
-      width: size,
-      margin: 2,
-      color: { dark: "#3d2417", light: "#ffffff" },
-    })
+    generateBrandedQrDataUrl(value, { width: size, showLogo })
       .then((url) => {
         if (!cancelled) setDataUrl(url);
       })
@@ -27,7 +30,7 @@ export function CampaignQrCode({ value, label, size = 180, className = "" }: Cam
     return () => {
       cancelled = true;
     };
-  }, [value, size]);
+  }, [value, size, showLogo]);
 
   if (!dataUrl) {
     return (

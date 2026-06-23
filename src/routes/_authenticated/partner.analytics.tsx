@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/hooks/use-user";
@@ -48,15 +48,12 @@ const PRESETS = [
   { id: "all", label: "All time", days: 0 },
 ];
 
-function toISODate(d: Date) {
-  return d.toISOString().slice(0, 10);
-}
-function dateFromInput(s: string) {
-  return s ? new Date(s + "T00:00:00").toISOString() : null;
-}
-function dateToInput(s: string) {
-  return s ? new Date(s + "T23:59:59.999").toISOString() : null;
-}
+import {
+  endOfLocalDayISO,
+  localDateFromTimestamp,
+  startOfLocalDayISO,
+  toLocalDateString,
+} from "@/lib/local-date-range";
 
 function PartnerAnalyticsPage() {
   const { t } = useTranslation();
@@ -68,17 +65,19 @@ function PartnerAnalyticsPage() {
     billing !== undefined &&
     billingLimitsForShop(billing, primaryShopId).limits.analyticsExport;
 
-  const today = useMemo(() => new Date(), []);
   const [preset, setPreset] = useState("30d");
-  const [from, setFrom] = useState(toISODate(new Date(today.getTime() - 30 * 86400000)));
-  const [to, setTo] = useState(toISODate(today));
+  const [from, setFrom] = useState(() =>
+    toLocalDateString(new Date(Date.now() - 30 * 86400000)),
+  );
+  const [to, setTo] = useState(() => toLocalDateString(new Date()));
+  const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<Row[]>([]);
   const [totals, setTotals] = useState<Totals>({ participants: 0, check_ins: 0, redemptions: 0, used: 0 });
   const [insights, setInsights] = useState({
     conversionPct: 0,
     repeatVisitors: 0,
-    peakHourLabel: "—",
-    topRewardType: "—",
+    peakHourLabel: "-",
+    topRewardType: "-",
   });
 
   function applyPreset(id: string) {
@@ -87,11 +86,11 @@ function PartnerAnalyticsPage() {
     if (!p) return;
     if (p.days === 0) {
       setFrom("");
-      setTo(toISODate(today));
+      setTo(toLocalDateString(new Date()));
       return;
     }
-    setFrom(toISODate(new Date(today.getTime() - p.days * 86400000)));
-    setTo(toISODate(today));
+    setFrom(toLocalDateString(new Date(Date.now() - p.days * 86400000)));
+    setTo(toLocalDateString(new Date()));
   }
 
   useEffect(() => {
@@ -126,8 +125,8 @@ function PartnerAnalyticsPage() {
         return;
       }
 
-      const fromISO = dateFromInput(from);
-      const toISO = dateToInput(to);
+      const fromISO = startOfLocalDayISO(from);
+      const toISO = endOfLocalDayISO(to);
 
       const partsQ = supabase.from("campaign_participants").select("campaign_id, joined_at").in("campaign_id", cIds);
       const cinsQ = supabase.from("check_ins").select("campaign_id, created_at").in("campaign_id", cIds);
@@ -210,7 +209,7 @@ function PartnerAnalyticsPage() {
         const rt = camp?.reward_type ?? "coffee";
         rewardTypeCounts.set(rt, (rewardTypeCounts.get(rt) ?? 0) + 1);
       }
-      let topRewardType = "—";
+      let topRewardType = "-";
       let topN = 0;
       for (const [rt, n] of rewardTypeCounts) {
         if (n > topN) {
@@ -273,7 +272,7 @@ function PartnerAnalyticsPage() {
           r.used,
           conv,
           useRate,
-          r.ends_at ? new Date(r.ends_at).toISOString().slice(0, 10) : "",
+          r.ends_at ? localDateFromTimestamp(r.ends_at) : "",
         ].join(","),
       );
     }

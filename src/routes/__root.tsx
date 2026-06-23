@@ -88,7 +88,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "theme-color", content: "#3d2417" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { title: "CO:FE(X) · (X)plore Cafés · (€)arn Coffees" },
-      { name: "description", content: "Discover independent coffee shops, join campaigns, and earn rewards with CO:FE(X)." },
+      { name: "description", content: "Discover independent coffee shops, join campaigns and earn rewards with CO:FE(X)." },
       { name: "author", content: "CO_FE_X" },
       { property: "og:title", content: "CO:FE(X) · Coffee Explorer Network" },
       { property: "og:description", content: "Snap. Post. Earn a free coffee. The Coffee Explorer Network." },

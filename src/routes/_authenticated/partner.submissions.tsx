@@ -9,6 +9,7 @@ import { PARTNER_CHIP, PARTNER_CHIP_ACTIVE } from "@/components/app/partner/Part
 import { SocialProofReviewCard } from "@/components/app/partner/SocialProofReviewCard";
 import {
   usePartnerSocialProofSignedUrls,
+  usePartnerSocialSubmissionCounts,
   usePartnerSocialSubmissions,
   useReviewSocialSubmission,
   type SocialSubmissionStatus,
@@ -23,6 +24,7 @@ function SubmissionsPage() {
   const { t } = useTranslation();
   const [tab, setTab] = useState<SocialSubmissionStatus>("pending");
   const submissionsQuery = usePartnerSocialSubmissions(tab);
+  const countsQuery = usePartnerSocialSubmissionCounts();
   const reviewMutation = useReviewSocialSubmission(tab);
 
   const screenshotPaths = useMemo(
@@ -55,6 +57,7 @@ function SubmissionsPage() {
 
   const items = submissionsQuery.data ?? [];
   const loading = submissionsQuery.isLoading;
+  const counts = countsQuery.data;
 
   return (
     <AppPage>
@@ -73,11 +76,18 @@ function SubmissionsPage() {
               className={tab === status ? PARTNER_CHIP_ACTIVE : PARTNER_CHIP}
             >
               {t(`submissionsPage.${status}`)}
+              {counts ? ` (${counts[status]})` : ""}
             </button>
           ))}
         </div>
 
-        {loading ? (
+        {submissionsQuery.isError ? (
+          <div className="cofex-app-card border border-rose-200 bg-rose-50/80 p-4 text-sm text-rose-800">
+            {submissionsQuery.error instanceof Error
+              ? submissionsQuery.error.message
+              : t("submissionsPage.loadError")}
+          </div>
+        ) : loading ? (
           <div className="py-12 text-center text-sm text-[color:var(--cofex-black)]/55">
             <Loader2 className="mr-1 inline h-4 w-4 animate-spin" /> {t("submissionsPage.loading")}
           </div>
@@ -89,6 +99,11 @@ function SubmissionsPage() {
             </p>
             {tab === "pending" && (
               <p className="mt-2 text-xs text-[color:var(--cofex-black)]/45">{t("submissionsPage.emptyPendingHint")}</p>
+            )}
+            {tab === "pending" && (counts?.approved ?? 0) > 0 && (
+              <p className="mt-2 text-xs font-medium text-emerald-800">
+                {t("submissionsPage.checkApprovedTab", { count: counts?.approved ?? 0 })}
+              </p>
             )}
             <Button asChild variant="outline" className="mt-4 rounded-full">
               <Link to="/partner/campaigns">

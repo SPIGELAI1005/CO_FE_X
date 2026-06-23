@@ -20,6 +20,7 @@ export interface PartnerSocialSubmission {
   status: SocialSubmissionStatus;
   created_at: string;
   review_notes: string | null;
+  reviewed_by: string | null;
   redemption_code: string | null;
   points_awarded: number | null;
   last_check_in_at: string | null;
@@ -45,34 +46,38 @@ async function fetchPartnerSocialSubmissions(status: SocialSubmissionStatus): Pr
     .from("social_submissions")
     .select(
       `id, user_id, campaign_id, coffee_shop_id, platform, submission_type, url, screenshot_path,
-      caption, explorer_note, status, created_at, review_notes, redemption_code, points_awarded,
-      campaigns(title, hashtag, hashtags, points_reward, reward_type, reward_description, status, ends_at),
-      profiles!social_submissions_user_id_fkey(display_name, avatar_url)`,
+      caption, explorer_note, status, created_at, review_notes, redemption_code, points_awarded, reviewed_by,
+      campaigns(title, hashtag, hashtags, points_reward, reward_type, reward_description, status, ends_at)`,
     )
     .eq("status", status)
     .order("created_at", { ascending: false })
     .limit(100);
 
   if (error) throw error;
-  const rows = (data ?? []) as Omit<PartnerSocialSubmission, "last_check_in_at">[];
+  const rows = (data ?? []) as Omit<PartnerSocialSubmission, "last_check_in_at" | "profiles">[];
 
   if (!rows.length) return [];
 
   const userIds = [...new Set(rows.map((r) => r.user_id))];
   const shopIds = [...new Set(rows.map((r) => r.coffee_shop_id))];
 
-  const { data: checkIns } = await supabase
-    .from("check_ins")
-    .select("user_id, coffee_shop_id, created_at")
-    .in("user_id", userIds)
-    .in("coffee_shop_id", shopIds)
-    .order("created_at", { ascending: false });
+  const [{ data: checkIns }, { data: profiles }] = await Promise.all([
+    supabase
+      .from("check_ins")
+      .select("user_id, coffee_shop_id, created_at")
+      .in("user_id", userIds)
+      .in("coffee_shop_id", shopIds)
+      .order("created_at", { ascending: false }),
+    supabase.from("profiles").select("id, display_name, avatar_url").in("id", userIds),
+  ]);
 
   const checkInMap = new Map<string, string>();
   for (const ci of checkIns ?? []) {
     const key = checkInKey(ci.user_id, ci.coffee_shop_id);
     if (!checkInMap.has(key)) checkInMap.set(key, ci.created_at);
   }
+
+  const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
 
   return rows.map((row) => {
     const raw = row.campaigns as Record<string, unknown> | null;
@@ -90,8 +95,32 @@ async function fetchPartnerSocialSubmissions(status: SocialSubmissionStatus): Pr
     return {
       ...row,
       campaigns,
+      profiles: profileMap.get(row.user_id) ?? null,
       last_check_in_at: checkInMap.get(checkInKey(row.user_id, row.coffee_shop_id)) ?? null,
     };
+  });
+}
+
+export async function fetchPartnerSocialSubmissionCounts(): Promise<Record<SocialSubmissionStatus, number>> {
+  const { data, error } = await supabase.from("social_submissions").select("status");
+  if (error) throw error;
+  const counts: Record<SocialSubmissionStatus, number> = {
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+  };
+  for (const row of data ?? []) {
+    const status = row.status as SocialSubmissionStatus;
+    if (status in counts) counts[status] += 1;
+  }
+  return counts;
+}
+
+export function usePartnerSocialSubmissionCounts() {
+  return useQuery({
+    queryKey: queryKeys.partnerSocialSubmissionCounts,
+    queryFn: fetchPartnerSocialSubmissionCounts,
+    staleTime: 30_000,
   });
 }
 
@@ -99,6 +128,7 @@ export function usePartnerSocialSubmissions(status: SocialSubmissionStatus) {
   return useQuery({
     queryKey: queryKeys.partnerSocialSubmissions(status),
     queryFn: () => fetchPartnerSocialSubmissions(status),
+    staleTime: 30_000,
   });
 }
 
@@ -143,6 +173,7 @@ export function useReviewSocialSubmission(status: SocialSubmissionStatus) {
       (["pending", "approved", "rejected"] as const).forEach((s) => {
         qc.invalidateQueries({ queryKey: queryKeys.partnerSocialSubmissions(s) });
       });
+      qc.invalidateQueries({ queryKey: queryKeys.partnerSocialSubmissionCounts });
     },
   });
 }

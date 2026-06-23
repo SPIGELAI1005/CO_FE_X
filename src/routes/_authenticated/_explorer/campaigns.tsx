@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { Gift, Users, Calendar, Hash, MapPin, Map } from "lucide-react";
+import { Users, Hash, Map } from "lucide-react";
 import { AppPage, AppPageBody, AppPageHeader } from "@/components/app/AppPageShell";
-import { EmptyState } from "@/components/patterns/EmptyState";
 import { QueryBoundary } from "@/components/patterns/QueryBoundary";
 import { getCampaignTypeMeta } from "@/lib/campaign-types";
 import { useActiveCampaigns, type CampaignListItem } from "@/lib/queries/campaigns";
+import { CofexIconTile, ResolvedIconTile } from "@/components/app/CofexIconTile";
+import { campaignMetaIcon, resolveCampaignTypeIcon } from "@/lib/explorer-section-icons";
 
 export const Route = createFileRoute("/_authenticated/_explorer/campaigns")({
   head: () => ({ meta: [{ title: "Campaigns · CO:FE(X)" }] }),
@@ -61,7 +62,8 @@ function CampaignCard({ c }: { c: CampaignListItem }) {
   const pct = c.max_participants
     ? Math.min(100, Math.round((c.participant_count / c.max_participants) * 100))
     : 0;
-  const { Icon: TypeIcon } = getCampaignTypeMeta(c.campaign_type);
+  const typeIcon = resolveCampaignTypeIcon(c.campaign_type);
+  const typeMeta = getCampaignTypeMeta(c.campaign_type);
 
   return (
     <Link
@@ -71,8 +73,8 @@ function CampaignCard({ c }: { c: CampaignListItem }) {
     >
       <div className="cofex-campaign-card-media relative h-40 bg-gradient-to-br from-[color:var(--cofex-pastel-blue)] to-[color:var(--cofex-cream)]">
         {cover && <img src={cover} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />}
-        <div className="absolute top-3 left-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white/95 text-[color:var(--cofex-coffee-deep)] shadow-md ring-1 ring-white/80">
-          <TypeIcon className="h-5 w-5 text-[color:var(--cofex-cyan)]" />
+        <div className="absolute top-3 left-3 shadow-md">
+          <ResolvedIconTile icon={typeIcon} size="sm" />
         </div>
         <div className="absolute right-3 bottom-3 left-3 text-white">
           <div className="text-xs tracking-widest uppercase opacity-80">{c.hashtag}</div>
@@ -82,14 +84,14 @@ function CampaignCard({ c }: { c: CampaignListItem }) {
       <div className="p-4">
         <p className="line-clamp-2 text-sm text-[color:var(--cofex-black)]/65">{c.description}</p>
         <div className="mt-3 space-y-2 text-sm">
-          <Meta Icon={Gift} text={c.reward_description ?? "Surprise reward"} />
+          <Meta iconKey="reward" text={c.reward_description ?? typeMeta.label} />
           {c.coffee_shops && (
             <Meta
-              Icon={MapPin}
+              iconKey="location"
               text={`${c.coffee_shops.name}${c.coffee_shops.city ? ` · ${c.coffee_shops.city}` : ""}`}
             />
           )}
-          {c.ends_at && <Meta Icon={Calendar} text={`Ends ${new Date(c.ends_at).toLocaleDateString()}`} />}
+          {c.ends_at && <Meta iconKey="calendar" text={`Ends ${new Date(c.ends_at).toLocaleDateString()}`} />}
         </div>
         {c.max_participants && (
           <div className="mt-3">
@@ -114,10 +116,10 @@ function CampaignCard({ c }: { c: CampaignListItem }) {
   );
 }
 
-function Meta({ Icon, text }: { Icon: React.ComponentType<{ className?: string }>; text: string }) {
+function Meta({ iconKey, text }: { iconKey: "reward" | "location" | "calendar"; text: string }) {
   return (
     <div className="flex items-center gap-2 text-[color:var(--cofex-black)]/75">
-      <Icon className="h-4 w-4 shrink-0 text-[color:var(--cofex-cyan)]" />
+      <CofexIconTile meta={campaignMetaIcon(iconKey)} size="xs" />
       <span className="truncate">{text}</span>
     </div>
   );

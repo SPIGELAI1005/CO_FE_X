@@ -1,15 +1,16 @@
 import { useState } from "react";
-import type { LucideIcon } from "lucide-react";
-import { Check, ChevronDown, Gift, MapPin, Star, TrendingUp } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useExploreSortLabels } from "@/lib/i18n/use-filter-labels";
+import { CofexIconTile } from "@/components/app/CofexIconTile";
+import { EXPLORE_SORT_ICON_META } from "@/lib/explorer-section-icons";
 
 export const EXPLORE_SORT_OPTIONS = [
-  { value: "distance", Icon: MapPin },
-  { value: "rating", Icon: Star },
-  { value: "popularity", Icon: TrendingUp },
-  { value: "free", Icon: Gift },
+  { value: "distance" },
+  { value: "rating" },
+  { value: "popularity" },
+  { value: "free" },
 ] as const;
 
 export type ExploreSortValue = (typeof EXPLORE_SORT_OPTIONS)[number]["value"];
@@ -22,13 +23,13 @@ interface ExploreSortSelectProps {
 function SortOption({
   label,
   description,
-  Icon,
+  sortValue,
   active,
   onClick,
 }: {
   label: string;
   description: string;
-  Icon: LucideIcon;
+  sortValue: ExploreSortValue;
   active: boolean;
   onClick: () => void;
 }) {
@@ -43,13 +44,7 @@ function SortOption({
         fontWeight: active ? 600 : 400,
       }}
     >
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[color:var(--cofex-pastel-blue)]/50">
-        <Icon
-          className={`h-4 w-4 ${
-            active ? "text-[color:var(--cofex-coffee-deep)]" : "text-[color:var(--cofex-cyan)]"
-          }`}
-        />
-      </span>
+      <CofexIconTile meta={EXPLORE_SORT_ICON_META[sortValue]} size="sm" />
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-semibold text-[color:var(--cofex-coffee-deep)]">{label}</span>
         <span className="block text-[11px] text-[color:var(--cofex-black)]/55">{description}</span>
@@ -68,7 +63,6 @@ export function ExploreSortSelect({ value, onChange }: ExploreSortSelectProps) {
   const [open, setOpen] = useState(false);
   const options = useExploreSortLabels();
   const current = options.find((o) => o.value === value) ?? options[0];
-  const CurrentIcon = current.Icon;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -77,7 +71,7 @@ export function ExploreSortSelect({ value, onChange }: ExploreSortSelectProps) {
           type="button"
           className="cofex-app-chip inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold"
         >
-          <CurrentIcon className="h-3.5 w-3.5 text-[color:var(--cofex-cyan)]" />
+          <CofexIconTile meta={EXPLORE_SORT_ICON_META[value]} size="xs" />
           {current.label}
           <ChevronDown className="h-3.5 w-3.5 text-[color:var(--cofex-coffee-deep)]/60" />
         </button>
@@ -100,7 +94,7 @@ export function ExploreSortSelect({ value, onChange }: ExploreSortSelectProps) {
                 key={option.value}
                 label={option.label}
                 description={option.description}
-                Icon={option.Icon}
+                sortValue={option.value}
                 active={value === option.value}
                 onClick={() => {
                   onChange(option.value);

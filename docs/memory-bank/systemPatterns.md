@@ -34,7 +34,8 @@ Sensitive operations go through Postgres RPCs (RLS + server logic), not direct t
 | `partner_update_campaign` | Partial campaign edit |
 | `partner_delete_shop` | Delete shop (no active campaigns) |
 | `issue_api_key` / `revoke_api_key` | Partner API keys |
-| `get_campaign_mission_progress` | Campaign mission step completion |
+| `join_campaign` | Explorer joins campaign (terms + disclosure compliance) |
+| `_campaign_is_live` | Internal: campaign window + active hours (record/jsonb-safe) |
 | `join_coffee_crawl` / `complete_crawl_stop` | Coffee crawl progression |
 | `claim_spawn_event` | Rare café spawn rewards |
 | `get_grid_mayor` | Weekly mayor per map grid cell |
@@ -83,7 +84,7 @@ Pure helpers with Vitest coverage for end-to-end logic without live Supabase:
 
 | Module | Covers |
 |--------|--------|
-| `campaign-availability.ts` | Join/discovery eligibility, expiry, quantity caps |
+| `campaign-availability.ts` | Join/discovery eligibility, expiry, quantity caps, **local calendar-day start** |
 | `campaign-fulfillment.ts` | Explorer phase, social vs check-in modes |
 | `campaign-mission.ts` | Mission step progress |
 | `verify-redemption.ts` | Partner verify result parsing, duplicate detection |
@@ -92,6 +93,22 @@ Pure helpers with Vitest coverage for end-to-end logic without live Supabase:
 | `campaign-journey.test.ts` | Cross-module journey scenarios |
 
 Manual device QA: [QA_CHECKLIST_CORE_FLOWS.md](../QA_CHECKLIST_CORE_FLOWS.md)
+
+---
+
+## Partner analytics & submissions
+
+- **Date filters:** Use `src/lib/local-date-range.ts` (`toLocalDateString`, `startOfLocalDayISO`, `endOfLocalDayISO`) — never `toISOString().slice(0,10)` for UI date pickers in EU timezones.
+- **Submissions:** `fetchPartnerSocialSubmissions` loads `profiles` in a second query (no PostgREST FK hint). Tab counts via `fetchPartnerSocialSubmissionCounts`.
+- **Auto-approve:** When `campaigns.auto_approve_social` is true, proofs land in **Approved**, not Pending — UI shows counts + hint.
+
+---
+
+## Campaign timing (local vs UTC)
+
+- Wizard custom dates: `parseLocalDateString` + `startOfDay` / `endOfDay` in `campaign-wizard.ts`.
+- Client join check: `campaignHasStarted()` treats legacy UTC-midnight `starts_at` as local calendar day.
+- Server: `_campaign_is_live` backfills and jsonb record reads — migrations `20260624010000`–`20260624040000`.
 
 ---
 

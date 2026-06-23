@@ -2,7 +2,7 @@
 
 This document is the master roadmap for taking CO:FE(X) from its current MVP state to a launch-ready product, while establishing patterns that keep future features fast and consistent.
 
-**Last updated:** June 2026  
+**Last updated:** June 24, 2026  
 **Horizon:** ~12 weeks (adjustable by team size)
 
 ---
@@ -57,20 +57,21 @@ Every new or updated screen must include:
 - i18n (EN/DE) with `LanguageToggle`; wallet, partner dashboard, landing localized
 - Mobile phone pass: safe-area insets, list-first explore, responsive shells
 - Legal: 9 public compliance pages
-- Tests: **61 Vitest** unit tests, **8 Playwright** specs (12 partner tests), CI on `main`/`develop`
-- Migrations through `20260621120000_campaign_reward_domain.sql`
+- **Campaign/partner hardening (June 24):** local campaign start dates, join RPC fixes, partner analytics local dates, submissions query fix, branded QR + door poster, wizard polish
+- Tests: **143+ Vitest** unit tests, **8 Playwright** specs (12 partner tests), CI on `main`/`develop`
+- Migrations through `20260623160000` + June 24 `_campaign_is_live` fixes (`20260624010000`–`20260624040000`)
 
 ### Known gaps
 
 | Area | Status |
 | --- | --- |
 | i18n depth | Campaign wizard toasts, niche partner form strings still English |
-| React Query | `partner.index.tsx` still uses `useEffect` for dashboard KPIs |
+| React Query | `partner.index.tsx`, `partner.analytics.tsx` still use `useEffect` for KPIs |
 | Push notifications | Subscription RPC + hook shipped; VAPID keys + SW handler needed for production |
 | Realtime | Leaderboard and notifications still polling-based |
 | Stripe production | Partner billing scaffolded; production webhook hardening pending |
 | CI secrets | `SUPABASE_SERVICE_ROLE_KEY` needed in GitHub for partner E2E in Actions |
-| Production DB | Vision + campaign reward migrations need `db:push` on linked Supabase |
+| Shop timezone | Campaign SQL backfill uses Europe/Berlin; multi-country may need per-shop TZ |
 
 ---
 

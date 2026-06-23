@@ -21,7 +21,7 @@ export interface ExplorerLevel {
   Icon: LucideIcon;
 }
 
-/** Ten progression tiers — thresholds mirrored in `sync_explorer_level_from_points`. */
+/** Ten progression tiers, thresholds mirrored in `sync_explorer_level_from_points`. */
 export const EXPLORER_LEVELS: ExplorerLevel[] = [
   { key: "coffee_rookie", min: 0, gradient: "from-slate-400 to-slate-600", Icon: Sprout },
   { key: "espresso_explorer", min: 75, gradient: "from-amber-300 to-amber-500", Icon: Search },

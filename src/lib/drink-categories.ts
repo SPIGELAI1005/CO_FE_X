@@ -1,3 +1,5 @@
+import { resolveRewardIconMeta } from "@/lib/reward-icons";
+
 export const DRINK_CATEGORIES = [
   "espresso",
   "cappuccino",
@@ -16,20 +18,23 @@ export type DrinkCategory = (typeof DRINK_CATEGORIES)[number];
 export interface DrinkCategoryMeta {
   id: DrinkCategory;
   labelKey: string;
-  emoji: string;
+}
+
+export function drinkCategoryIconMeta(id: string) {
+  return resolveRewardIconMeta(id);
 }
 
 export const DRINK_CATEGORY_META: DrinkCategoryMeta[] = [
-  { id: "espresso", labelKey: "drinkTracker.categories.espresso", emoji: "☕" },
-  { id: "cappuccino", labelKey: "drinkTracker.categories.cappuccino", emoji: "☕" },
-  { id: "latte", labelKey: "drinkTracker.categories.latte", emoji: "🥛" },
-  { id: "americano", labelKey: "drinkTracker.categories.americano", emoji: "☕" },
-  { id: "matcha", labelKey: "drinkTracker.categories.matcha", emoji: "🍵" },
-  { id: "tea", labelKey: "drinkTracker.categories.tea", emoji: "🫖" },
-  { id: "cola", labelKey: "drinkTracker.categories.cola", emoji: "🥤" },
-  { id: "juice", labelKey: "drinkTracker.categories.juice", emoji: "🧃" },
-  { id: "ice_cream", labelKey: "drinkTracker.categories.iceCream", emoji: "🍦" },
-  { id: "other", labelKey: "drinkTracker.categories.other", emoji: "✨" },
+  { id: "espresso", labelKey: "drinkTracker.categories.espresso" },
+  { id: "cappuccino", labelKey: "drinkTracker.categories.cappuccino" },
+  { id: "latte", labelKey: "drinkTracker.categories.latte" },
+  { id: "americano", labelKey: "drinkTracker.categories.americano" },
+  { id: "matcha", labelKey: "drinkTracker.categories.matcha" },
+  { id: "tea", labelKey: "drinkTracker.categories.tea" },
+  { id: "cola", labelKey: "drinkTracker.categories.cola" },
+  { id: "juice", labelKey: "drinkTracker.categories.juice" },
+  { id: "ice_cream", labelKey: "drinkTracker.categories.iceCream" },
+  { id: "other", labelKey: "drinkTracker.categories.other" },
 ];
 
 const REWARD_TYPE_MAP: Record<string, DrinkCategory> = {

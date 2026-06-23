@@ -9,7 +9,7 @@ export const Route = createFileRoute("/community")({
       { title: "Community Guidelines · CO:FE(X)" },
       {
         name: "description",
-        content: "Rules for authentic sharing, social proof, and respectful behavior on CO:FE(X).",
+        content: "Rules for authentic sharing, social proof and respectful behavior on CO:FE(X).",
       },
     ],
   }),
@@ -20,7 +20,7 @@ function CommunityPage() {
   return (
     <LegalPageShell
       title="Community Guidelines"
-      subtitle="How to share authentically, earn rewards fairly, and keep the Coffee Explorer Network welcoming."
+      subtitle="How to share authentically, earn rewards fairly and keep the Coffee Explorer Network welcoming."
       lastUpdated={LAST_UPDATED}
     >
       <LegalCallout>
@@ -49,7 +49,7 @@ function CommunityPage() {
 
       <LegalSection title="2. Supported platforms and verification">
         <p>
-          CO:FE(X) may accept links or screenshots from platforms such as Instagram, TikTok, Facebook, and X. Verification
+          CO:FE(X) may accept links or screenshots from platforms such as Instagram, TikTok, Facebook and X. Verification
           may be manual (Partner or CO:FE(X) review) or automated where APIs are available in the future.
         </p>
         <p>
@@ -75,7 +75,7 @@ function CommunityPage() {
           items={[
             "Be courteous to café staff and other guests when creating content on site.",
             "Do not photograph other customers without their consent where privacy laws apply.",
-            "Follow each café's house rules, filming policies, and opening hours.",
+            "Follow each café's house rules, filming policies and opening hours.",
             "No harassment, hate speech, discrimination, or threats toward users, Partners, or staff.",
           ]}
         />
@@ -86,7 +86,7 @@ function CommunityPage() {
           items={[
             "Illegal content, intellectual property infringement, or impersonation.",
             "Sexually explicit, violent, or excessively profane material unrelated to the café experience.",
-            "False health claims, undisclosed alcohol promotion where restricted, or dangerous challenges.",
+            "False health claims undisclosed alcohol promotion where restricted, or dangerous challenges.",
             "Spam, malware links, or scraped content presented as your own.",
             "Content that encourages reward fraud or circumvents campaign limits.",
           ]}
@@ -96,7 +96,7 @@ function CommunityPage() {
       <LegalSection title="6. Your content license">
         <p>
           By submitting User Content, you grant CO:FE(X) and the relevant Partner a limited license to store, review,
-          display, and use it to operate campaigns, prevent fraud, and promote the café where you have opted in or the
+          display and use it to operate campaigns, prevent fraud and promote the café where you have opted in or the
           post is already public. You retain ownership of your content.
         </p>
       </LegalSection>
@@ -107,7 +107,7 @@ function CommunityPage() {
           <a href="mailto:Contact@COFE-X.com" className="underline hover:opacity-80">
             Contact@COFE-X.com
           </a>{" "}
-          with links, screenshots, and campaign details. We may remove content, reject rewards, suspend accounts, or
+          with links, screenshots and campaign details. We may remove content, reject rewards, suspend accounts, or
           notify Partners and authorities where required by law.
         </p>
       </LegalSection>

@@ -12,7 +12,7 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
-import { REWARD_MARKER_STYLES } from "@/lib/map/campaign-markers";
+import { CofexIconTile } from "@/components/app/CofexIconTile";
 import { FULFILLMENT_MODE_LABELS } from "@/lib/campaign-fulfillment";
 import { formatExpiryCountdown } from "@/lib/campaign-mission";
 import type { CampaignDetail } from "@/lib/queries/campaigns";
@@ -26,7 +26,6 @@ interface CampaignMissionInfoProps {
 export function CampaignMissionInfo({ campaign: c, participantCount, remainingQuantity }: CampaignMissionInfoProps) {
   const { t } = useTranslation();
   const shop = c.coffee_shops;
-  const rewardStyle = REWARD_MARKER_STYLES[c.reward_type];
   const expiry = formatExpiryCountdown(c.ends_at);
   const allHashtags = [
     ...c.hashtags,
@@ -51,14 +50,7 @@ export function CampaignMissionInfo({ campaign: c, participantCount, remainingQu
         )}
         <div className="p-5">
         <div className="flex gap-4">
-          <div
-            className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-2xl shadow-inner"
-            style={{
-              background: `linear-gradient(145deg, ${rewardStyle.color}, color-mix(in oklab, ${rewardStyle.color} 75%, #000))`,
-            }}
-          >
-            {rewardStyle.emoji}
-          </div>
+          <CofexIconTile rewardType={c.reward_type} size="lg" />
           <div className="min-w-0 flex-1">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[color:var(--cofex-cyan)]">
               {t("campaignMission.rewardType")}

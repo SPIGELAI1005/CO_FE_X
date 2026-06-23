@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Sparkles, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { CofexIconTile } from "@/components/app/CofexIconTile";
 import {
   DRINK_CATEGORY_META,
   drinkCategoryMeta,
@@ -109,12 +110,30 @@ export function DrinkTrackerCard() {
           <StatTile label={t("drinkTracker.thisWeek")} value={isLoading ? "…" : String(weekCount)} />
           <StatTile
             label={t("drinkTracker.favorite")}
-            value={data?.favorite_category ? `${favorite.emoji} ${t(favorite.labelKey)}` : "—"}
+            value={
+              data?.favorite_category ? (
+                <span className="inline-flex items-center gap-1.5">
+                  <CofexIconTile rewardType={favorite.id} size="xs" />
+                  {t(favorite.labelKey)}
+                </span>
+              ) : (
+                "-"
+              )
+            }
             sub={data?.favorite_count ? t("drinkTracker.times", { count: data.favorite_count }) : undefined}
           />
           <StatTile
             label={t("drinkTracker.mostVisited")}
-            value={data?.top_category_week ? `${topWeek.emoji} ${t(topWeek.labelKey)}` : "—"}
+            value={
+              data?.top_category_week ? (
+                <span className="inline-flex items-center gap-1.5">
+                  <CofexIconTile rewardType={topWeek.id} size="xs" />
+                  {t(topWeek.labelKey)}
+                </span>
+              ) : (
+                "-"
+              )
+            }
             sub={
               data?.top_category_week_count
                 ? t("drinkTracker.thisWeekCount", { count: data.top_category_week_count })
@@ -136,8 +155,9 @@ export function DrinkTrackerCard() {
                     key={d.id}
                     className="flex items-center justify-between rounded-xl bg-[color:var(--cofex-cream)]/60 px-3 py-2 text-sm"
                   >
-                    <span>
-                      {meta.emoji} {t(meta.labelKey)}
+                    <span className="inline-flex items-center gap-1.5">
+                      <CofexIconTile rewardType={meta.id} size="xs" />
+                      {t(meta.labelKey)}
                       {d.shop_name ? (
                         <span className="text-[color:var(--cofex-black)]/45"> · {d.shop_name}</span>
                       ) : null}
@@ -198,7 +218,7 @@ export function DrinkTrackerCard() {
   );
 }
 
-function StatTile({ label, value, sub }: { label: string; value: string; sub?: string }) {
+function StatTile({ label, value, sub }: { label: string; value: ReactNode; sub?: string }) {
   return (
     <div className="rounded-xl bg-[color:var(--cofex-cream)]/50 p-3">
       <p className="text-[10px] font-bold uppercase tracking-wide text-[color:var(--cofex-black)]/45">{label}</p>
@@ -223,9 +243,10 @@ function CategoryChips({ counts }: { counts: Record<string, number> }) {
         {entries.map((c) => (
           <span
             key={c.id}
-            className="inline-flex items-center gap-1 rounded-full bg-[color:var(--cofex-pastel-blue)]/30 px-2.5 py-1 text-xs font-semibold text-[color:var(--cofex-coffee-deep)]"
+            className="inline-flex items-center gap-1.5 rounded-full bg-[color:var(--cofex-pastel-blue)]/30 px-2.5 py-1 text-xs font-semibold text-[color:var(--cofex-coffee-deep)]"
           >
-            {c.emoji} {t(c.labelKey)} ×{counts[c.id]}
+            <CofexIconTile rewardType={c.id} size="xs" />
+            {t(c.labelKey)} ×{counts[c.id]}
           </span>
         ))}
       </div>

@@ -8,13 +8,14 @@ import {
   stampVariantStyle,
   type PassportStampCategory,
 } from "@/lib/passport-stamps";
-import { REWARD_MARKER_STYLES } from "@/lib/map/campaign-markers";
+import { REWARD_ICON_META } from "@/lib/reward-icons";
+import { CofexIconTile } from "@/components/app/CofexIconTile";
 
 export function PassportStampCard({ stamp, index = 0 }: { stamp: PassportStamp; index?: number }) {
   const { t, i18n } = useTranslation();
   const category = stamp.stamp_category as PassportStampCategory;
   const variant = stampVariantStyle(stamp.stamp_variant);
-  const rewardStyle = REWARD_MARKER_STYLES[stamp.reward_type] ?? REWARD_MARKER_STYLES.coffee;
+  const rewardMeta = REWARD_ICON_META[stamp.reward_type] ?? REWARD_ICON_META.coffee;
   const slug = stamp.coffee_shops?.slug;
   const earnedLabel = new Date(stamp.earned_at).toLocaleDateString(i18n.language, {
     month: "short",
@@ -40,17 +41,14 @@ export function PassportStampCard({ stamp, index = 0 }: { stamp: PassportStamp; 
               className="h-full w-full object-cover"
             />
           ) : (
-            <div
-              className="grid h-full w-full place-items-center text-lg"
-              style={{ background: rewardStyle.color }}
-            >
-              {rewardStyle.emoji}
+            <div className="grid h-full w-full place-items-center bg-gradient-to-br from-white to-[color:var(--cofex-cream)]">
+              <CofexIconTile rewardType={stamp.reward_type} size="sm" />
             </div>
           )}
         </div>
         <span
           className="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white shadow-sm"
-          style={{ background: rewardStyle.color }}
+          style={{ background: rewardMeta.color }}
         >
           {t(STAMP_CATEGORY_LABEL_KEYS[category])}
         </span>
@@ -79,7 +77,9 @@ export function PassportStampCard({ stamp, index = 0 }: { stamp: PassportStamp; 
         {earnedLabel}
       </div>
 
-      <div className="pointer-events-none absolute bottom-2 right-2 text-2xl opacity-20">{rewardStyle.emoji}</div>
+      <div className="pointer-events-none absolute bottom-2 right-2 opacity-15">
+        <CofexIconTile rewardType={stamp.reward_type} size="lg" />
+      </div>
     </article>
   );
 

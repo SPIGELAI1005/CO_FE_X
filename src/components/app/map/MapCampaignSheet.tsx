@@ -13,6 +13,7 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { REWARD_MARKER_STYLES } from "@/lib/map/campaign-markers";
+import { RewardTypeChip } from "@/components/app/CofexIconTile";
 import { openingStatusLabel } from "@/lib/map/opening-hours";
 import type { MapCampaignPin } from "@/lib/queries/campaign-map";
 
@@ -70,12 +71,8 @@ export function MapCampaignSheet({ pin, onClose }: MapCampaignSheetProps) {
             </SheetHeader>
 
             <div className="mt-3 flex flex-wrap gap-2">
-              <span
-                className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-white"
-                style={{ background: REWARD_MARKER_STYLES[pin.rewardType].color }}
-              >
-                {REWARD_MARKER_STYLES[pin.rewardType].emoji}{" "}
-                {t(`campaignMap.rewardTypes.${pin.rewardType}`)}
+              <span className="inline-flex items-center rounded-full bg-[color:var(--cofex-cream)]/80 px-2.5 py-1 text-xs font-semibold text-[color:var(--cofex-coffee-deep)]">
+                <RewardTypeChip type={pin.rewardType} label={t(`campaignMap.rewardTypes.${pin.rewardType}`)} />
               </span>
               {pin.isExpiringSoon && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800">

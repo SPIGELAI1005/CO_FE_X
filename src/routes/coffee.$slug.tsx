@@ -26,7 +26,7 @@ export const Route = createFileRoute("/coffee/$slug")({
     const description =
       shop?.description?.slice(0, 160) ??
       (shop
-        ? `Discover ${shop.name} in ${shop.city ?? "your city"}. Check in, earn rewards, and join EEFFOC campaigns on CO:FE(X).`
+        ? `Discover ${shop.name} in ${shop.city ?? "your city"}. Check in, earn rewards and join EEFFOC campaigns on CO:FE(X).`
         : "Coffee shop on CO:FE(X)");
     const image = coffeeShopOgImage(shop);
 

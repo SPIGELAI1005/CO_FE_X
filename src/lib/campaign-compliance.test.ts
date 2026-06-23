@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildCombinedTerms,
+  buildPartnerCampaignTermsTemplate,
   buildPlatformDefaultTerms,
   needsDisclosureAcknowledgment,
 } from "./campaign-compliance";
@@ -21,5 +22,10 @@ describe("campaign-compliance", () => {
     const t = buildCombinedTerms({ cafeTerms: "No reposts.", locale: "en" });
     expect(t.fullText).toContain("No reposts");
     expect(t.cafeTerms).toBe("No reposts.");
+  });
+
+  it("builds partner wizard terms template", () => {
+    expect(buildPartnerCampaignTermsTemplate("en")).toContain("EEFFOC");
+    expect(buildPartnerCampaignTermsTemplate("de")).toContain("EEFFOC");
   });
 });

@@ -15,7 +15,7 @@ function xpAmount(key: string) {
   return XP_EVENT_DEFINITIONS.find((d) => d.key === key)?.xpAmount ?? 0;
 }
 
-describe("core explorer journey — check-in campaign", () => {
+describe("core explorer journey - check-in campaign", () => {
   const baseCampaign = {
     status: "active",
     endsAt: "2026-06-30T00:00:00.000Z",
@@ -80,7 +80,7 @@ describe("core explorer journey — check-in campaign", () => {
   });
 });
 
-describe("core explorer journey — social proof campaign", () => {
+describe("core explorer journey - social proof campaign", () => {
   it("requires proof submission and café approval before reward", () => {
     expect(needsSocialProof("social_proof")).toBe(true);
 
@@ -140,7 +140,7 @@ describe("core explorer journey — social proof campaign", () => {
   });
 });
 
-describe("core explorer journey — hybrid campaign", () => {
+describe("core explorer journey - hybrid campaign", () => {
   it("requires check-in before social post", () => {
     expect(
       getCampaignExplorerPhase({
@@ -170,7 +170,7 @@ describe("core explorer journey — hybrid campaign", () => {
   });
 });
 
-describe("core partner journey — verify and quantity", () => {
+describe("core partner journey - verify and quantity", () => {
   it("parses QR verify input with rotating token", () => {
     expect(parseVerifyInput("ABC12345 654321")).toEqual({
       code: "ABC12345",

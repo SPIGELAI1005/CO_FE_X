@@ -9,7 +9,7 @@ export const Route = createFileRoute("/accessibility")({
       { title: "Accessibility Statement · CO:FE(X)" },
       {
         name: "description",
-        content: "CO:FE(X) accessibility commitment, known limitations, and how to request assistance.",
+        content: "CO:FE(X) accessibility commitment, known limitations and how to request assistance.",
       },
     ],
   }),
@@ -30,9 +30,9 @@ function AccessibilityPage() {
 
       <LegalSection title="1. Our commitment">
         <p>
-          Everyone should be able to discover cafés, understand campaigns, and redeem rewards regardless of ability,
+          Everyone should be able to discover cafés understand campaigns and redeem rewards regardless of ability,
           device, or connection quality. Accessibility is part of our design language: clear typography, strong
-          contrast, readable structure, and keyboard-friendly interactions.
+          contrast, readable structure and keyboard-friendly interactions.
         </p>
       </LegalSection>
 
@@ -56,12 +56,12 @@ function AccessibilityPage() {
           items={[
             "Readable typefaces (Nunito Sans) with scalable text and sufficient line height.",
             "Color contrast aligned with brand tokens and checked for body text and buttons.",
-            "Semantic headings, landmarks, labels on form fields, and descriptive alt text on key images.",
-            "Keyboard focus states on links, buttons, and form controls.",
+            "Semantic headings, landmarks, labels on form fields and descriptive alt text on key images.",
+            "Keyboard focus states on links, buttons and form controls.",
             "Touch targets sized for mobile use in primary navigation and call-to-action areas.",
             "Reduced-motion support for scroll animations on the landing page where supported by the browser.",
-            "Responsive layouts for small screens, zoom, and landscape orientation.",
-            "Plain-language labels for campaign steps, social submission flows, and reward status.",
+            "Responsive layouts for small screens, zoom and landscape orientation.",
+            "Plain-language labels for campaign steps, social submission flows and reward status.",
           ]}
         />
       </LegalSection>
@@ -77,13 +77,13 @@ function AccessibilityPage() {
             "Automated accessibility testing across every partner-generated shop page is not yet complete.",
           ]}
         />
-        <p>We prioritize fixes that block account creation, sign-in, campaign participation, and reward redemption.</p>
+        <p>We prioritize fixes that block account creation, sign-in, campaign participation and reward redemption.</p>
       </LegalSection>
 
       <LegalSection title="5. Assistive technology">
         <p>
           CO:FE(X) is tested on current versions of major browsers (Chrome, Firefox, Safari, Edge) on desktop and
-          mobile. We aim to support recent versions of VoiceOver, TalkBack, and NVDA for core journeys, though your
+          mobile. We aim to support recent versions of VoiceOver, TalkBack and NVDA for core journeys, though your
           experience may vary by browser and assistive technology combination.
         </p>
       </LegalSection>
@@ -91,7 +91,7 @@ function AccessibilityPage() {
       <LegalSection title="6. Feedback and assistance">
         <p>
           If you encounter a barrier on CO:FE(X), please tell us so we can fix it. Include the page URL, what you were
-          trying to do, your device and browser, and any assistive technology you use.
+          trying to do, your device and browser and any assistive technology you use.
         </p>
         <p>
           Email:{" "}

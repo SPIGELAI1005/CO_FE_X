@@ -18,9 +18,19 @@ import { useUser } from "@/hooks/use-user";
 import { useActiveSpawns, useActivePhotoChallenge } from "@/lib/queries/vision";
 import { SpawnBanner } from "@/components/app/SpawnBanner";
 import {
-  Coffee, Flame, Megaphone, Trophy, MapPin, Sparkles, Locate, Zap,
-  Gift, Leaf, ArrowRight, RadioTower, Check,
+  Trophy,
+  MapPin,
+  Locate,
+  ArrowRight,
+  RadioTower,
+  Check,
 } from "lucide-react";
+import { CofexIconTile, SectionIcon } from "@/components/app/CofexIconTile";
+import {
+  RADAR_SECTION_ICONS,
+  RADAR_STAT_ICONS,
+  challengeAccentToMeta,
+} from "@/lib/explorer-section-icons";
 
 export const Route = createFileRoute("/_authenticated/_explorer/radar")({
   head: () => ({
@@ -114,7 +124,7 @@ function RadarPage() {
             <p className="font-extrabold text-[color:var(--cofex-coffee-deep)]">{t("moments.title")}</p>
             <p className="text-xs text-[color:var(--cofex-black)]/60">{t("moments.subtitle")}</p>
           </div>
-          <Sparkles className="h-8 w-8 shrink-0 text-[color:var(--cofex-cyan)]" />
+          <SectionIcon meta={RADAR_SECTION_ICONS.moments} size="lg" />
         </Link>
         {timeBonusHint ? (
           <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900">
@@ -169,10 +179,10 @@ function RadarPage() {
 
         {/* Stat strip */}
         <div className="cofex-app-card mt-6 grid grid-cols-2 gap-2 p-3 sm:grid-cols-4">
-          <Stat icon={<Zap className="h-4 w-4" />} label="Streak" value={`${data?.stats.streak_days ?? 0}d`} accent="from-amber-400 to-orange-500" />
-          <Stat icon={<Coffee className="h-4 w-4" />} label="This week" value={data?.stats.visits_this_week ?? 0} accent="from-rose-400 to-pink-500" />
-          <Stat icon={<MapPin className="h-4 w-4" />} label="Cities" value={data?.stats.cities_explored ?? 0} accent="from-emerald-400 to-teal-500" />
-          <Stat icon={<Sparkles className="h-4 w-4" />} label="Points" value={data?.stats.total_points ?? 0} accent="from-violet-400 to-fuchsia-500" />
+          <Stat iconMeta={RADAR_STAT_ICONS[0]} label="Streak" value={`${data?.stats.streak_days ?? 0}d`} accent="from-amber-400 to-orange-500" />
+          <Stat iconMeta={RADAR_STAT_ICONS[1]} label="This week" value={data?.stats.visits_this_week ?? 0} accent="from-rose-400 to-pink-500" />
+          <Stat iconMeta={RADAR_STAT_ICONS[2]} label="Cities" value={data?.stats.cities_explored ?? 0} accent="from-emerald-400 to-teal-500" />
+          <Stat iconMeta={RADAR_STAT_ICONS[3]} label="Points" value={data?.stats.total_points ?? 0} accent="from-violet-400 to-fuchsia-500" />
         </div>
 
         {/* Location chip */}
@@ -194,7 +204,7 @@ function RadarPage() {
         <AppPageSection
           eyebrow="Today only"
           title={`${data?.free_today.length ?? 0} cafés nearby offering free coffee`}
-          icon={<Gift className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
+          icon={<SectionIcon meta={RADAR_SECTION_ICONS.freeCoffee} />}
         >
           {loading ? (
             <SectionSkeleton />
@@ -212,7 +222,7 @@ function RadarPage() {
         <AppPageSection
           eyebrow="Heating up"
           title="Trending Matcha spots"
-          icon={<Flame className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
+          icon={<SectionIcon meta={RADAR_SECTION_ICONS.matcha} />}
         >
           {loading ? (
             <SectionSkeleton grid />
@@ -230,7 +240,7 @@ function RadarPage() {
         <AppPageSection
           eyebrow="Fresh drops"
           title="New EEFFOC campaigns"
-          icon={<Megaphone className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
+          icon={<SectionIcon meta={RADAR_SECTION_ICONS.campaigns} />}
         >
           {loading ? (
             <SectionSkeleton />
@@ -249,7 +259,7 @@ function RadarPage() {
           <AppPageSection
             eyebrow="Limited time"
             title="Seasonal challenges"
-            icon={<Sparkles className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
+            icon={<SectionIcon meta={RADAR_SECTION_ICONS.challenges} />}
           >
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {limitedViews.map((view) => (
@@ -284,7 +294,7 @@ function RadarPage() {
         <AppPageSection
           eyebrow="Earn this week"
           title="Explorer Challenges"
-          icon={<Trophy className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
+          icon={<SectionIcon meta={RADAR_SECTION_ICONS.challenges} />}
           action={
             <div className="flex items-center gap-3">
               <Link
@@ -357,19 +367,29 @@ function RadarSweep() {
         }}
       />
       <div className="absolute inset-0 flex items-center justify-center">
-        <Coffee className="h-6 w-6 text-[color:var(--cofex-coffee-deep)]" />
+        <CofexIconTile rewardType="coffee" size="sm" />
       </div>
       <span className="absolute -top-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[color:var(--cofex-cyan)] shadow-[0_0_12px_color-mix(in_oklab,var(--cofex-cyan)_80%,transparent)]" />
     </div>
   );
 }
 
-function Stat({ icon, label, value, accent }: { icon: React.ReactNode; label: string; value: number | string; accent: string }) {
+function Stat({
+  iconMeta,
+  label,
+  value,
+  accent,
+}: {
+  iconMeta: (typeof RADAR_STAT_ICONS)[number];
+  label: string;
+  value: number | string;
+  accent: string;
+}) {
   return (
     <div className="cofex-stat-tile px-3 py-2">
       <div className={`absolute -right-4 -top-4 h-12 w-12 rounded-full bg-gradient-to-br ${accent} opacity-25 blur-xl`} />
       <div className="relative flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wide text-[color:var(--cofex-black)]/50 sm:text-[10px] sm:tracking-widest">
-        <span className="shrink-0">{icon}</span>
+        <CofexIconTile meta={iconMeta} size="xs" />
         <span className="truncate">{label}</span>
       </div>
       <div className="relative mt-0.5 text-lg font-extrabold text-[color:var(--cofex-coffee-deep)] sm:text-xl">{value}</div>
@@ -399,9 +419,7 @@ function SectionSkeleton({ grid = false }: { grid?: boolean }) {
 function SectionEmpty({ message }: { message: string }) {
   return (
     <div className="cofex-app-card cofex-app-card-dashed cofex-empty-state px-6 py-8">
-      <div className="cofex-empty-state-icon">
-        <Coffee className="h-7 w-7 text-[color:var(--cofex-cyan)]" aria-hidden />
-      </div>
+      <CofexIconTile rewardType="coffee" size="xl" className="mx-auto" />
       <p className="mt-3 text-sm font-medium text-[color:var(--cofex-black)]/65">{message}</p>
     </div>
   );
@@ -430,7 +448,7 @@ function FreeCard({ shop }: { shop: Shop }) {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
         <span className="absolute top-2 left-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-extrabold text-white shadow-lg" style={{ background: "var(--gradient-coffee)" }}>
-          <Gift className="h-3 w-3" /> FREE TODAY
+          <CofexIconTile meta={RADAR_SECTION_ICONS.freeCoffee} size="xs" /> FREE TODAY
         </span>
         {shop.distance_km != null && (
           <span className="absolute top-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-semibold text-amber-100 backdrop-blur">
@@ -457,8 +475,8 @@ function TrendingCard({ shop, rank }: { shop: Shop; rank: number }) {
         {shop.cover_image_url ? (
           <img src={shop.cover_image_url} alt="" loading="lazy" className="h-full w-full object-cover" />
         ) : (
-          <div className="h-full w-full bg-gradient-to-br from-emerald-500/40 to-teal-700/40 flex items-center justify-center">
-            <Leaf className="h-6 w-6 text-emerald-200" />
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-emerald-500/40 to-teal-700/40">
+            <CofexIconTile rewardType="matcha" size="md" />
           </div>
         )}
         <span className="absolute top-1 left-1 rounded-md bg-black/70 px-1.5 py-0.5 text-[10px] font-extrabold text-emerald-200">#{rank}</span>
@@ -467,7 +485,7 @@ function TrendingCard({ shop, rank }: { shop: Shop; rank: number }) {
         <div className="truncate font-bold text-[color:var(--cofex-coffee-deep)]">{shop.name}</div>
         <div className="truncate text-[11px] text-[color:var(--cofex-black)]/55">{shop.city ?? "-"}</div>
         <div className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
-          <Flame className="h-3 w-3" /> {shop.recent_visits ?? 0} check-ins · 14d
+          <CofexIconTile meta={RADAR_SECTION_ICONS.matcha} size="xs" /> {shop.recent_visits ?? 0} check-ins · 14d
         </div>
       </div>
     </Link>
@@ -490,7 +508,7 @@ function CampaignCard({ c, now }: { c: Campaign; now: Date }) {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
         <span className="absolute top-2 left-2 inline-flex items-center gap-1 rounded-full bg-rose-300 px-2 py-0.5 text-[10px] font-extrabold text-rose-950">
-          <Sparkles className="h-3 w-3" /> +{c.points_reward} pts
+          <CofexIconTile meta={RADAR_SECTION_ICONS.challenges} size="xs" /> +{c.points_reward} pts
         </span>
         {endsIn != null && endsIn <= 7 && (
           <span className="absolute top-2 right-2 rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-semibold text-rose-200">
@@ -529,6 +547,7 @@ function ChallengeCard({
 }) {
   const { challenge, progress, pct, claimable, claimed } = view;
   const Icon = challenge.Icon;
+  const challengeIconMeta = challengeAccentToMeta(challenge.accent, Icon);
   const resetCopy =
     weeklyResetLabel(challenge, weekPeriodKey) ??
     limitedCountdownLabel(challenge);
@@ -542,7 +561,7 @@ function ChallengeCard({
       {celebrating && celebrationPoints != null && (
         <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-white/75 backdrop-blur-[2px]">
           <div className="animate-bounce text-center">
-            <Sparkles className="mx-auto h-8 w-8 text-[color:var(--cofex-accent-gold)]" />
+            <CofexIconTile meta={RADAR_SECTION_ICONS.challenges} size="lg" />
             <div className="mt-1 text-2xl font-extrabold text-[color:var(--cofex-coffee-deep)]">
               +{celebrationPoints} pts
             </div>
@@ -553,7 +572,7 @@ function ChallengeCard({
       <div className="relative flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-widest text-[color:var(--cofex-cyan)] uppercase">
-            <Icon className="h-4 w-4" /> Challenge
+            <CofexIconTile meta={challengeIconMeta} size="xs" /> Challenge
           </div>
           <div className="mt-1 font-bold text-[color:var(--cofex-coffee-deep)]">{challenge.title}</div>
           <div className="text-[12px] text-[color:var(--cofex-black)]/60">{challenge.subtitle}</div>

@@ -29,7 +29,7 @@ async function flushEvents() {
       ),
     );
   } catch {
-    // fail silent — dev console still has events
+    // fail silent, dev console still has events
   }
 }
 

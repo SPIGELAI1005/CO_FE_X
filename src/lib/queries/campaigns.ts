@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { parseRpcErrorMessage } from "@/lib/rpc/client";
 import { queryKeys } from "./keys";
 import { afterCampaignAction } from "./invalidation";
 import type { CampaignFulfillmentMode } from "@/lib/campaign-fulfillment";
@@ -49,6 +50,7 @@ export interface CampaignDetail {
   social_requirements: CampaignSocialRequirements;
   participation_token: string | null;
   status: string;
+  starts_at: string | null;
   ends_at: string | null;
   terms_and_conditions: string | null;
   gifting_enabled?: boolean;
@@ -145,6 +147,9 @@ export function useCampaignDetail(campaignId: string, userId: string | undefined
     refetchInterval: (query) => {
       const redemption = query.state.data?.user?.redemption;
       if (redemption && !redemption.used_at) return 5000;
+      const campaign = query.state.data?.campaign;
+      const joined = query.state.data?.user?.joined;
+      if (campaign && !joined && campaign.ends_at) return 30_000;
       return false;
     },
     queryFn: async (): Promise<{ campaign: CampaignDetail | null; user: CampaignUserState }> => {
@@ -153,7 +158,7 @@ export function useCampaignDetail(campaignId: string, userId: string | undefined
         .select(
           `id, title, slogan, description, reward_description, reward_type, requirements, hashtag, hashtags,
           points_reward, max_participants, available_quantity, required_check_ins, campaign_type, fulfillment_mode,
-          social_requirements, participation_token, status, ends_at, terms_and_conditions, gifting_enabled, coffee_shop_id, cover_image_url,
+          social_requirements, participation_token, status, starts_at, ends_at, terms_and_conditions, gifting_enabled, coffee_shop_id, cover_image_url,
           coffee_shops(id, name, slug, city, address, description, latitude, longitude, logo_url, cover_image_url, social_links)`,
         )
         .eq("id", campaignId)
@@ -286,7 +291,7 @@ export function useJoinCampaign(userId: string | undefined) {
         _terms_accepted: termsAccepted,
         _disclosure_acknowledged: disclosureAcknowledged,
       });
-      if (error) throw error;
+      if (error) throw new Error(parseRpcErrorMessage(error));
     },
     onSuccess: (_data, { campaignId }) => {
       if (userId) afterCampaignAction(qc, userId, campaignId);

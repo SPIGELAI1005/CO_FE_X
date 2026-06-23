@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { Award, Coffee, Sparkles, ChevronRight } from "lucide-react";
+import { Award, Sparkles, ChevronRight } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { levelFor, levelDisplayName } from "@/lib/explorer-levels";
@@ -8,6 +8,7 @@ import { xpEventLabelKey, formatXpDelta } from "@/lib/xp-system";
 import type { Profile } from "@/lib/queries/profile";
 import type { XpEventRow } from "@/lib/queries/xp-events";
 import { BEVERAGE_TAGS } from "@/lib/beverage-tags";
+import { CofexIconTile } from "@/components/app/CofexIconTile";
 
 interface ExplorerProfileCardProps {
   profile: Profile | null | undefined;
@@ -110,17 +111,17 @@ export function ExplorerProfileCard({
 
       <div className="grid grid-cols-3 divide-x divide-[color:var(--border)] border-b border-[color:var(--border)] bg-[color:var(--cofex-cream)]/40">
         <StatCell
-          icon={<Coffee className="h-4 w-4 text-[color:var(--cofex-coffee-deep)]" />}
+          icon={<CofexIconTile rewardType="coffee" size="sm" />}
           label={t("explorerCard.cafesVisited")}
           value={uniqueCafes}
         />
         <StatCell
-          icon={<Award className="h-4 w-4 text-[color:var(--cofex-accent-gold)]" />}
+          icon={<CofexIconTile meta={{ Icon: Award, from: "from-amber-300", to: "to-amber-600" }} size="sm" />}
           label={t("explorerCard.badges")}
           value={badgeCount}
         />
         <StatCell
-          icon={<span className="text-base leading-none">{drinkTag.emoji}</span>}
+          icon={<CofexIconTile rewardType={drinkTag.id} size="sm" />}
           label={t("explorerCard.favoriteDrink")}
           value={t(drinkTag.labelKey)}
           compact

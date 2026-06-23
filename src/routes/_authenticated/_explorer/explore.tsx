@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState, lazy, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { Map as MapIcon, List as ListIcon, Search, Locate, Columns2, Maximize2 } from "lucide-react";
 import { CoffeeShopCard, type ShopCardData } from "@/components/app/CoffeeShopCard";
+import { CofexIconTile } from "@/components/app/CofexIconTile";
+import { EXPLORE_PANEL_ICONS } from "@/lib/explorer-section-icons";
 import type { MapShop } from "@/components/app/CoffeeMap";
 import { ExploreFilters } from "@/components/app/ExploreFilters";
 import { ExploreSortSelect } from "@/components/app/ExploreSortSelect";
@@ -71,14 +73,14 @@ function panelSizeClass(size: PanelSize) {
 function PanelPeek({
   side,
   label,
-  Icon,
+  panelKey,
   badge,
   onClick,
   showLabel = true,
 }: {
   side: "left" | "right";
   label: string;
-  Icon: React.ComponentType<{ className?: string }>;
+  panelKey: "list" | "map";
   badge?: string | number;
   onClick: () => void;
   showLabel?: boolean;
@@ -91,7 +93,7 @@ function PanelPeek({
       className={`cofex-explore-peek ${side === "left" ? "rounded-r-3xl rounded-l-xl" : "rounded-l-3xl rounded-r-xl"}`}
       aria-label={t("explore.showPanel", { label })}
     >
-      <Icon className="h-5 w-5 shrink-0 text-[color:var(--cofex-cyan)]" />
+      <CofexIconTile meta={EXPLORE_PANEL_ICONS[panelKey]} size="sm" />
       {showLabel && <span className="cofex-explore-peek-label">{label}</span>}
       {badge != null && (
         <span className="rounded-full bg-[color:var(--cofex-coffee-deep)] px-1.5 py-0.5 text-[9px] font-bold text-white">
@@ -331,10 +333,10 @@ function ExplorePage() {
               update({ tags: [], amenities: [], free: false, campaignsOnly: false, minRating: 0, mood: null })
             }
           />
-          <div className="space-y-1.5">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[color:var(--cofex-black)]/55">
+          <div>
+            <p className="mb-1.5 px-0.5 text-[10px] font-extrabold uppercase tracking-[0.25em] text-[color:var(--cofex-cyan)]">
               {t("mood.label")}
-            </span>
+            </p>
             <MoodFilterChips value={mood as MoodId | null} onChange={(m) => update({ mood: m })} />
           </div>
         </div>
@@ -369,7 +371,7 @@ function ExplorePage() {
           </div>
         </div>
 
-        {/* Results — collapsible list + map */}
+        {/* Results, collapsible list + map */}
         <div className="cofex-explore-panels min-h-0 flex-1">
           {/* List panel */}
           <div className={`cofex-explore-panel ${panelSizeClass(panelSizes.list)}`}>
@@ -378,7 +380,7 @@ function ExplorePage() {
                 side="left"
                 label={t("explore.list")}
                 showLabel={false}
-                Icon={ListIcon}
+                panelKey="list"
                 badge={cards.length}
                 onClick={() => {
                   if (view === "map") setView("list");
@@ -432,7 +434,7 @@ function ExplorePage() {
               <PanelPeek
                 side="right"
                 label={t("explore.map")}
-                Icon={MapIcon}
+                panelKey="map"
                 onClick={() => {
                   if (view === "list") setView("map");
                   else setPanelFocus("map");

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Gift, MapPin, QrCode, Smartphone } from "lucide-react";
 import { CampaignQrCode } from "@/components/app/CampaignQrCode";
 import { REWARD_MARKER_STYLES } from "@/lib/map/campaign-markers";
+import { CofexIconTile, RewardTypeChip } from "@/components/app/CofexIconTile";
 import type { WizardFormState } from "@/lib/campaign-wizard";
 import {
   buildRewardDescription,
@@ -61,7 +62,7 @@ export function CampaignWizardPreview({ form, shopName }: CampaignWizardPreviewP
           <div className="text-[10px] font-bold uppercase tracking-widest text-amber-800">
             {t("campaignWizard.preview.explorerHint")}
           </div>
-          <div className="mt-2 text-2xl">{style.emoji}</div>
+          <CofexIconTile rewardType={rewardType} size="lg" />
           <h3 className="mt-1 text-xl font-extrabold text-[color:var(--cofex-coffee-deep)]">
             {form.title || t("campaignWizard.preview.untitled")}
           </h3>
@@ -92,7 +93,9 @@ export function CampaignWizardPreview({ form, shopName }: CampaignWizardPreviewP
           >
             <div className="cofex-campaign-pin__glow" />
             <div className="cofex-campaign-pin__body">
-              <span className="cofex-campaign-pin__emoji">{style.emoji}</span>
+              <span className="cofex-campaign-pin__icon">
+                <CofexIconTile rewardType={rewardType} size="sm" />
+              </span>
             </div>
           </div>
           <div className="w-full max-w-sm rounded-2xl border bg-gradient-to-br from-[color:var(--cofex-pastel-blue)] to-[color:var(--cofex-cream)] p-4 shadow-sm">
@@ -101,11 +104,8 @@ export function CampaignWizardPreview({ form, shopName }: CampaignWizardPreviewP
             </p>
             <p className="font-extrabold text-[color:var(--cofex-coffee-deep)]">{shopName}</p>
             <p className="mt-1 text-sm font-bold">{form.title || "…"}</p>
-            <span
-              className="mt-2 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-white"
-              style={{ background: style.color }}
-            >
-              {style.emoji} {t(`campaignMap.rewardTypes.${rewardType}`)}
+            <span className="mt-2 inline-flex items-center rounded-full bg-[color:var(--cofex-cream)] px-2.5 py-1 text-xs font-semibold text-[color:var(--cofex-coffee-deep)]">
+              <RewardTypeChip type={rewardType} label={t(`campaignMap.rewardTypes.${rewardType}`)} />
             </span>
             <p className="mt-2 text-xs text-zinc-600">{rewardLabel}</p>
           </div>

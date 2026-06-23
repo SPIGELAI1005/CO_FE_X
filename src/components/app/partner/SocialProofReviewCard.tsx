@@ -16,8 +16,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { PartnerStatusPill } from "@/components/app/partner/PartnerShell";
 import type { PartnerSocialSubmission } from "@/lib/queries/partner-submissions";
-import { REWARD_MARKER_STYLES } from "@/lib/map/campaign-markers";
-import { getSocialPlatform } from "@/lib/social-share-links";
+import { CofexIconTile, RewardTypeChip } from "@/components/app/CofexIconTile";
+import { getSocialPlatform, getSocialPlatformIconMeta } from "@/lib/social-share-links";
 
 function explorerInitials(name: string | null | undefined) {
   const n = name?.trim() || "?";
@@ -31,10 +31,6 @@ function explorerInitials(name: string | null | undefined) {
 
 function platformLabel(platform: string) {
   return getSocialPlatform(platform)?.label ?? platform.replace(/_/g, " ");
-}
-
-function platformEmoji(platform: string) {
-  return getSocialPlatform(platform)?.emoji ?? "📱";
 }
 
 export function SocialProofReviewCard({
@@ -52,7 +48,6 @@ export function SocialProofReviewCard({
 
   const campaign = submission.campaigns;
   const rewardType = campaign?.reward_type ?? "coffee";
-  const rewardStyle = REWARD_MARKER_STYLES[rewardType];
   const explorerName = submission.profiles?.display_name ?? t("partnerSubmissionsReview.explorerFallback");
   const hashtagLine = useMemo(() => {
     const tags = campaign?.hashtags?.length
@@ -98,18 +93,20 @@ export function SocialProofReviewCard({
             </p>
           </div>
         </div>
-        <StatusPill status={submission.status} />
+        <StatusPill
+          status={submission.status}
+          autoApproved={
+            submission.status === "approved" &&
+            !!submission.reviewed_by &&
+            submission.reviewed_by === submission.user_id
+          }
+        />
       </div>
 
       <div className="border-t border-[color:var(--border)] bg-[color:var(--cofex-cream)]/30 px-4 py-3 sm:px-5">
         <div className="flex flex-wrap items-center gap-2">
           <span className="font-bold text-[color:var(--cofex-coffee-deep)]">{campaign?.title ?? "Campaign"}</span>
-          <span
-            className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold"
-            style={{ background: rewardStyle.color, color: "#fff" }}
-          >
-            {rewardStyle.emoji} {t(`campaignMap.rewardTypes.${rewardType}`)}
-          </span>
+          <RewardTypeChip type={rewardType} label={t(`campaignMap.rewardTypes.${rewardType}`)} />
           {campaign?.reward_description ? (
             <span className="text-xs text-[color:var(--cofex-black)]/60">· {campaign.reward_description}</span>
           ) : null}
@@ -150,7 +147,7 @@ export function SocialProofReviewCard({
 
         <div className="space-y-3 text-sm">
           <MetaRow
-            icon={<span className="text-base">{platformEmoji(submission.platform)}</span>}
+            icon={<CofexIconTile meta={getSocialPlatformIconMeta(submission.platform)} size="xs" />}
             label={t("partnerSubmissionsReview.platform")}
             value={platformLabel(submission.platform)}
           />
@@ -274,12 +271,13 @@ function MetaRow({
   );
 }
 
-function StatusPill({ status }: { status: string }) {
+function StatusPill({ status, autoApproved }: { status: string; autoApproved?: boolean }) {
   const { t } = useTranslation();
   if (status === "approved")
     return (
       <PartnerStatusPill tone="success">
-        <CheckCircle2 className="h-3 w-3" /> {t("submissionsPage.approved")}
+        <CheckCircle2 className="h-3 w-3" />{" "}
+        {autoApproved ? t("submissionsPage.autoApproved") : t("submissionsPage.approved")}
       </PartnerStatusPill>
     );
   if (status === "rejected")

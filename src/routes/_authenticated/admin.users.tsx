@@ -117,7 +117,7 @@ function AdminUsersPage() {
             <AdminCard className="flex flex-col items-center justify-center py-16 text-center text-[color:var(--cofex-black)]/55">
               <User className="mb-3 h-10 w-10 text-[color:var(--cofex-cyan)]" />
               <p className="font-semibold">Select a user</p>
-              <p className="mt-1 text-sm">View profile, roles, trust status, and activity summary.</p>
+              <p className="mt-1 text-sm">View profile, roles, trust status and activity summary.</p>
             </AdminCard>
           ) : detailLoading ? (
             <AdminLoading />
@@ -133,7 +133,7 @@ function AdminUsersPage() {
                     </h2>
                     <p className="text-sm text-[color:var(--cofex-black)]/60">
                       {(profile?.handle as string) ? `@${profile?.handle}` : selectedId} ·{" "}
-                      {(profile?.city as string) ?? "—"}
+                      {(profile?.city as string) ?? "-"}
                     </p>
                   </div>
                   <Badge className={TRUST_STATUS_TONES[trustStatus]}>{TRUST_STATUS_LABELS[trustStatus]}</Badge>

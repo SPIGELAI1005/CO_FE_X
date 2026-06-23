@@ -6,8 +6,19 @@ export type WizardSocialAction =
   | "instagram_story"
   | "instagram_post"
   | "tiktok"
+  | "facebook_post"
   | "any_social"
   | "manual_proof";
+
+/** Platforms partners can combine in the wizard (multi-select). */
+export const WIZARD_SOCIAL_PLATFORM_ACTIONS: WizardSocialAction[] = [
+  "instagram_story",
+  "instagram_post",
+  "tiktok",
+  "facebook_post",
+];
+
+export const WIZARD_MANUAL_PROOF_ACTION: WizardSocialAction = "manual_proof";
 export type WizardPublishMode = "draft" | "active" | "scheduled";
 
 export interface WizardActiveHours {
@@ -26,7 +37,7 @@ export interface WizardFormState {
   use_active_hours: boolean;
   active_hours_start: string;
   active_hours_end: string;
-  social_action: WizardSocialAction;
+  social_actions: WizardSocialAction[];
   auto_approve_social: boolean;
   title: string;
   description: string;
@@ -81,9 +92,9 @@ export const WIZARD_SMART_SUGGESTIONS: WizardSmartSuggestion[] = [
       use_active_hours: true,
       active_hours_start: "15:00",
       active_hours_end: "17:00",
-      social_action: "instagram_story",
+      social_actions: ["instagram_story"],
       title: "Slow afternoon boost",
-      description: "Beat the afternoon slump — free cappuccinos for explorers who share their cozy moment.",
+      description: "Beat the afternoon slump, free cappuccinos for explorers who share their cozy moment.",
       hashtags: "#SlowAfternoon, #WeGiveEEFFOC",
       points_reward: 15,
     },
@@ -98,9 +109,9 @@ export const WIZARD_SMART_SUGGESTIONS: WizardSmartSuggestion[] = [
       reward_quantity: 1,
       max_participants: 40,
       timing_preset: "this_week",
-      social_action: "any_social",
+      social_actions: ["instagram_story", "instagram_post", "tiktok", "facebook_post"],
       title: "Weekend discovery",
-      description: "Welcome weekend wanderers — share your visit and unlock a free coffee.",
+      description: "Welcome weekend wanderers - share your visit and unlock a free coffee.",
       hashtags: "#WeekendDiscovery, #WeGiveEEFFOC",
       points_reward: 20,
     },
@@ -116,9 +127,9 @@ export const WIZARD_SMART_SUGGESTIONS: WizardSmartSuggestion[] = [
       max_participants: 25,
       daily_redemption_limit: 8,
       timing_preset: "this_week",
-      social_action: "instagram_post",
+      social_actions: ["instagram_post"],
       title: "New matcha launch",
-      description: "Celebrate our new matcha menu — post a photo and try it on us.",
+      description: "Celebrate our new matcha menu, post a photo and try it on us.",
       hashtags: "#MatchaLaunch, #WeGiveEEFFOC",
       points_reward: 25,
     },
@@ -134,7 +145,7 @@ export const WIZARD_SMART_SUGGESTIONS: WizardSmartSuggestion[] = [
       max_participants: 20,
       daily_redemption_limit: 10,
       timing_preset: "today_only",
-      social_action: "instagram_story",
+      social_actions: ["instagram_story"],
       title: "Rainy day coffee",
       description: "Grey skies? Warm cup on us when you share your rainy-day ritual.",
       hashtags: "#RainyDayCoffee, #WeGiveEEFFOC",
@@ -151,11 +162,28 @@ export const WIZARD_SMART_SUGGESTIONS: WizardSmartSuggestion[] = [
       reward_quantity: 1,
       max_participants: 50,
       timing_preset: "this_week",
-      social_action: "manual_proof",
+      social_actions: ["manual_proof"],
       title: "Local hero campaign",
-      description: "Reward neighbours who shout us out — show your post at the counter for a free espresso.",
+      description: "Reward neighbours who shout us out, show your post at the counter for a free espresso.",
       hashtags: "#LocalHero, #WeGiveEEFFOC",
       points_reward: 20,
+    },
+  },
+  {
+    id: "custom_campaign",
+    titleKey: "campaignWizard.suggestions.customCampaign.title",
+    descriptionKey: "campaignWizard.suggestions.customCampaign.description",
+    emoji: "✨",
+    patch: {
+      reward_type: "coffee",
+      reward_quantity: 1,
+      max_participants: 50,
+      timing_preset: "this_week",
+      social_actions: ["instagram_story", "instagram_post"],
+      title: "Custom campaign",
+      description: "Build your own EEFFOC moment. Tailor the reward, timing and social proof to your café.",
+      hashtags: "#WeGiveEEFFOC",
+      points_reward: 15,
     },
   },
 ];
@@ -191,6 +219,12 @@ export function startOfDay(d: Date): Date {
   return start;
 }
 
+/** Parse YYYY-MM-DD as local calendar date (avoids UTC midnight shift). */
+export function parseLocalDateString(dateStr: string): Date {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
 export function resolveTimingDates(
   preset: WizardTimingPreset,
   customStart?: string,
@@ -206,14 +240,18 @@ export function resolveTimingDates(
     end.setHours(23, 59, 59, 999);
     return { start: now, end };
   }
-  const start = customStart ? new Date(customStart) : now;
-  const end = customEnd ? endOfDay(new Date(customEnd)) : endOfDay(start);
+  const start = customStart ? startOfDay(parseLocalDateString(customStart)) : now;
+  const end = customEnd ? endOfDay(parseLocalDateString(customEnd)) : endOfDay(start);
   if (end < start) return { start, end: endOfDay(start) };
   return { start, end };
 }
 
 export function socialActionToFulfillment(action: WizardSocialAction): CampaignFulfillmentMode {
-  if (action === "manual_proof") return "hybrid";
+  return socialActionsToFulfillment([action]);
+}
+
+export function socialActionsToFulfillment(actions: WizardSocialAction[]): CampaignFulfillmentMode {
+  if (actions.includes("manual_proof")) return "hybrid";
   return "social_proof";
 }
 
@@ -225,6 +263,8 @@ export function socialActionPlatforms(action: WizardSocialAction): string[] {
       return ["instagram_post"];
     case "tiktok":
       return ["tiktok"];
+    case "facebook_post":
+      return ["facebook_post"];
     case "any_social":
       return ["instagram_story", "instagram_post", "tiktok", "facebook_post"];
     case "manual_proof":
@@ -234,22 +274,91 @@ export function socialActionPlatforms(action: WizardSocialAction): string[] {
   }
 }
 
-export function buildWizardSocialRequirements(
+export function socialActionsToPlatforms(actions: WizardSocialAction[]): string[] {
+  const platforms = new Set<string>();
+  for (const action of actions) {
+    for (const platform of socialActionPlatforms(action)) {
+      platforms.add(platform);
+    }
+  }
+  return [...platforms];
+}
+
+export function platformsToSocialActions(platforms?: string[]): WizardSocialAction[] {
+  if (!platforms?.length) return ["instagram_story"];
+  if (platforms.length === 1 && platforms[0] === "screenshot") return ["manual_proof"];
+
+  const actions: WizardSocialAction[] = [];
+  const known: WizardSocialAction[] = [
+    "instagram_story",
+    "instagram_post",
+    "tiktok",
+    "facebook_post",
+  ];
+  for (const platform of platforms) {
+    if (known.includes(platform as WizardSocialAction)) {
+      actions.push(platform as WizardSocialAction);
+    }
+  }
+  return actions.length ? actions : ["instagram_story"];
+}
+
+export function toggleWizardSocialAction(
+  current: WizardSocialAction[],
   action: WizardSocialAction,
+): WizardSocialAction[] {
+  if (action === "manual_proof") {
+    return current.includes("manual_proof") ? ["instagram_story"] : ["manual_proof"];
+  }
+
+  const withoutManual = current.filter((a) => a !== "manual_proof");
+  if (withoutManual.includes(action)) {
+    const next = withoutManual.filter((a) => a !== action);
+    return next.length > 0 ? next : ["instagram_story"];
+  }
+  return [...withoutManual, action];
+}
+
+export function isWizardSocialActionSelected(
+  actions: WizardSocialAction[],
+  action: WizardSocialAction,
+): boolean {
+  return actions.includes(action);
+}
+
+export function buildWizardSocialRequirements(
+  actions: WizardSocialAction[],
   cafeHandle: string,
   title: string,
 ): CampaignSocialRequirements & { cafe_handle?: string } {
   const handle = cafeHandle.trim().replace(/^@/, "");
   const tag = handle ? `@${handle}` : "{shop_name}";
+  const platforms = socialActionsToPlatforms(actions);
+  const hints: string[] = [];
+
+  if (actions.includes("instagram_story")) {
+    hints.push("Share a story with your drink or the café vibe.");
+  }
+  if (actions.includes("instagram_post")) {
+    hints.push("Post a photo with your hashtag and tag the café.");
+  }
+  if (actions.includes("tiktok")) {
+    hints.push("Short video showing your order or first sip.");
+  }
+  if (actions.includes("facebook_post")) {
+    hints.push("Share a public Facebook post about your visit.");
+  }
+  if (actions.includes("manual_proof")) {
+    hints.push("Check in on-site and show proof at the counter.");
+  }
+  if (hints.length === 0) {
+    hints.push("Photo or video of your visit.");
+  }
+
   return {
-    platforms: socialActionPlatforms(action),
-    caption_template: `Loved my visit! Tag ${tag} — ${title}`,
-    media_hints:
-      action === "instagram_story"
-        ? "Share a story with your drink or the café vibe."
-        : action === "tiktok"
-          ? "Short video showing your order or first sip."
-          : "Photo or video of your visit.",
+    platforms,
+    caption_template: `Loved my visit! Tag ${tag}, ${title}`,
+    media_hints: hints.join(" "),
     cafe_handle: handle || undefined,
   };
 }
@@ -281,7 +390,7 @@ export function defaultWizardForm(): WizardFormState {
     use_active_hours: false,
     active_hours_start: "15:00",
     active_hours_end: "17:00",
-    social_action: "instagram_story",
+    social_actions: ["instagram_story"],
     auto_approve_social: false,
     title: "",
     description: "",

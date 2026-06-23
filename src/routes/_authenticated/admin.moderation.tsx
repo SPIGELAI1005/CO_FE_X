@@ -31,7 +31,7 @@ function AdminModerationPage() {
   return (
     <AdminPage
       title="Content moderation"
-      subtitle="Review moments, feed items, and user reports. Hide or remove inappropriate content."
+      subtitle="Review moments, feed items and user reports. Hide or remove inappropriate content."
     >
       <p className="mb-6 text-sm text-[color:var(--cofex-black)]/60">
         {data?.hidden_count ?? 0} items hidden or removed · {data?.reports.length ?? 0} open reports
@@ -183,7 +183,7 @@ function AdminModerationPage() {
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold capitalize">{f.source_type.replace(/_/g, " ")}</p>
                   <p className="text-sm text-[color:var(--cofex-black)]/60">
-                    {f.author_name ?? f.author_handle ?? f.user_id.slice(0, 8)} · {f.shop_name ?? "—"} ·{" "}
+                    {f.author_name ?? f.author_handle ?? f.user_id.slice(0, 8)} · {f.shop_name ?? "-"} ·{" "}
                     {new Date(f.published_at).toLocaleString()}
                   </p>
                   {f.caption && <p className="mt-1 text-sm">{f.caption}</p>}

@@ -78,6 +78,8 @@ docs/                        # Plans, audit, memory bank
 2. `npm run db:push`
 3. `npm run db:types`
 4. Add RPC wrapper in `src/lib/rpc/client.ts` if needed
+
+Latest migrations include engagement sprint batch (`20260621180000`–`20260623160000`) and June 24 campaign timing fixes (`20260624010000`–`20260624040000`).
 5. Add query hook in `src/lib/queries/`
 6. Integration test in `src/lib/rpc/client.integration.test.ts` for critical RPCs
 

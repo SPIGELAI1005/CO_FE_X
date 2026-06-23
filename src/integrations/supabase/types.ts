@@ -284,48 +284,6 @@ export type Database = {
           },
         ]
       }
-      content_reports: {
-        Row: {
-          admin_notes: string | null
-          created_at: string
-          details: string | null
-          id: string
-          reason: string
-          reporter_id: string
-          reviewed_at: string | null
-          reviewed_by: string | null
-          status: string
-          target_id: string
-          target_type: string
-        }
-        Insert: {
-          admin_notes?: string | null
-          created_at?: string
-          details?: string | null
-          id?: string
-          reason: string
-          reporter_id: string
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          status?: string
-          target_id: string
-          target_type: string
-        }
-        Update: {
-          admin_notes?: string | null
-          created_at?: string
-          details?: string | null
-          id?: string
-          reason?: string
-          reporter_id?: string
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          status?: string
-          target_id?: string
-          target_type?: string
-        }
-        Relationships: []
-      }
       campaign_participants: {
         Row: {
           campaign_id: string
@@ -924,6 +882,48 @@ export type Database = {
           },
         ]
       }
+      content_reports: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          details: string | null
+          id: string
+          reason: string
+          reporter_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          target_id: string
+          target_type: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason: string
+          reporter_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          target_id: string
+          target_type: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason?: string
+          reporter_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          target_id?: string
+          target_type?: string
+        }
+        Relationships: []
+      }
       countries: {
         Row: {
           active: boolean
@@ -1284,6 +1284,10 @@ export type Database = {
           latitude: number | null
           like_count: number
           longitude: number | null
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_notes: string | null
+          moderation_status: string
           published_at: string
           save_count: number
           source_id: string | null
@@ -1307,6 +1311,10 @@ export type Database = {
           latitude?: number | null
           like_count?: number
           longitude?: number | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_notes?: string | null
+          moderation_status?: string
           published_at?: string
           save_count?: number
           source_id?: string | null
@@ -1330,6 +1338,10 @@ export type Database = {
           latitude?: number | null
           like_count?: number
           longitude?: number | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_notes?: string | null
+          moderation_status?: string
           published_at?: string
           save_count?: number
           source_id?: string | null
@@ -2808,6 +2820,10 @@ export type Database = {
           drink_type: string | null
           id: string
           image_path: string
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_notes: string | null
+          moderation_status: string
           user_id: string
         }
         Insert: {
@@ -2817,6 +2833,10 @@ export type Database = {
           drink_type?: string | null
           id?: string
           image_path: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_notes?: string | null
+          moderation_status?: string
           user_id: string
         }
         Update: {
@@ -2826,6 +2846,10 @@ export type Database = {
           drink_type?: string | null
           id?: string
           image_path?: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_notes?: string | null
+          moderation_status?: string
           user_id?: string
         }
         Relationships: [
@@ -3299,14 +3323,6 @@ export type Database = {
       _user_shares_location: { Args: { _user: string }; Returns: boolean }
       _user_shares_moments: { Args: { _user: string }; Returns: boolean }
       accept_reward_gift: { Args: { _gift_token: string }; Returns: Json }
-      admin_review_cafe_report: {
-        Args: { _admin_notes?: string; _report_id: string; _status: string }
-        Returns: Json
-      }
-      admin_review_content_report: {
-        Args: { _admin_notes?: string; _report_id: string; _status: string }
-        Returns: Json
-      }
       admin_moderate_feed_item: {
         Args: { _feed_item_id: string; _notes?: string; _status: string }
         Returns: Json
@@ -3315,9 +3331,14 @@ export type Database = {
         Args: { _moment_id: string; _notes?: string; _status: string }
         Returns: Json
       }
-      get_admin_user_detail: { Args: { _user_id: string }; Returns: Json }
-      get_admin_moderation_queue: { Args: never; Returns: Json }
-      get_admin_campaign_metrics: { Args: never; Returns: Json }
+      admin_review_cafe_report: {
+        Args: { _admin_notes?: string; _report_id: string; _status: string }
+        Returns: Json
+      }
+      admin_review_content_report: {
+        Args: { _admin_notes?: string; _report_id: string; _status: string }
+        Returns: Json
+      }
       admin_set_campaign_status: {
         Args: { _campaign_id: string; _status: string }
         Returns: Json
@@ -3405,8 +3426,11 @@ export type Database = {
         Args: { _lat?: number; _lng?: number; _radius_km?: number }
         Returns: Json
       }
+      get_admin_campaign_metrics: { Args: never; Returns: Json }
       get_admin_engagement: { Args: never; Returns: Json }
       get_admin_fraud_dashboard: { Args: never; Returns: Json }
+      get_admin_moderation_queue: { Args: never; Returns: Json }
+      get_admin_user_detail: { Args: { _user_id: string }; Returns: Json }
       get_beverage_passport: { Args: { _user?: string }; Returns: Json }
       get_campaign_by_token: { Args: { _token: string }; Returns: Json }
       get_challenge_week_period_key: { Args: never; Returns: string }

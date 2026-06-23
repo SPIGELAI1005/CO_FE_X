@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { useQueryClient } from "@tanstack/react-query";
 import { getCurrentPosition } from "@/lib/geo";
 import { rpcPerformCheckIn, parseCheckInResult, parseRpcErrorMessage, type CheckInRpcResult } from "@/lib/rpc/client";
 import { supabase } from "@/integrations/supabase/client";

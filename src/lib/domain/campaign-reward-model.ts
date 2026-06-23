@@ -1,5 +1,5 @@
 /**
- * CO(X) campaign & reward domain model — TypeScript types aligned with Postgres schema.
+ * CO(X) campaign & reward domain model, TypeScript types aligned with Postgres schema.
  * @see docs/DATA_MODEL_CAMPAIGN_REWARD.md
  */
 

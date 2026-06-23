@@ -113,3 +113,21 @@ export function parseRpcErrorMessage(error: { message?: string } | null): string
   if (!error?.message) return "Request failed";
   return error.message.replace(/^.*?: /, "");
 }
+
+/** Maps join_campaign RPC errors to explorer-facing copy. */
+export function mapJoinCampaignErrorMessage(
+  message: string,
+  t: (key: string) => string,
+): string {
+  const m = message.toLowerCase();
+  if (m.includes("campaign not available") || m.includes("not available")) {
+    return t("campaignMission.campaignEnded");
+  }
+  if (m.includes("full") || m.includes("claimed")) {
+    return t("campaignMission.campaignFull");
+  }
+  if (m.includes("must accept") || m.includes("disclosure") || m.includes("restricted")) {
+    return message;
+  }
+  return message || t("campaignMission.toastJoinError");
+}

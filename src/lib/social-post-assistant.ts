@@ -4,17 +4,6 @@ import { DEFAULT_CAMPAIGN_SLOGAN } from "@/lib/domain/campaign-reward-model";
 import type { CafeSocialLinks, CampaignRewardType } from "@/lib/domain/campaign-reward-model";
 import type { SocialPlatform } from "@/lib/social-share-links";
 
-const DRINK_EMOJI: Record<CampaignRewardType, string> = {
-  coffee: "☕",
-  espresso: "☕",
-  cappuccino: "🥛",
-  matcha: "🍵",
-  ice_cream: "🍦",
-  juice: "🧃",
-  cola: "🥤",
-  other: "🎁",
-};
-
 export interface SocialPostContext {
   shopName: string;
   shopCity?: string | null;
@@ -42,7 +31,7 @@ export interface SocialPostPackage {
   locationSuggestion: string | null;
   slogan: string;
   drinkLabel: string;
-  drinkEmoji: string;
+  rewardType: CampaignRewardType;
   fullPostText: string;
 }
 
@@ -50,9 +39,9 @@ const BASE_TAGS = ["WeGiveEEFFOC", "COFEX", "CoffeeExplorer"];
 
 export function buildDisclosureText(locale = "en"): string {
   if (locale.startsWith("de")) {
-    return "Erhalten im Rahmen einer CO:FE(X)-Reward-Kampagne. Bitte kennzeichne die Kooperation in deinem Post — z. B. mit #ad, #Anzeige oder #Werbung, je nach Land und Plattform.";
+    return "Erhalten im Rahmen einer CO:FE(X)-Reward-Kampagne. Bitte kennzeichne die Kooperation in deinem Post, z. B. mit #ad, #Anzeige oder #Werbung, je nach Land und Plattform.";
   }
-  return "Received as part of a CO:FE(X) reward campaign. Please disclose the collaboration in your post — e.g. with #ad, #Anzeige or #Werbung depending on your location and platform.";
+  return "Received as part of a CO:FE(X) reward campaign. Please disclose the collaboration in your post, e.g. with #ad, #Anzeige or #Werbung depending on your location and platform.";
 }
 
 export function buildDisclosureShort(locale = "en"): string {
@@ -118,7 +107,6 @@ export function buildSocialPostPackage(
   const locale = ctx.locale ?? "en";
   const slogan = ctx.campaignSlogan?.trim() || DEFAULT_CAMPAIGN_SLOGAN;
   const rewardType = ctx.rewardType ?? "coffee";
-  const drinkEmoji = DRINK_EMOJI[rewardType];
   const primaryTag = collectCampaignHashtags(ctx)[0] ?? "#WeGiveEEFFOC";
   const caption = buildCaptionTemplate(ctx.captionTemplate ?? undefined, {
     shop_name: ctx.shopName,
@@ -133,7 +121,7 @@ export function buildSocialPostPackage(
   const cafeHandle = resolveCafeHandle(platform, ctx.socialLinks);
   const cafeTag = cafeHandle ? `Tag ${cafeHandle} in your post` : `Tag ${ctx.shopName} in your post`;
   const locationSuggestion = buildLocationSuggestion(ctx);
-  const drinkLabel = ctx.rewardDescription?.trim() || `${drinkEmoji} ${rewardType.replace(/_/g, " ")}`;
+  const drinkLabel = ctx.rewardDescription?.trim() || rewardType.replace(/_/g, " ");
 
   const fullPostText = [
     disclosureShort,
@@ -142,7 +130,7 @@ export function buildSocialPostPackage(
     hashtagsLine,
     disclosure,
     cafeTag,
-    locationSuggestion ? `📍 ${locationSuggestion}` : null,
+    locationSuggestion ? `Location: ${locationSuggestion}` : null,
   ]
     .filter(Boolean)
     .join("\n\n");
@@ -159,7 +147,7 @@ export function buildSocialPostPackage(
     locationSuggestion,
     slogan,
     drinkLabel,
-    drinkEmoji,
+    rewardType,
     fullPostText,
   };
 }

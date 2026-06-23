@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/hooks/use-user";
 import { billingLimitsForShop, usePartnerBilling } from "@/lib/queries/billing";
-import { EEFFOC_TEMPLATES, EEFFOC_TEMPLATE_CATEGORIES, EEFFOC_CATEGORY_LABEL_KEYS, type EeffocTemplate, type EeffocTemplateCategory } from "@/lib/eeffoc-templates";
+import { EEFFOC_TEMPLATES, EEFFOC_TEMPLATE_CATEGORIES, EEFFOC_CATEGORY_GROUPS, EEFFOC_CATEGORY_LABEL_KEYS, type EeffocTemplate, type EeffocTemplateCategory } from "@/lib/eeffoc-templates";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,9 +27,11 @@ import {
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { CampaignWizardPreview } from "@/components/app/CampaignWizardPreview";
+import { PARTNER_CHIP, PARTNER_CHIP_ACTIVE } from "@/components/app/partner/PartnerShell";
 import {
   WIZARD_REWARD_TYPES,
-  WIZARD_SOCIAL_ACTIONS,
+  WIZARD_SOCIAL_PLATFORM_ACTIONS,
+  WIZARD_MANUAL_PROOF_ACTION,
   WIZARD_SMART_SUGGESTIONS,
   WIZARD_STEP_COUNT,
   applySuggestion,
@@ -38,17 +40,23 @@ import {
   buildWizardSocialRequirements,
   defaultWizardForm,
   formatQuantityExample,
+  isWizardSocialActionSelected,
   parseHashtagsInput,
+  platformsToSocialActions,
   primaryHashtag,
   resolvePublishTiming,
   resolveTimingDates,
-  socialActionToFulfillment,
+  socialActionsToFulfillment,
+  toggleWizardSocialAction,
   type WizardFormState,
   type WizardPublishMode,
   type WizardTimingPreset,
 } from "@/lib/campaign-wizard";
 import { REWARD_MARKER_STYLES } from "@/lib/map/campaign-markers";
-import type { CampaignFulfillmentMode } from "@/lib/campaign-fulfillment";
+import { CofexIconTile } from "@/components/app/CofexIconTile";
+import { resolveEeffocTemplateIcon, resolveWizardSuggestionIcon } from "@/lib/eeffoc-template-icons";
+import { buildPartnerCampaignTermsTemplate } from "@/lib/campaign-compliance";
+import { parseSocialRequirements, type CampaignFulfillmentMode } from "@/lib/campaign-fulfillment";
 import type { CampaignRewardType } from "@/lib/domain/campaign-reward-model";
 
 type Shop = { id: string; name: string; social_links?: Record<string, string> | null };
@@ -82,6 +90,7 @@ export function CampaignWizard({
     max_participants: number | null;
     fulfillment_mode: CampaignFulfillmentMode;
     auto_approve_social?: boolean;
+    social_requirements?: unknown;
     starts_at: string | null;
     ends_at: string | null;
     participant_count?: number;
@@ -94,7 +103,7 @@ export function CampaignWizard({
     status?: string;
   } | null;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [step, setStep] = useState(0);
   const [showTemplates, setShowTemplates] = useState(false);
   const [templateCategory, setTemplateCategory] = useState<EeffocTemplateCategory | "all">("all");
@@ -119,6 +128,18 @@ export function CampaignWizard({
         : EEFFOC_TEMPLATES.filter((tpl) => tpl.category === templateCategory),
     [templateCategory],
   );
+  const templateCategories = useMemo(
+    () => EEFFOC_TEMPLATE_CATEGORIES.filter((cat) => EEFFOC_TEMPLATES.some((tpl) => tpl.category === cat)),
+    [],
+  );
+  const templateCategoryGroups = useMemo(
+    () =>
+      EEFFOC_CATEGORY_GROUPS.map((group) => ({
+        ...group,
+        categories: group.categories.filter((cat) => templateCategories.includes(cat)),
+      })).filter((group) => group.categories.length > 0),
+    [templateCategories],
+  );
   const quantityExample = formatQuantityExample(form.reward_type, form.reward_quantity);
   const timingPreview = resolveTimingDates(form.timing_preset, form.custom_start, form.custom_end);
 
@@ -135,16 +156,24 @@ export function CampaignWizard({
         .eq("partner_id", authUser.id);
       const list = (data ?? []) as Shop[];
       setShops(list);
-      if (list[0]) {
-        setShopId(list[0].id);
-        const ig = list[0].social_links?.instagram ?? "";
+      const preferredShopId = editCampaign?.coffee_shop_id ?? list[0]?.id;
+      if (preferredShopId) {
+        setShopId(preferredShopId);
+        const shop = list.find((s) => s.id === preferredShopId) ?? list[0];
+        const ig = shop?.social_links?.instagram ?? "";
         const handle = ig.replace(/^https?:\/\/(www\.)?instagram\.com\//i, "").replace(/\/$/, "");
-        if (handle && !form.cafe_handle) {
+        if (handle && !editCampaign) {
           setForm((f) => ({ ...f, cafe_handle: handle.startsWith("@") ? handle.slice(1) : handle }));
         }
       }
     })();
-  }, [open]);
+  }, [open, editCampaign?.id, editCampaign?.coffee_shop_id]);
+
+  useEffect(() => {
+    if (!open || editCampaign) return;
+    const template = buildPartnerCampaignTermsTemplate(i18n.language);
+    setForm((f) => (f.terms.trim() ? f : { ...f, terms: template }));
+  }, [open, editCampaign, i18n.language]);
 
   useEffect(() => {
     if (!open || !editCampaign) return;
@@ -163,17 +192,21 @@ export function CampaignWizard({
       reward_type: (editCampaign.reward_type as CampaignRewardType) ?? "coffee",
       reward_quantity: editCampaign.reward_quantity ?? 1,
       daily_redemption_limit: editCampaign.daily_redemption_limit ?? null,
-      terms: editCampaign.terms_and_conditions ?? "",
+      terms: editCampaign.terms_and_conditions?.trim()
+        ? editCampaign.terms_and_conditions
+        : buildPartnerCampaignTermsTemplate(i18n.language),
       auto_approve_social: editCampaign.auto_approve_social ?? false,
       timing_preset: "custom",
       custom_start: start.toISOString().slice(0, 10),
       custom_end: end.toISOString().slice(0, 10),
-      social_action: fulfillmentToSocialAction(editCampaign.fulfillment_mode),
+      social_actions: platformsToSocialActions(
+        parseSocialRequirements(editCampaign.social_requirements).platforms,
+      ),
       publish_mode: editCampaign.status === "draft" ? "draft" : "active",
     });
     setErrors({});
     if (editCampaign.coffee_shop_id) setShopId(editCampaign.coffee_shop_id);
-  }, [open, editCampaign]);
+  }, [open, editCampaign, i18n.language]);
 
   useEffect(() => {
     if (!open) {
@@ -195,16 +228,16 @@ export function CampaignWizard({
 
   function pickTemplate(tpl: EeffocTemplate) {
     setCampaignType(tpl.id);
-    const social = tpl.social_requirements?.platforms?.[0];
+    const social = tpl.social_requirements?.platforms;
     setForm((f) =>
       applySuggestion(f, {
-        title: tpl.title === "Custom Campaign" ? "" : tpl.title,
+        title: tpl.title === "Custom EEFFOC" ? "" : tpl.title,
         description: tpl.description,
         requirements: tpl.requirements,
         hashtags: tpl.hashtag,
         points_reward: tpl.points_reward,
         max_participants: tpl.max_participants ?? 100,
-        social_action: platformToSocialAction(social),
+        social_actions: platformsToSocialActions(social),
         auto_approve_social: f.auto_approve_social,
         reward_type: inferRewardFromDescription(tpl.reward_description),
         reward_quantity: 1,
@@ -223,6 +256,9 @@ export function CampaignWizard({
       if (form.daily_redemption_limit != null && form.daily_redemption_limit > form.max_participants) {
         errs.daily_redemption_limit = t("campaignWizard.errors.dailyLimit");
       }
+    }
+    if (current === 4 && form.social_actions.length === 0) {
+      errs.social_actions = t("campaignWizard.errors.pickSocial");
     }
     if (current === 3 && form.timing_preset === "custom") {
       if (!form.custom_start) errs.custom_start = t("campaignWizard.errors.startDate");
@@ -260,8 +296,8 @@ export function CampaignWizard({
     setSaving(true);
     const hashtags = parseHashtagsInput(form.hashtags);
     const hashtag = primaryHashtag(hashtags);
-    const fulfillment_mode = socialActionToFulfillment(form.social_action);
-    const social_requirements = buildWizardSocialRequirements(form.social_action, form.cafe_handle, form.title);
+    const fulfillment_mode = socialActionsToFulfillment(form.social_actions);
+    const social_requirements = buildWizardSocialRequirements(form.social_actions, form.cafe_handle, form.title);
     const reward_description = buildRewardDescription(form.reward_type, form.reward_quantity);
     const active_hours = buildActiveHoursJson(form);
 
@@ -413,46 +449,86 @@ export function CampaignWizard({
                   onClick={() => pickSuggestion(s.id)}
                   className="rounded-2xl border border-zinc-200 bg-white p-4 text-left transition hover:border-amber-500 hover:shadow-md"
                 >
-                  <div className="text-2xl">{s.emoji}</div>
+                  {(() => {
+                    const icon = resolveWizardSuggestionIcon(s);
+                    return "rewardType" in icon ? (
+                      <CofexIconTile rewardType={icon.rewardType} size="md" />
+                    ) : (
+                      <CofexIconTile meta={icon.meta} size="md" />
+                    );
+                  })()}
                   <div className="mt-1 font-semibold">{t(s.titleKey)}</div>
                   <p className="mt-1 line-clamp-2 text-sm text-zinc-500">{t(s.descriptionKey)}</p>
                 </button>
               ))}
             </div>
-            <div className="flex flex-wrap gap-2 pt-2">
-              <Button type="button" variant="outline" onClick={() => setStep(1)}>
-                {t("campaignWizard.startScratch")}
-              </Button>
-              <Button type="button" variant="ghost" onClick={() => setShowTemplates((v) => !v)}>
-                {showTemplates ? t("campaignWizard.hideTemplates") : t("campaignWizard.browseTemplates")}
-              </Button>
+            <div className="mt-2 space-y-3">
+              <div className="rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50 via-white to-[color:var(--cofex-cream)] p-4 shadow-sm">
+                <p className="text-center text-[10px] font-bold uppercase tracking-[0.2em] text-amber-800/80">
+                  {t("campaignWizard.templatesEyebrow")}
+                </p>
+                <Button
+                  type="button"
+                  onClick={() => setShowTemplates((v) => !v)}
+                  className={`cofex-onboarding-cta mt-3 h-12 w-full rounded-full border-0 text-base font-bold text-white shadow-md ${
+                    showTemplates ? "ring-2 ring-amber-300 ring-offset-2" : ""
+                  }`}
+                >
+                  <Sparkles className="mr-2 h-5 w-5 shrink-0" />
+                  {showTemplates ? t("campaignWizard.hideTemplates") : t("campaignWizard.browseTemplates")}
+                  <ArrowRight className="ml-2 h-5 w-5 shrink-0" />
+                </Button>
+                <p className="mt-2 text-center text-xs text-[color:var(--cofex-black)]/55">
+                  {t("campaignWizard.templatesCtaHint")}
+                </p>
+              </div>
+              <div className="flex justify-center">
+                <Button type="button" variant="ghost" size="sm" className="text-[color:var(--cofex-black)]/55" onClick={() => setStep(1)}>
+                  {t("campaignWizard.startScratch")}
+                </Button>
+              </div>
             </div>
             {showTemplates && (
-              <div className="mt-4 space-y-3 border-t pt-4">
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setTemplateCategory("all")}
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                      templateCategory === "all" ? "bg-amber-600 text-white" : "bg-zinc-100"
-                    }`}
-                  >
-                    {t("partnerCampaignsPage.allTemplates")}
-                  </button>
-                  {EEFFOC_TEMPLATE_CATEGORIES.map((cat) => (
+              <div className="mt-4 space-y-3 border-t border-[color:var(--border)] pt-4">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[color:var(--cofex-black)]/45">
+                    {t("campaignWizard.filterTemplates")}
+                  </p>
+                  <div className="mt-2 space-y-3">
                     <button
-                      key={cat}
                       type="button"
-                      onClick={() => setTemplateCategory(cat)}
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        templateCategory === cat ? "bg-amber-600 text-white" : "bg-zinc-100"
-                      }`}
+                      onClick={() => setTemplateCategory("all")}
+                      className={`w-full ${templateCategory === "all" ? PARTNER_CHIP_ACTIVE : PARTNER_CHIP}`}
                     >
-                      {t(EEFFOC_CATEGORY_LABEL_KEYS[cat])}
+                      {t("partnerCampaignsPage.allTemplates")}
                     </button>
-                  ))}
+                    {templateCategoryGroups.map((group) => (
+                      <div key={group.id}>
+                        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-[color:var(--cofex-black)]/40">
+                          {t(group.labelKey)}
+                        </p>
+                        <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+                          {group.categories.map((cat) => (
+                            <button
+                              key={cat}
+                              type="button"
+                              onClick={() => setTemplateCategory(cat)}
+                              className={`min-h-9 px-2 py-1.5 text-center text-xs leading-tight ${
+                                templateCategory === cat ? PARTNER_CHIP_ACTIVE : PARTNER_CHIP
+                              }`}
+                            >
+                              {t(EEFFOC_CATEGORY_LABEL_KEYS[cat])}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="grid max-h-48 grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-2">
+                <p className="text-xs text-[color:var(--cofex-black)]/50">
+                  {t("campaignWizard.templatesShowing", { count: filteredTemplates.length })}
+                </p>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {filteredTemplates.map((tpl) => (
                     <button
                       key={tpl.id}
@@ -460,7 +536,19 @@ export function CampaignWizard({
                       onClick={() => pickTemplate(tpl)}
                       className="rounded-xl border p-3 text-left text-sm hover:border-amber-400"
                     >
-                      {tpl.emoji} {tpl.title}
+                      {(() => {
+                        const icon = resolveEeffocTemplateIcon(tpl);
+                        return (
+                          <span className="inline-flex items-center gap-2">
+                            {"rewardType" in icon ? (
+                              <CofexIconTile rewardType={icon.rewardType} size="xs" />
+                            ) : (
+                              <CofexIconTile meta={icon.meta} size="xs" />
+                            )}
+                            {tpl.title}
+                          </span>
+                        );
+                      })()}
                     </button>
                   ))}
                 </div>
@@ -487,7 +575,7 @@ export function CampaignWizard({
                       selected ? "border-amber-600 bg-amber-50 ring-2 ring-amber-200" : "border-zinc-200 hover:border-amber-300"
                     }`}
                   >
-                    <div className="text-3xl">{style.emoji}</div>
+                    <CofexIconTile rewardType={type} size="md" className="mx-auto" />
                     <div className="mt-1 text-sm font-semibold">{t(`campaignMap.rewardTypes.${type}`)}</div>
                   </button>
                 );
@@ -623,21 +711,53 @@ export function CampaignWizard({
         {step === 4 && (
           <div className="space-y-4">
             <h3 className="font-semibold">{t("campaignWizard.stepSocial")}</h3>
+            <p className="text-xs text-zinc-500">{t("campaignWizard.socialMultiHint")}</p>
+            {errors.social_actions && <p className="text-xs text-red-600">{errors.social_actions}</p>}
             <div className="grid gap-2 sm:grid-cols-2">
-              {WIZARD_SOCIAL_ACTIONS.map((action) => (
-                <button
-                  key={action}
-                  type="button"
-                  onClick={() => setForm({ ...form, social_action: action })}
-                  className={`rounded-xl border p-3 text-left text-sm ${
-                    form.social_action === action ? "border-amber-600 bg-amber-50" : "border-zinc-200"
-                  }`}
-                >
-                  <div className="font-semibold">{t(`campaignWizard.social.${action}`)}</div>
-                  <p className="mt-1 text-xs text-zinc-600">{t(`campaignWizard.social.${action}Hint`)}</p>
-                </button>
-              ))}
+              {WIZARD_SOCIAL_PLATFORM_ACTIONS.map((action) => {
+                const selected = isWizardSocialActionSelected(form.social_actions, action);
+                return (
+                  <button
+                    key={action}
+                    type="button"
+                    onClick={() =>
+                      setForm({ ...form, social_actions: toggleWizardSocialAction(form.social_actions, action) })
+                    }
+                    className={`rounded-xl border p-3 text-left text-sm transition ${
+                      selected ? "border-amber-600 bg-amber-50 ring-1 ring-amber-600/30" : "border-zinc-200"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="font-semibold">{t(`campaignWizard.social.${action}`)}</div>
+                      {selected && <Check className="h-4 w-4 shrink-0 text-amber-700" />}
+                    </div>
+                    <p className="mt-1 text-xs text-zinc-600">{t(`campaignWizard.social.${action}Hint`)}</p>
+                  </button>
+                );
+              })}
             </div>
+            <button
+              type="button"
+              onClick={() =>
+                setForm({
+                  ...form,
+                  social_actions: toggleWizardSocialAction(form.social_actions, WIZARD_MANUAL_PROOF_ACTION),
+                })
+              }
+              className={`w-full rounded-xl border p-3 text-left text-sm transition ${
+                isWizardSocialActionSelected(form.social_actions, WIZARD_MANUAL_PROOF_ACTION)
+                  ? "border-amber-600 bg-amber-50 ring-1 ring-amber-600/30"
+                  : "border-zinc-200"
+              }`}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <div className="font-semibold">{t("campaignWizard.social.manual_proof")}</div>
+                {isWizardSocialActionSelected(form.social_actions, WIZARD_MANUAL_PROOF_ACTION) && (
+                  <Check className="h-4 w-4 shrink-0 text-amber-700" />
+                )}
+              </div>
+              <p className="mt-1 text-xs text-zinc-600">{t("campaignWizard.social.manual_proofHint")}</p>
+            </button>
             <div className="flex items-center justify-between rounded-xl border p-3">
               <div>
                 <div className="text-sm font-semibold">{t("campaignWizard.autoApprove")}</div>
@@ -687,11 +807,13 @@ export function CampaignWizard({
             </Field>
             <Field label={t("campaignWizard.terms")}>
               <Textarea
-                rows={2}
+                rows={5}
                 maxLength={800}
                 value={form.terms}
                 onChange={(e) => setForm({ ...form, terms: e.target.value })}
               />
+              <p className="mt-2 text-xs leading-relaxed text-zinc-600">{t("campaignWizard.termsHint")}</p>
+              <p className="mt-1 text-xs leading-relaxed text-amber-800/90">{t("campaignWizard.termsResponsibility")}</p>
             </Field>
           </div>
         )}
@@ -718,18 +840,24 @@ export function CampaignWizard({
                 </Link>
               </div>
             )}
-            <div className="grid gap-2 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               {(["draft", "active", "scheduled"] as WizardPublishMode[]).map((mode) => (
                 <button
                   key={mode}
                   type="button"
                   onClick={() => setForm({ ...form, publish_mode: mode })}
-                  className={`rounded-xl border p-4 text-left ${
-                    form.publish_mode === mode ? "border-amber-600 bg-amber-50" : "border-zinc-200"
+                  className={`flex min-h-[5.5rem] flex-col rounded-2xl border p-4 text-left transition ${
+                    form.publish_mode === mode
+                      ? "border-amber-600 bg-amber-50 ring-2 ring-amber-200 ring-offset-1"
+                      : "border-zinc-200 bg-white hover:border-amber-300"
                   }`}
                 >
-                  <div className="font-semibold">{t(`campaignWizard.publish.${mode}`)}</div>
-                  <p className="mt-1 text-xs text-zinc-600">{t(`campaignWizard.publish.${mode}Hint`)}</p>
+                  <div className="font-semibold leading-snug text-[color:var(--cofex-coffee-deep)]">
+                    {t(`campaignWizard.publishModes.${mode}`)}
+                  </div>
+                  <p className="mt-2 flex-1 text-xs leading-relaxed text-[color:var(--cofex-black)]/60">
+                    {t(`campaignWizard.publishModes.${mode}Hint`)}
+                  </p>
                 </button>
               ))}
             </div>
@@ -808,18 +936,6 @@ function Field({ label, error, children }: { label: string; error?: string; chil
       {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
     </div>
   );
-}
-
-function fulfillmentToSocialAction(mode: CampaignFulfillmentMode): WizardFormState["social_action"] {
-  if (mode === "check_in") return "manual_proof";
-  return "any_social";
-}
-
-function platformToSocialAction(platform?: string): WizardFormState["social_action"] {
-  if (platform === "instagram_story") return "instagram_story";
-  if (platform === "instagram_post") return "instagram_post";
-  if (platform === "tiktok") return "tiktok";
-  return "any_social";
 }
 
 function inferRewardFromDescription(desc: string): CampaignRewardType {

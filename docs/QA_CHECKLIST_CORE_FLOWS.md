@@ -1,6 +1,6 @@
 # Manual QA Checklist — Core CO:FE(X) Flows
 
-**Last updated:** June 23, 2026  
+**Last updated:** June 24, 2026  
 **Purpose:** End-to-end validation when automated tests cannot cover device GPS, camera QR, or live Supabase RPC behavior.
 
 Run after migrations are applied (`npm run db:push`) and with at least one **partner** café and **explorer** test account.
@@ -11,7 +11,7 @@ Run after migrations are applied (`npm run db:push`) and with at least one **par
 
 | Item | How to verify |
 |------|----------------|
-| Migrations applied | Latest through `20260623140000_admin_moderation.sql` |
+| Migrations applied | Latest through `20260624040000_fix_campaign_is_live_jsonb.sql` |
 | Partner account | Owns an approved `coffee_shops` row |
 | Explorer account | Signed in on phone or narrow viewport (≤390px) |
 | Active campaign | Partner created via Campaign Wizard (check-in, social, or hybrid) |
@@ -34,6 +34,9 @@ Run after migrations are applied (`npm run db:push`) and with at least one **par
 - [ ] Tap **Join** on an active campaign with remaining quantity
 - [ ] Terms/disclosure shown for social/hybrid campaigns; must accept to join
 - [ ] Full campaign shows “full” state and blocks new joins
+- [ ] Custom single-day campaign joinable from **local midnight** on that date (not delayed to 02:00 CEST)
+- [ ] Future start date shows **Starts {date}** until window opens
+- [ ] QR join URL (`?src=qr&token=…`) loads campaign and completes join after consent
 
 ### QR check-in
 
@@ -73,8 +76,9 @@ Run after migrations are applied (`npm run db:push`) and with at least one **par
 ### Proof approval
 
 - [ ] **Submissions** queue shows pending proofs with preview
+- [ ] Tab counts visible (Pending / Approved / Rejected)
+- [ ] Auto-approved proofs appear under **Approved** (not Pending) when campaign flag enabled
 - [ ] Approve moves explorer to reward phase; reject shows reason
-- [ ] Auto-approve works when campaign flag enabled
 
 ### Reward redemption
 
@@ -88,6 +92,8 @@ Run after migrations are applied (`npm run db:push`) and with at least one **par
 - [ ] Dashboard counters: active campaigns, pending proofs, redeemed today, new explorers, social reach, rewards left
 - [ ] Pending proofs tile highlights when count > 0
 - [ ] Rewards left decreases as explorers join
+- [ ] **Analytics** date range includes activity from local calendar today (check after midnight local time)
+- [ ] Participants / redemptions counts match joined explorers (not zero when activity exists)
 
 ---
 

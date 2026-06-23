@@ -10,6 +10,30 @@ export interface CampaignAvailabilityInput {
   now?: Date;
 }
 
+/** Wizard custom dates were saved as UTC midnight; treat as live from local start of that day. */
+export function isUtcDateBoundary(d: Date): boolean {
+  return (
+    d.getUTCHours() === 0 &&
+    d.getUTCMinutes() === 0 &&
+    d.getUTCSeconds() === 0 &&
+    d.getUTCMilliseconds() === 0
+  );
+}
+
+export function localStartOfCalendarDay(d: Date): Date {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+}
+
+export function campaignHasStarted(startsAt: string | null | undefined, now = new Date()): boolean {
+  if (!startsAt) return true;
+  const start = new Date(startsAt);
+  if (now >= start) return true;
+  if (isUtcDateBoundary(start)) {
+    return now >= localStartOfCalendarDay(start);
+  }
+  return false;
+}
+
 export function isCampaignExpired(
   input: Pick<CampaignAvailabilityInput, "status" | "endsAt"> & { now?: Date },
 ): boolean {
@@ -39,7 +63,9 @@ export function canJoinCampaign(
 ): { ok: true } | { ok: false; reason: "expired" | "full" | "not_active" | "not_started" } {
   const now = input.now ?? new Date();
   if (input.status !== "active") return { ok: false, reason: "not_active" };
-  if (input.startsAt && new Date(input.startsAt) > now) return { ok: false, reason: "not_started" };
+  if (input.startsAt && !campaignHasStarted(input.startsAt, now)) {
+    return { ok: false, reason: "not_started" };
+  }
   if (isCampaignExpired(input)) return { ok: false, reason: "expired" };
   if (isCampaignFull(input)) return { ok: false, reason: "full" };
   return { ok: true };

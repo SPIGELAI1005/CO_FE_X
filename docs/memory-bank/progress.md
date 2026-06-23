@@ -1,10 +1,22 @@
 # Progress (Memory Bank)
 
-**Last updated:** June 23, 2026
+**Last updated:** June 24, 2026
 
 ---
 
 ## Shipped ✅
+
+### Campaign wizard & EEFFOC partner tooling (June 24, 2026)
+
+- [x] **8-step campaign wizard** — EEFFOC templates, grouped category filters, prominent template browse CTA, publish step i18n fix
+- [x] **Branded participation QR** — centered logo overlay (`qr-code-brand.ts`, `CampaignQrCode.tsx`)
+- [x] **Shop door poster PDF** — A4 print poster with partner branding (`shop-door-qr-pdf.ts`, `ShopDoorQr.tsx`)
+- [x] **Campaign join hardening** — `canJoinCampaign` + local calendar-day start (`campaignHasStarted`, `parseLocalDateString`)
+- [x] **Join RPC fixes** — `_campaign_is_live` accepts joined rows via `to_jsonb(record)`; UTC-midnight starts backfilled to Europe/Berlin
+- [x] **Partner analytics date fix** — local calendar-day filters (`local-date-range.ts`); no more midnight UTC excluding same-day activity
+- [x] **Partner submissions fix** — removed broken `profiles!social_submissions_user_id_fkey` join; tab counts; auto-approved badge; load errors surfaced
+- [x] **Edit campaign fix** — `parseSocialRequirements` import; full campaign fields on edit load; shop preserved
+- [x] **Explorer campaign detail** — join error mapping, starts-on copy, `trackExplorerEvent` QR analytics restored
 
 ### Core platform
 
@@ -109,7 +121,7 @@
 
 - [ ] CI: add GitHub repository secrets (see README) for partner E2E in Actions
 - [ ] **i18n depth** — campaign wizard toasts and deep partner form strings
-- [ ] Partner dashboard full React Query migration (`partner.index.tsx` still uses `useEffect`)
+- [ ] Partner dashboard full React Query migration (`partner.index.tsx`, `partner.analytics.tsx` still use `useEffect`)
 - [ ] Apply vision + campaign reward migrations to production Supabase + seed crawl stops with real shop IDs
 - [ ] VAPID keys for Web Push (`VITE_VAPID_PUBLIC_KEY`) + service worker push handler
 - [ ] Partner application notification flow (`20260618120000_partner_application_notifications.sql`)
@@ -147,14 +159,13 @@
 
 ---
 
-## Migration inventory (33 total)
+## Migration inventory (54 total)
 
-Latest seven:
+Latest batch (June 24, 2026):
 
-1. `20260617120000_partner_next_steps.sql`
-2. `20260618120000_partner_application_notifications.sql`
-3. `20260619120000_vision_wave1.sql`
-4. `20260619130000_vision_wave2.sql`
-5. `20260619140000_vision_wave3.sql`
-6. `20260619150000_vision_wave4.sql`
-7. `20260621120000_campaign_reward_domain.sql`
+1. `20260624010000_campaign_start_local_day.sql` — local start-of-day backfill + `_campaign_is_live` calendar logic
+2. `20260624020000_fix_campaign_is_live_record.sql` — record-type overload for joined campaign rows
+3. `20260624030000_drop_campaign_is_live_overload.sql` — drop strict `campaigns` composite overload
+4. `20260624040000_fix_campaign_is_live_jsonb.sql` — read record fields via `to_jsonb` (join_campaign fix)
+
+Prior engagement sprint migrations include `20260621180000` through `20260623160000` (reward lifecycle, XP, badges, trails, anti-fraud, compliance, moments, notifications, admin moderation, shop images).

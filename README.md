@@ -83,7 +83,7 @@ See **[docs/DEVELOPMENT_PLAN.md](./docs/DEVELOPMENT_PLAN.md)** for the full 12-w
 | Doc | Purpose |
 | --- | --- |
 | [docs/PROJECT_CONTEXT.md](./docs/PROJECT_CONTEXT.md) | Product vision, roles, development principles |
-| [docs/LATEST_CHANGES.md](./docs/LATEST_CHANGES.md) | Recent changelog (vision waves, campaign domain, i18n, mobile, partner) |
+| [docs/LATEST_CHANGES.md](./docs/LATEST_CHANGES.md) | Recent changelog (June 24 partner/campaign hardening, vision, i18n, mobile) |
 | [docs/PLAN_VISION_FEATURES.md](./docs/PLAN_VISION_FEATURES.md) | Vision feature waves 1–4 (shipped) |
 | [docs/DATA_MODEL_CAMPAIGN_REWARD.md](./docs/DATA_MODEL_CAMPAIGN_REWARD.md) | Campaign/reward domain spec mapping |
 | [docs/AUDIT.md](./docs/AUDIT.md) | Comprehensive app audit (product, security, compliance, ops) |

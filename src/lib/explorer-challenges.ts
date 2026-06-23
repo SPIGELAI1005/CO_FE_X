@@ -90,7 +90,7 @@ export function challengesFromDefs(rows: ExplorerChallengeDefRow[]): ExplorerCha
     })
     .filter((c) => isLimitedChallengeActive(c));
 }
-/** Fallback when DB defs are unavailable — rules mirror `explorer_challenge_defs` seed. */
+/** Fallback when DB defs are unavailable, rules mirror `explorer_challenge_defs` seed. */
 export const EXPLORER_CHALLENGES: ExplorerChallengeDef[] = challengesFromDefs([
   { id: "weekly", title: "Weekly Wanderer", subtitle: "Check in 5 times this week", stat_key: "visits_this_week", target: 5, reward: 50, period_type: "weekly", sort_order: 1 },
   { id: "new3", title: "Three New Doors", subtitle: "Visit 3 cafés you've never been to this week", stat_key: "new_shops_this_week", target: 3, reward: 75, period_type: "weekly", sort_order: 2 },

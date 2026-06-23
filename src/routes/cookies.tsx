@@ -9,7 +9,7 @@ export const Route = createFileRoute("/cookies")({
       { title: "Cookie Policy · CO:FE(X)" },
       {
         name: "description",
-        content: "How CO:FE(X) uses cookies, local storage, and similar technologies.",
+        content: "How CO:FE(X) uses cookies, local storage and similar technologies.",
       },
     ],
   }),
@@ -20,7 +20,7 @@ function CookiesPage() {
   return (
     <LegalPageShell
       title="Cookie Policy"
-      subtitle="How we use cookies, local storage, and similar technologies on our website and app."
+      subtitle="How we use cookies, local storage and similar technologies on our website and app."
       lastUpdated={LAST_UPDATED}
     >
       <LegalCallout>
@@ -35,7 +35,7 @@ function CookiesPage() {
       <LegalSection title="1. What are cookies and local storage?">
         <p>
           Cookies are small text files stored in your browser. Local storage and similar technologies keep data on your
-          device so CO:FE(X) can remember your session, preferences, and installed PWA assets.
+          device so CO:FE(X) can remember your session, preferences and installed PWA assets.
         </p>
       </LegalSection>
 

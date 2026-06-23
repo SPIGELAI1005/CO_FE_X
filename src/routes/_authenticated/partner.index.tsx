@@ -38,6 +38,8 @@ export const Route = createFileRoute("/_authenticated/partner/")({
 
 type Daily = { day: string; visitors: number; new_customers: number; redemptions: number; reviews: number };
 
+import { localDateFromTimestamp, toLocalDateString } from "@/lib/local-date-range";
+
 function startOfDayISO(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString();
 }
@@ -48,7 +50,7 @@ function lastNDays(n: number) {
   for (let i = n - 1; i >= 0; i--) {
     const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
     days.push({
-      key: d.toISOString().slice(0, 10),
+      key: toLocalDateString(d),
       label: d.toLocaleDateString(undefined, { month: "short", day: "numeric" }),
     });
   }
@@ -206,22 +208,22 @@ function PartnerDashboard() {
       const dayMap = new Map<string, Daily>();
       for (const d of days) dayMap.set(d.key, { day: d.label, visitors: 0, new_customers: 0, redemptions: 0, reviews: 0 });
       for (const r of cinsSeries ?? []) {
-        const k = r.created_at.slice(0, 10);
+        const k = localDateFromTimestamp(r.created_at);
         const row = dayMap.get(k);
         if (row) row.visitors += 1;
       }
       for (const r of revSeries ?? []) {
-        const k = r.created_at.slice(0, 10);
+        const k = localDateFromTimestamp(r.created_at);
         const row = dayMap.get(k);
         if (row) row.reviews += 1;
       }
       for (const r of redSeries ?? []) {
-        const k = (r.redeemed_at ?? "").slice(0, 10);
+        const k = r.redeemed_at ? localDateFromTimestamp(r.redeemed_at) : "";
         const row = dayMap.get(k);
         if (row) row.redemptions += 1;
       }
       for (const [, first] of userFirsts) {
-        const k = first.slice(0, 10);
+        const k = localDateFromTimestamp(first);
         const row = dayMap.get(k);
         if (row) row.new_customers += 1;
       }

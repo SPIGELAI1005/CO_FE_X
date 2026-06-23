@@ -61,7 +61,7 @@ export function registerServiceWorker() {
 
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/sw.js").catch(() => {
-      // Non-fatal — PWA is optional enhancement
+      // Non-fatal, PWA is optional enhancement
     });
   });
 }

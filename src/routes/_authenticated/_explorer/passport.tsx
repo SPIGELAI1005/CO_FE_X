@@ -2,15 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Award,
-  Coffee,
-  MapPin,
-  Globe2,
   Trophy,
-  Sparkles,
   Lock,
-  Stamp as StampIcon,
-  Gift,
 } from "lucide-react";
 import { AppPage, AppPageBody, AppPageHeader, AppPageSection } from "@/components/app/AppPageShell";
 import { EmptyState } from "@/components/patterns/EmptyState";
@@ -40,6 +33,8 @@ import {
   EMPTY_BADGE_STATS,
 } from "@/lib/badges";
 import { BEVERAGE_TAGS, beverageTitle } from "@/lib/beverage-tags";
+import { CofexIconTile, SectionIcon } from "@/components/app/CofexIconTile";
+import { PASSPORT_SECTION_ICONS } from "@/lib/explorer-section-icons";
 import { cityToSlug } from "@/lib/cities";
 
 export const Route = createFileRoute("/_authenticated/_explorer/passport")({
@@ -161,7 +156,7 @@ function PassportContent({
           <div className="relative flex flex-col gap-6 p-6 md:flex-row md:items-end md:justify-between md:p-8">
             <div className="flex-1">
               <div className="inline-flex items-center gap-2 text-xs tracking-[0.25em] uppercase text-amber-200/80">
-                <StampIcon className="h-3.5 w-3.5" /> {t("passportPage.yourJourney")}
+                <CofexIconTile meta={PASSPORT_SECTION_ICONS.stamps} size="xs" /> {t("passportPage.yourJourney")}
               </div>
               <div className="mt-5 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
                 <HeroStat label={t("passportPage.uniqueCafes")} value={cafeCount} />
@@ -200,7 +195,7 @@ function PassportContent({
           eyebrow={t("passportPage.stampCollectionEyebrow")}
           title={t("passportPage.stampCollectionTitle")}
           subtitle={t("passportPage.stampCollectionSubtitle")}
-          icon={<StampIcon className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
+          icon={<SectionIcon meta={PASSPORT_SECTION_ICONS.stamps} />}
         >
           <div className="mb-4 flex flex-wrap gap-2">
             <CategoryChip active={categoryFilter === "all"} onClick={() => setCategoryFilter("all")} label={t("passportPage.categories.all")} />
@@ -218,7 +213,7 @@ function PassportContent({
             <p className="py-8 text-center text-sm text-[color:var(--cofex-black)]/55">{t("passportPage.loadingStamps")}</p>
           ) : filteredStamps.length === 0 ? (
             <EmptyState
-              icon={Gift}
+              iconMeta={PASSPORT_SECTION_ICONS.emptyStamps}
               title={t("passportPage.noRewardStamps")}
               description={t("passportPage.noRewardStampsHint")}
               actionLabel={t("passportPage.exploreCampaigns")}
@@ -243,7 +238,7 @@ function PassportContent({
                 key={b.id}
                 className="inline-flex items-center gap-1.5 rounded-full bg-[color:var(--cofex-accent-gold)] px-3 py-1 text-xs font-semibold text-white"
               >
-                <Sparkles className="h-3.5 w-3.5" /> {b.name}
+                <CofexIconTile meta={PASSPORT_SECTION_ICONS.achievements} size="xs" /> {b.name}
               </span>
             ))}
           </div>
@@ -252,19 +247,21 @@ function PassportContent({
         <AppPageSection
           eyebrow={t("passportPage.beverageEyebrow")}
           title={t("passportPage.beverageTitle")}
-          icon={<Coffee className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
+          icon={<SectionIcon meta={PASSPORT_SECTION_ICONS.beverages} />}
         >
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {BEVERAGE_TAGS.map((b) => {
               const count = beverageCounts[b.id] ?? 0;
               return (
-                <div key={b.id} className="cofex-app-card p-4 text-center">
-                  <div className="text-2xl">{b.emoji}</div>
-                  <div className="mt-1 text-lg font-extrabold text-[color:var(--cofex-coffee-deep)]">{count}</div>
+                <div key={b.id} className="cofex-app-card flex flex-col items-center p-4 text-center">
+                  <CofexIconTile rewardType={b.id} size="lg" />
+                  <div className="mt-3 text-2xl font-extrabold tabular-nums text-[color:var(--cofex-coffee-deep)]">
+                    {count}
+                  </div>
                   <div className="text-[10px] font-bold uppercase tracking-wider text-[color:var(--cofex-black)]/55">
                     {t(b.labelKey)}
                   </div>
-                  <div className="mt-1 text-xs font-semibold text-[color:var(--cofex-cyan)]">
+                  <div className="mt-1 text-xs font-semibold text-[color:var(--cofex-coffee-deep)]/80">
                     {beverageTitle(count, b.id)}
                   </div>
                 </div>
@@ -279,7 +276,7 @@ function PassportContent({
           </Link>
         </AppPageSection>
 
-        <AppPageSection eyebrow={t("passportPage.collectAll")} title={t("passportPage.achievements")} icon={<Award className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}>
+        <AppPageSection eyebrow={t("passportPage.collectAll")} title={t("passportPage.achievements")} icon={<SectionIcon meta={PASSPORT_SECTION_ICONS.achievements} />}>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {badges
               .sort((a, b) => Number(earned.has(b.id)) - Number(earned.has(a.id)))
@@ -351,11 +348,11 @@ function PassportContent({
         <AppPageSection
           eyebrow={t("passportPage.cityCollectionsSubtitle")}
           title={t("passportPage.cityCollections")}
-          icon={<MapPin className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
+          icon={<SectionIcon meta={PASSPORT_SECTION_ICONS.cities} />}
         >
           {cityGroups.length === 0 ? (
             <EmptyState
-              icon={MapPin}
+              iconMeta={PASSPORT_SECTION_ICONS.cities}
               title={t("passportPage.noCityStamps")}
               description={t("passportPage.noCityStampsHint")}
               actionLabel={t("campaignsPage.emptyAction")}
@@ -410,7 +407,7 @@ function PassportContent({
                             className="h-full w-full object-cover"
                           />
                         ) : (
-                          <Coffee className="h-5 w-5 text-[color:var(--cofex-coffee-deep)]" />
+                          <CofexIconTile rewardType="coffee" size="xs" />
                         )}
                       </Link>
                     ))}
@@ -430,12 +427,12 @@ function PassportContent({
         <AppPageSection
           eyebrow="The world, one cup at a time"
           title="Country collections"
-          icon={<Globe2 className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
+          icon={<SectionIcon meta={PASSPORT_SECTION_ICONS.world} />}
           className="pb-4"
         >
           {countryGroups.length === 0 ? (
             <EmptyState
-              icon={Globe2}
+              iconMeta={PASSPORT_SECTION_ICONS.world}
               title="No country stamps yet"
               description="Visit cafés in new countries to fill your passport."
               actionLabel="Explore cafés"

@@ -35,6 +35,7 @@ import { buildSocialPostPackage, copyText } from "@/lib/social-post-assistant";
 import { SocialPostTemplate } from "@/components/app/SocialPostTemplate";
 import { DisclosureHelper } from "@/components/app/DisclosureHelper";
 import { CampaignDataPrivacy } from "@/components/app/CampaignDataPrivacy";
+import { CofexIconTile } from "@/components/app/CofexIconTile";
 import { trackExplorerEvent } from "@/lib/explorer-analytics";
 
 type Submission = {
@@ -294,7 +295,7 @@ export function SocialPostAssistant({
                   : "border-[color:var(--border)] hover:border-amber-300"
               }`}
             >
-              <span className="text-xl">{p.emoji}</span>
+              <CofexIconTile meta={p.iconMeta} size="sm" />
               <span className="mt-1 block text-xs font-semibold leading-tight text-[color:var(--cofex-coffee-deep)]">
                 {p.label}
               </span>

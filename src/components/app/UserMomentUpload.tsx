@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { BEVERAGE_TAGS } from "@/lib/beverage-tags";
+import { CofexIconTile } from "@/components/app/CofexIconTile";
 import { usePublishUserMoment } from "@/lib/queries/moments";
 import { toast } from "sonner";
 
@@ -56,13 +57,14 @@ export function UserMomentUpload({ userId, canPublish }: UserMomentUploadProps) 
             key={tag.id}
             type="button"
             onClick={() => setDrinkType(tag.id)}
-            className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${
+            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-semibold ${
               drinkType === tag.id
                 ? "border-[color:var(--cofex-coffee-deep)] bg-[color:var(--cofex-coffee-deep)] text-white"
                 : "border-[color:var(--border)]"
             }`}
           >
-            {tag.emoji} {t(tag.labelKey)}
+            <CofexIconTile rewardType={tag.id} size="xs" />
+            {t(tag.labelKey)}
           </button>
         ))}
       </div>

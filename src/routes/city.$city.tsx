@@ -15,7 +15,7 @@ export const Route = createFileRoute("/city/$city")({
   head: ({ params }) => {
     const name = cityFromSlug(params.city);
     const title = `Coffee in ${name} · CO:FE(X)`;
-    const description = `Top cafés and active EEFFOC campaigns in ${name}. Discover, check in, and earn rewards with CO:FE(X).`;
+    const description = `Top cafés and active EEFFOC campaigns in ${name}. Discover, check in and earn rewards with CO:FE(X).`;
     return {
       meta: [
         { title },
@@ -135,7 +135,7 @@ function CityPage() {
                 <Star className="mx-auto h-8 w-8 text-amber-700" />
                 <p className="mt-2 font-semibold">Ready to explore {cityName}?</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Create a free account to check in, collect passport stamps, and unlock EEFFOC rewards.
+                  Create a free account to check in, collect passport stamps and unlock EEFFOC rewards.
                 </p>
                 <Link
                   to="/auth"

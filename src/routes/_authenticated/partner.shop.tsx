@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { PARTNER_BTN, PartnerEmptyState, PartnerStatusPill } from "@/components/app/partner/PartnerShell";
 import { ShopDoorQr } from "@/components/app/ShopDoorQr";
+import { formatPriceLevel, PRICE_LEVEL_OPTIONS } from "@/lib/price-level";
 
 export const Route = createFileRoute("/_authenticated/partner/shop")({
   head: () => ({ meta: [{ title: "Shop profile · Partner" }] }),
@@ -305,7 +306,7 @@ function ShopProfilePage() {
           <PartnerEmptyState
             Icon={Store}
             title="Create your café profile"
-            description="Photos, story, location, and amenities. Explorers need GPS coordinates to check in."
+            description="Photos, story, location and amenities. Explorers need GPS coordinates to check in."
             action={
               <Button className={`mt-4 ${PARTNER_BTN}`} onClick={startNewShop}>
                 <Plus className="mr-1 h-4 w-4" /> Start setup
@@ -398,9 +399,9 @@ function ShopProfilePage() {
                 onChange={(e) => setShop({ ...shop, price_level: Number(e.target.value) })}
                 className="h-10 w-full rounded-md border bg-white px-3 text-sm"
               >
-                {[1, 2, 3, 4].map((n) => (
+                {PRICE_LEVEL_OPTIONS.map((n) => (
                   <option key={n} value={n}>
-                    {"$".repeat(n)}
+                    {formatPriceLevel(n)}
                   </option>
                 ))}
               </select>

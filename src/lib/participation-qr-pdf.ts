@@ -1,16 +1,12 @@
-import QRCode from "qrcode";
 import { jsPDF } from "jspdf";
+import { generateBrandedQrDataUrl } from "@/lib/qr-code-brand";
 
 export async function downloadParticipationQrPdf(options: {
   url: string;
   campaignTitle: string;
   shopName?: string;
 }) {
-  const qrDataUrl = await QRCode.toDataURL(options.url, {
-    width: 400,
-    margin: 2,
-    color: { dark: "#3d2417", light: "#ffffff" },
-  });
+  const qrDataUrl = await generateBrandedQrDataUrl(options.url, { width: 400 });
 
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();

@@ -8,6 +8,10 @@ import {
   resolveTimingDates,
   socialActionPlatforms,
   socialActionToFulfillment,
+  socialActionsToFulfillment,
+  socialActionsToPlatforms,
+  startOfDay,
+  toggleWizardSocialAction,
 } from "./campaign-wizard";
 
 describe("campaign-wizard", () => {
@@ -32,16 +36,31 @@ describe("campaign-wizard", () => {
     expect(end.getTime()).toBeGreaterThan(now.getTime());
   });
 
-  it("resolves custom dates", () => {
+  it("resolves custom dates in local timezone", () => {
     const { start, end } = resolveTimingDates("custom", "2026-07-01", "2026-07-05", now);
-    expect(start.toISOString().slice(0, 10)).toBe("2026-07-01");
-    expect(endOfDay(new Date("2026-07-05")).getTime()).toBe(end.getTime());
+    expect(start).toEqual(startOfDay(new Date(2026, 6, 1)));
+    expect(end).toEqual(endOfDay(new Date(2026, 6, 5)));
   });
 
   it("maps social actions to fulfillment", () => {
     expect(socialActionToFulfillment("instagram_story")).toBe("social_proof");
+    expect(socialActionsToFulfillment(["instagram_story", "tiktok"])).toBe("social_proof");
     expect(socialActionToFulfillment("manual_proof")).toBe("hybrid");
+    expect(socialActionsToPlatforms(["instagram_story", "tiktok"])).toEqual([
+      "instagram_story",
+      "tiktok",
+    ]);
     expect(socialActionPlatforms("any_social").length).toBeGreaterThan(2);
+  });
+
+  it("toggles wizard social actions", () => {
+    expect(toggleWizardSocialAction(["instagram_story"], "tiktok")).toEqual([
+      "instagram_story",
+      "tiktok",
+    ]);
+    expect(toggleWizardSocialAction(["instagram_story", "tiktok"], "manual_proof")).toEqual([
+      "manual_proof",
+    ]);
   });
 
   it("parses hashtags", () => {

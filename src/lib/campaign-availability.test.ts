@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   canJoinCampaign,
+  campaignHasStarted,
   isCampaignDiscoverable,
   isCampaignExpired,
   isCampaignFull,
@@ -110,5 +111,28 @@ describe("campaign-availability", () => {
         now,
       }),
     ).toBe(false);
+  });
+
+  it("treats UTC-midnight custom start dates as live from local calendar day", () => {
+    const startsAt = "2026-06-24T00:00:00.000Z";
+    const justAfterLocalMidnight = new Date(2026, 5, 24, 0, 10, 0, 0);
+    expect(campaignHasStarted(startsAt, justAfterLocalMidnight)).toBe(true);
+    expect(
+      canJoinCampaign({
+        status: "active",
+        startsAt,
+        endsAt: "2026-06-24T21:59:59.999Z",
+        availableQuantity: 10,
+        maxParticipants: null,
+        participantCount: 0,
+        now: justAfterLocalMidnight,
+      }),
+    ).toEqual({ ok: true });
+  });
+
+  it("keeps exact start time for same-day publish (today_only)", () => {
+    const startsAt = "2026-06-24T13:00:00.000Z";
+    const beforePublish = new Date("2026-06-24T12:00:00.000Z");
+    expect(campaignHasStarted(startsAt, beforePublish)).toBe(false);
   });
 });

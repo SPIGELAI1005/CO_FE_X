@@ -19,7 +19,7 @@ export function SpawnBanner({
       <div className="min-w-0 flex-1">
         <div className="text-xs font-bold uppercase tracking-wider text-violet-700">{s.rarity} spawn</div>
         <div className="truncate font-semibold text-[color:var(--cofex-coffee-deep)]">{s.title}</div>
-        <div className="text-[11px] text-violet-800/70">Limited time — tap to visit</div>
+        <div className="text-[11px] text-violet-800/70">Limited time - tap to visit</div>
       </div>
     </Link>
   );

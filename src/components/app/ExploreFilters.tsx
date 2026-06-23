@@ -1,14 +1,7 @@
 import type { ReactNode } from "react";
-import type { LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   Check,
-  Coffee,
-  Gift,
-  Leaf,
-  SlidersHorizontal,
-  Sparkles,
-  Star,
   X,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -20,6 +13,8 @@ import {
   type ExploreFilterOption,
 } from "@/lib/explore-filters";
 import { useExploreFilterLabels } from "@/lib/i18n/use-filter-labels";
+import { ResolvedIconTile } from "@/components/app/CofexIconTile";
+import { resolveExploreFilterIcon } from "@/lib/explorer-section-icons";
 
 export interface ExploreFilterState {
   free: boolean;
@@ -41,15 +36,19 @@ interface ExploreFiltersProps {
   onClear: () => void;
 }
 
+function ExploreFilterIcon({ id, size = "xs" }: { id: string; size?: "xs" | "sm" }) {
+  return <ResolvedIconTile icon={resolveExploreFilterIcon(id)} size={size} />;
+}
+
 function FilterChip({
   active,
   onClick,
-  Icon,
+  filterId,
   children,
 }: {
   active: boolean;
   onClick: () => void;
-  Icon?: LucideIcon;
+  filterId: string;
   children: ReactNode;
 }) {
   return (
@@ -60,7 +59,7 @@ function FilterChip({
         active ? "cofex-app-chip-active" : ""
       }`}
     >
-      {Icon && <Icon className="h-3.5 w-3.5 text-[color:var(--cofex-cyan)]" />}
+      <ExploreFilterIcon id={filterId} />
       {children}
     </button>
   );
@@ -99,7 +98,6 @@ function RewardOption({
   onClick: () => void;
   pastelBg: string;
 }) {
-  const Icon = option.Icon;
   return (
     <button
       type="button"
@@ -111,9 +109,7 @@ function RewardOption({
         fontWeight: active ? 600 : 400,
       }}
     >
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/85 shadow-sm">
-        <Icon className="h-4 w-4 text-[color:var(--cofex-cyan)]" />
-      </span>
+      <ExploreFilterIcon id={option.id} size="sm" />
       <span className="min-w-0 flex-1 pt-0.5">
         <span className="block text-sm font-semibold text-[color:var(--cofex-coffee-deep)]">{option.label}</span>
         {option.description && (
@@ -140,7 +136,6 @@ function AmenityOption({
   active: boolean;
   onClick: () => void;
 }) {
-  const Icon = option.Icon;
   return (
     <button
       type="button"
@@ -152,9 +147,7 @@ function AmenityOption({
         fontWeight: active ? 600 : 400,
       }}
     >
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/85 shadow-sm">
-        <Icon className="h-4 w-4 text-[color:var(--cofex-coffee-deep)]" />
-      </span>
+      <ExploreFilterIcon id={option.id} size="sm" />
       <span className="min-w-0 flex-1 pt-0.5">
         <span className="block text-sm font-semibold text-[color:var(--cofex-coffee-deep)]">{option.label}</span>
         {option.description && (
@@ -181,13 +174,13 @@ export function ExploreFilters({
 }: ExploreFiltersProps) {
   const { t } = useTranslation();
   const { rewardFilters, tagFilters, amenityFilters, ratingFilters } = useExploreFilterLabels();
-  const extraChips: { key: string; label: string; Icon: LucideIcon; onRemove: () => void }[] = [];
+  const extraChips: { key: string; label: string; filterId: string; onRemove: () => void }[] = [];
 
   if (filters.campaignsOnly) {
     extraChips.push({
       key: "campaigns",
       label: t("filters.campaignsChip"),
-      Icon: rewardFilters[1].Icon,
+      filterId: "campaigns",
       onRemove: onToggleCampaigns,
     });
   }
@@ -195,7 +188,7 @@ export function ExploreFilters({
     extraChips.push({
       key: "rating",
       label: t("filters.starsChip", { rating: filters.minRating }),
-      Icon: Star,
+      filterId: "rating",
       onRemove: () => onSetMinRating(0),
     });
   }
@@ -205,7 +198,7 @@ export function ExploreFilters({
     extraChips.push({
       key: `tag-${tag}`,
       label: meta?.label ?? tag,
-      Icon: meta?.Icon ?? Sparkles,
+      filterId: tag,
       onRemove: () => onToggleTag(tag),
     });
   }
@@ -214,7 +207,7 @@ export function ExploreFilters({
     extraChips.push({
       key: `amenity-${amenity}`,
       label: meta?.label ?? amenity,
-      Icon: meta?.Icon ?? Sparkles,
+      filterId: amenity,
       onRemove: () => onToggleAmenity(amenity),
     });
   }
@@ -234,7 +227,7 @@ export function ExploreFilters({
               filterCount > 0 ? "cofex-app-chip-active" : ""
             }`}
           >
-            <SlidersHorizontal className="h-3.5 w-3.5 text-[color:var(--cofex-cyan)]" />
+            <ExploreFilterIcon id="filters" />
             {filterCount > 0 ? t("filters.triggerCount", { count: filterCount }) : t("filters.trigger")}
           </button>
         </PopoverTrigger>
@@ -276,7 +269,7 @@ export function ExploreFilters({
 
               <FilterSection title={t("filters.ratingSection")}>
                 <div className="flex flex-wrap gap-2">
-                  {ratingFilters.map(({ value, label, Icon }) => {
+                  {ratingFilters.map(({ value, label }) => {
                     const active = filters.minRating === value;
                     return (
                       <button
@@ -291,13 +284,7 @@ export function ExploreFilters({
                         }}
                       >
                         {active && <Check className="h-3 w-3" />}
-                        <Icon
-                          className={`h-3.5 w-3.5 ${
-                            value > 0
-                              ? "fill-[color:var(--cofex-accent-gold)] text-[color:var(--cofex-accent-gold)]"
-                              : "text-[color:var(--cofex-cyan)]"
-                          }`}
-                        />
+                        <ExploreFilterIcon id="rating" />
                         {label}
                       </button>
                     );
@@ -309,7 +296,6 @@ export function ExploreFilters({
                 <div className="grid grid-cols-2 gap-2">
                   {tagFilters.map((option) => {
                     const active = filters.tags.includes(option.id);
-                    const Icon = option.Icon;
                     return (
                       <button
                         key={option.id}
@@ -323,7 +309,7 @@ export function ExploreFilters({
                           fontWeight: active ? 600 : 400,
                         }}
                       >
-                        <Icon className="h-3.5 w-3.5 shrink-0 text-[color:var(--cofex-cyan)]" />
+                        <ExploreFilterIcon id={option.id} />
                         <span className="truncate">{option.label}</span>
                       </button>
                     );
@@ -360,18 +346,18 @@ export function ExploreFilters({
         </PopoverContent>
       </Popover>
 
-      <FilterChip active={filters.free} onClick={onToggleFree} Icon={Gift}>
+      <FilterChip active={filters.free} onClick={onToggleFree} filterId="free">
         {t("filters.freeCoffeeChip")}
       </FilterChip>
-      <FilterChip active={filters.tags.includes("Espresso")} onClick={() => onToggleTag("Espresso")} Icon={Coffee}>
+      <FilterChip active={filters.tags.includes("Espresso")} onClick={() => onToggleTag("Espresso")} filterId="Espresso">
         {t("filters.tags.Espresso")}
       </FilterChip>
-      <FilterChip active={filters.tags.includes("Matcha")} onClick={() => onToggleTag("Matcha")} Icon={Leaf}>
+      <FilterChip active={filters.tags.includes("Matcha")} onClick={() => onToggleTag("Matcha")} filterId="Matcha">
         {t("filters.tags.Matcha")}
       </FilterChip>
 
       {extraChips.map((chip) => (
-        <FilterChip key={chip.key} active onClick={chip.onRemove} Icon={chip.Icon}>
+        <FilterChip key={chip.key} active onClick={chip.onRemove} filterId={chip.filterId}>
           {chip.label}
           <X className="h-3 w-3 opacity-50" />
         </FilterChip>

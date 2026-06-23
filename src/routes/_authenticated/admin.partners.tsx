@@ -101,7 +101,7 @@ function AdminPartnersPage() {
                   <div>
                     <p className="font-semibold">{shop.name}</p>
                     <p className="text-sm text-[color:var(--cofex-black)]/60">
-                      {shop.city ?? "—"} · {shop.slug}
+                      {shop.city ?? "-"} · {shop.slug}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">

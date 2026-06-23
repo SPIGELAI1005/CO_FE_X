@@ -1,3 +1,4 @@
+import { CofexIconTile } from "@/components/app/CofexIconTile";
 import type { SocialPostPackage } from "@/lib/social-post-assistant";
 import { MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -34,8 +35,8 @@ export function SocialPostTemplate({ shopName, coverImageUrl, postPackage, isSto
         </div>
 
         <div className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-white/90 bg-white/20 text-4xl shadow-lg backdrop-blur-sm">
-            {postPackage.drinkEmoji}
+          <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-white/90 bg-white/20 shadow-lg backdrop-blur-sm">
+            <CofexIconTile rewardType={postPackage.rewardType} size="lg" />
           </div>
         </div>
 

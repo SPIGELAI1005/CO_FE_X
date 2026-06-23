@@ -1,13 +1,63 @@
 # Latest Changes — CO:FE(X)
 
-**Last updated:** June 23, 2026  
-**Status:** Core flow tests + QA checklist; vision waves + campaign domain shipped; committed to [CO_FE_X](https://github.com/SPIGELAI1005/CO_FE_X).
+**Last updated:** June 24, 2026  
+**Status:** Campaign/partner hardening shipped; core flow tests + vision waves + campaign domain; committed to [CO_FE_X](https://github.com/SPIGELAI1005/CO_FE_X).
 
 This document summarizes the most recent product and engineering work. For sprint-level detail, see [SPRINT_EXPLORER_ENGAGEMENT.md](./SPRINT_EXPLORER_ENGAGEMENT.md), [PLAN_EXPLORER_GAPS.md](./PLAN_EXPLORER_GAPS.md), and [PLAN_PARTNER_NEXT_STEPS.md](./PLAN_PARTNER_NEXT_STEPS.md). For a full system review, see [AUDIT.md](./AUDIT.md).
 
 ---
 
-## Summary (June 2026 — latest)
+## Summary (June 24, 2026 — latest)
+
+| Batch | Scope |
+|-------|--------|
+| **Campaign join & timing** | Local calendar-day starts; `campaignHasStarted`; join error mapping; “Starts {date}” UI; `_campaign_is_live` RPC chain fix |
+| **Partner analytics fix** | Local date range filters — KPIs include same-day activity after local midnight |
+| **Partner submissions fix** | Broken profiles FK join removed; tab counts; auto-approved badge; load error state |
+| **Campaign wizard & EEFFOC** | Template categories, publish i18n, edit crash fix, branded QR, door poster PDF |
+| **June 24 migrations** | `20260624010000`–`20260624040000` — start date backfill + `_campaign_is_live` record/jsonb fixes |
+
+---
+
+## Campaign join & partner analytics hardening (June 24, 2026)
+
+### Problem
+
+End-to-end EEFFOC test exposed several production-edge bugs:
+
+1. Explorer campaign page crashed (missing `trackExplorerEvent` import).
+2. Custom date “June 24” stored as UTC midnight — join blocked until 02:00 CEST.
+3. `join_campaign` RPC failed (`cannot cast type record to campaigns`, then `could not identify column starts_at`).
+4. Partner analytics showed **0** despite real participants — UTC date filter excluded local-midnight activity.
+5. Partner submissions page always empty — invalid PostgREST join hint to `profiles`.
+
+### Fixes
+
+| Area | Change | Key files |
+|------|--------|-----------|
+| Join eligibility | Local calendar-day semantics + UTC-midnight legacy fallback | `campaign-availability.ts`, `campaign-wizard.ts` |
+| Join RPC | `_campaign_is_live(_c record)` reads fields via `to_jsonb(_c)` | `20260624020000`–`20260624040000` migrations |
+| Start date backfill | UTC-midnight `starts_at` → Europe/Berlin local start of day | `20260624010000_campaign_start_local_day.sql` |
+| Explorer UI | “Starts {date}” badge/button; readable join errors | `campaign.$id.tsx`, `CampaignJoinConsent.tsx`, `rpc/client.ts` |
+| Partner analytics | Local FROM/TO day boundaries | `local-date-range.ts`, `partner.analytics.tsx`, `partner.index.tsx` |
+| Partner submissions | Separate profiles query; tab counts; auto-approved label | `partner-submissions.ts`, `partner.submissions.tsx` |
+| Branded QR / door PDF | Logo overlay QR + printable A4 door poster | `qr-code-brand.ts`, `shop-door-qr-pdf.ts`, `ShopDoorQr.tsx` |
+| Wizard polish | EEFFOC template groups, publish keys, edit campaign fields | `CampaignWizard.tsx`, `eeffoc-templates.ts`, `partner.campaigns.tsx` |
+
+### Migrations (June 24)
+
+| Migration | Purpose |
+|-----------|---------|
+| `20260624010000_campaign_start_local_day.sql` | Backfill UTC-midnight starts; local-day logic in `_campaign_is_live` |
+| `20260624020000_fix_campaign_is_live_record.sql` | Accept generic `record` parameter |
+| `20260624030000_drop_campaign_is_live_overload.sql` | Remove conflicting `campaigns` composite overload |
+| `20260624040000_fix_campaign_is_live_jsonb.sql` | Field access via `to_jsonb` for joined rows |
+
+Run `npm run db:push` + `npm run db:types` after pull.
+
+---
+
+## Summary (June 2026 — prior batches)
 
 | Batch | Scope |
 |-------|--------|
@@ -330,7 +380,7 @@ Run `npm run db:push` then `npm run db:types` after pulling.
 | Unit tests (`npm test`) | 143 passing (36 files) |
 | Build (`npm run build`) | Passing |
 | Partner E2E (`npm run test:e2e:partner`) | 12 passing |
-| Migrations in repo | Through `20260621120000_campaign_reward_domain.sql` |
+| Migrations in repo | 54 files; through `20260623160000` + June 24 `_campaign_is_live` fixes |
 | Types regenerated | `src/integrations/supabase/types.ts` |
 
 ---
@@ -362,6 +412,7 @@ supabase/migrations/
   20260618120000_partner_application_notifications.sql
   20260619120000_vision_wave1.sql … 20260619150000_vision_wave4.sql
   20260621120000_campaign_reward_domain.sql
+  20260624010000_campaign_start_local_day.sql … 20260624040000_fix_campaign_is_live_jsonb.sql
 ```
 
 ---

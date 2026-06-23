@@ -62,7 +62,7 @@
 }
 
 :root {
-  /* CO:FE(X) — bright, white-canvas style matching the draft */
+  /* CO:FE(X), bright, white-canvas style matching the draft */
   --radius: 1rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.18 0.01 60);
@@ -99,11 +99,11 @@
 
   /* CO:FE(X) brand accents */
   --cofex-cyan: #00b6f0;
-  --cofex-coffee: #7b4a2b;        /* Coffee Brown — primary brand */
+  --cofex-coffee: #7b4a2b;        /* Coffee Brown, primary brand */
   --cofex-coffee-deep: #4a2c1a;   /* deeper espresso for hover/contrast */
-  --cofex-cream: #fbfaf6;         /* Cream White — surfaces */
+  --cofex-cream: #fbfaf6;         /* Cream White, surfaces */
   --cofex-cream-warm: #f3ede1;    /* warm cream alt */
-  --cofex-black: #0a0a0a;         /* Black — text/buttons */
+  --cofex-black: #0a0a0a;         /* Black, text/buttons */
   --cofex-gold: #c9a44c;          /* Accent Gold */
   --cofex-accent-gold: var(--cofex-gold);
   --cofex-gold-soft: #e8cf86;     /* soft gold highlight */
@@ -234,7 +234,7 @@
 }
 .cofex-reveal.is-visible { opacity: 1; transform: none; }
 
-/* Parallax — children read --px/--py (mouse) and --sy (scroll) from root/parent */
+/* Parallax, children read --px/--py (mouse) and --sy (scroll) from root/parent */
 .cofex-px {
   transform:
     translate3d(
@@ -571,7 +571,7 @@ html[data-cofex-auth-busy] body::before {
   font-weight: 700;
 }
 
-/* Branded popover host — strip default shadcn chrome */
+/* Branded popover host, strip default shadcn chrome */
 .cofex-popover-panel-host {
   border: none !important;
   background: transparent !important;
@@ -698,11 +698,17 @@ html[data-cofex-auth-busy] body::before {
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.cofex-campaign-pin__emoji {
+.cofex-campaign-pin__emoji,
+.cofex-campaign-pin__icon {
   transform: rotate(45deg);
-  font-size: 20px;
+  display: grid;
+  place-items: center;
   line-height: 1;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.cofex-campaign-pin__icon > span {
+  transform: rotate(-45deg);
 }
 
 .cofex-campaign-pin__badge {

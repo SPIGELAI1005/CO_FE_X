@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { LucideIcon } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { AppPage, AppPageBody, AppPageHeader } from "@/components/app/AppPageShell";
 import { QueryBoundary } from "@/components/patterns/QueryBoundary";
 import {
@@ -16,7 +16,8 @@ import { levelFor, levelDisplayName } from "@/lib/explorer-levels";
 import { trackExplorerEvent } from "@/lib/explorer-analytics";
 import { useProfile } from "@/lib/queries/profile";
 import { cityToSlug } from "@/lib/cities";
-import { Coffee, MessageSquareText, Megaphone, Share2, Sparkles, Crown, Medal, Award, MapPin } from "lucide-react";
+import { CofexIconTile } from "@/components/app/CofexIconTile";
+import { LEADERBOARD_METRIC_ICONS, LEADERBOARD_PODIUM_ICONS } from "@/lib/explorer-section-icons";
 export const Route = createFileRoute("/_authenticated/_explorer/leaderboard")({
   head: () => ({ meta: [{ title: "Leaderboard · CO:FE(X)" }] }),
   component: LeaderboardPage,
@@ -25,22 +26,20 @@ export const Route = createFileRoute("/_authenticated/_explorer/leaderboard")({
 const METRIC_KEYS: {
   id: LeaderboardMetric;
   labelKey: string;
-  Icon: LucideIcon;
   field: keyof LeaderboardRow;
   suffix?: string;
 }[] = [
-  { id: "points", labelKey: "leaderboardPage.metrics.points", Icon: Sparkles, field: "total_points", suffix: "pts" },
-  { id: "cafes", labelKey: "leaderboardPage.metrics.cafes", Icon: Coffee, field: "cafes_visited" },
-  { id: "reviews", labelKey: "leaderboardPage.metrics.reviews", Icon: MessageSquareText, field: "reviews_written" },
-  { id: "campaigns", labelKey: "leaderboardPage.metrics.campaigns", Icon: Megaphone, field: "campaigns_completed" },
-  { id: "social", labelKey: "leaderboardPage.metrics.social", Icon: Share2, field: "social_posts" },
+  { id: "points", labelKey: "leaderboardPage.metrics.points", field: "total_points", suffix: "pts" },
+  { id: "cafes", labelKey: "leaderboardPage.metrics.cafes", field: "cafes_visited" },
+  { id: "reviews", labelKey: "leaderboardPage.metrics.reviews", field: "reviews_written" },
+  { id: "campaigns", labelKey: "leaderboardPage.metrics.campaigns", field: "campaigns_completed" },
+  { id: "social", labelKey: "leaderboardPage.metrics.social", field: "social_posts" },
 ];
 
 interface LeaderboardMetricItem {
   id: LeaderboardMetric;
   label: string;
   labelKey: string;
-  Icon: LucideIcon;
   field: keyof LeaderboardRow;
   suffix?: string;
 }
@@ -99,7 +98,7 @@ function LeaderboardPage() {
                 metric === m.id ? "cofex-app-chip-active" : ""
               }`}
             >
-              <m.Icon className="h-3.5 w-3.5" /> {m.label}
+              <CofexIconTile meta={LEADERBOARD_METRIC_ICONS[m.id]} size="xs" /> {m.label}
             </button>
           ))}
         </div>
@@ -229,9 +228,9 @@ function PodiumCard({
   const LevelIcon = level.Icon;
   const heights = { 1: "pt-8 pb-6", 2: "pt-6 pb-5", 3: "pt-5 pb-4" };
   const icons = {
-    1: <Crown className="h-5 w-5 text-amber-700" />,
-    2: <Medal className="h-5 w-5 text-slate-600" />,
-    3: <Award className="h-5 w-5 text-orange-700" />,
+    1: <CofexIconTile meta={LEADERBOARD_PODIUM_ICONS[1]} size="sm" />,
+    2: <CofexIconTile meta={LEADERBOARD_PODIUM_ICONS[2]} size="sm" />,
+    3: <CofexIconTile meta={LEADERBOARD_PODIUM_ICONS[3]} size="sm" />,
   };
   const colors = {
     1: "border-amber-400 bg-gradient-to-b from-amber-200 via-amber-300 to-orange-400 text-amber-950",
@@ -295,7 +294,7 @@ function RankRow({
             <LevelIcon className="h-3 w-3" /> {levelDisplayName(level, t)}
           </span>
           <span className="inline-flex items-center gap-0.5">
-            <Coffee className="h-3 w-3" /> {row.cafes_visited}
+            <CofexIconTile meta={LEADERBOARD_METRIC_ICONS.cafes} size="xs" /> {row.cafes_visited}
           </span>
         </div>
       </div>

@@ -10,6 +10,7 @@ import {
   ShieldAlert,
   Image,
   UserCog,
+  ArrowLeft,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
@@ -24,7 +25,7 @@ function AdminOverviewPage() {
     <div className="p-6 max-w-5xl">
       <h1 className="text-2xl font-extrabold text-[color:var(--cofex-coffee-deep)]">Admin console</h1>
       <p className="mt-1 text-sm text-[color:var(--cofex-black)]/65">
-        Platform control — users, cafés, campaigns, trust & safety, and content moderation.
+        Platform control, users, cafés, campaigns, trust & safety and content moderation.
       </p>
 
       {isLoading ? (
@@ -45,6 +46,12 @@ function AdminOverviewPage() {
           </div>
 
           <div className="mt-10 grid gap-3 sm:grid-cols-2">
+            <QuickLink
+              to="/radar"
+              title="Back to explorer app"
+              description="Return to Radar, campaigns, passport and the main CO:FE(X) experience"
+              icon={ArrowLeft}
+            />
             <QuickLink
               to="/admin/users"
               title="User management"

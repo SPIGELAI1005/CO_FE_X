@@ -107,7 +107,7 @@ export function buildPassportShareSummary(input: {
     input.favoriteRewardLabel ? `✨ Favorite reward: ${input.favoriteRewardLabel}` : null,
     `📮 ${input.stampCount} collectible stamps`,
     "",
-    "Join the Coffee Explorer Network — We give EEFFOC!",
+    "Join the Coffee Explorer Network, We give EEFFOC!",
   ].filter(Boolean);
   return lines.join("\n");
 }

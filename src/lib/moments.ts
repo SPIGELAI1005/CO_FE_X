@@ -43,30 +43,27 @@ export interface MomentFeedItem {
   published_at: string;
 }
 
-export const MOMENT_FEED_FILTERS: { id: MomentFeedFilter; labelKey: string; emoji: string }[] = [
-  { id: "trending", labelKey: "moments.filters.trending", emoji: "🔥" },
-  { id: "nearby", labelKey: "moments.filters.nearby", emoji: "📍" },
-  { id: "new_cafes", labelKey: "moments.filters.newCafes", emoji: "✨" },
-  { id: "coffee", labelKey: "moments.filters.coffee", emoji: "☕" },
-  { id: "matcha", labelKey: "moments.filters.matcha", emoji: "🍵" },
-  { id: "ice_cream", labelKey: "moments.filters.iceCream", emoji: "🍦" },
-  { id: "friends", labelKey: "moments.filters.friends", emoji: "👥" },
+import type { LucideIcon } from "lucide-react";
+import { Flame, MapPin, Sparkles, Users } from "lucide-react";
+
+export const MOMENT_FEED_FILTERS: {
+  id: MomentFeedFilter;
+  labelKey: string;
+  rewardType?: string;
+  meta?: { Icon: LucideIcon; from: string; to: string };
+}[] = [
+  { id: "trending", labelKey: "moments.filters.trending", meta: { Icon: Flame, from: "from-orange-400", to: "to-red-500" } },
+  { id: "nearby", labelKey: "moments.filters.nearby", meta: { Icon: MapPin, from: "from-sky-400", to: "to-blue-600" } },
+  { id: "new_cafes", labelKey: "moments.filters.newCafes", meta: { Icon: Sparkles, from: "from-violet-400", to: "to-purple-600" } },
+  { id: "coffee", labelKey: "moments.filters.coffee", rewardType: "coffee" },
+  { id: "matcha", labelKey: "moments.filters.matcha", rewardType: "matcha" },
+  { id: "ice_cream", labelKey: "moments.filters.iceCream", rewardType: "ice_cream" },
+  { id: "friends", labelKey: "moments.filters.friends", meta: { Icon: Users, from: "from-cyan-400", to: "to-teal-600" } },
 ];
 
-const DRINK_EMOJI: Record<string, string> = {
-  coffee: "☕",
-  espresso: "☕",
-  cappuccino: "🥛",
-  matcha: "🍵",
-  ice_cream: "🍦",
-  juice: "🧃",
-  cola: "🥤",
-  other: "🎁",
-};
-
-export function momentDrinkEmoji(drinkType: string | null | undefined): string {
-  if (!drinkType) return "☕";
-  return DRINK_EMOJI[drinkType] ?? "☕";
+export function momentDrinkType(drinkType: string | null | undefined): string {
+  if (!drinkType) return "coffee";
+  return drinkType;
 }
 
 export function momentAuthorLabel(item: MomentFeedItem): string {

@@ -1,26 +1,24 @@
 import type { CatalogItem } from "@/lib/queries/wallet";
-import {
-  getRewardCatalogMeta,
-  rewardCatalogIconBoxClass,
-  rewardCatalogIconClass,
-} from "@/lib/reward-catalog-meta";
+import { CofexIconTile, type CofexIconTileSize } from "@/components/app/CofexIconTile";
+import { getRewardCatalogIcon } from "@/lib/reward-catalog-meta";
 
 interface RewardCatalogIconProps {
   item: Pick<CatalogItem, "name" | "tier">;
   size?: "sm" | "md";
 }
 
-export function RewardCatalogIcon({ item, size = "md" }: RewardCatalogIconProps) {
-  const { Icon, accent } = getRewardCatalogMeta(item);
-  const box = size === "sm" ? "h-10 w-10 rounded-xl" : "h-12 w-12 rounded-2xl";
-  const icon = size === "sm" ? "h-5 w-5" : "h-6 w-6";
+const SIZE_MAP: Record<"sm" | "md", CofexIconTileSize> = {
+  sm: "md",
+  md: "lg",
+};
 
-  return (
-    <div
-      className={`flex shrink-0 items-center justify-center ${box} ${rewardCatalogIconBoxClass(accent)}`}
-      aria-hidden
-    >
-      <Icon className={`${icon} ${rewardCatalogIconClass(accent)}`} strokeWidth={2} />
-    </div>
-  );
+export function RewardCatalogIcon({ item, size = "md" }: RewardCatalogIconProps) {
+  const resolved = getRewardCatalogIcon(item);
+  const tileSize = SIZE_MAP[size];
+
+  if ("rewardType" in resolved) {
+    return <CofexIconTile rewardType={resolved.rewardType} size={tileSize} />;
+  }
+
+  return <CofexIconTile meta={resolved.meta} size={tileSize} />;
 }

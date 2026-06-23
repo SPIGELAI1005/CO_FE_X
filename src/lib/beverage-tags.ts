@@ -1,15 +1,29 @@
+import type { LucideIcon } from "lucide-react";
+import { Citrus, Coffee, CupSoda, IceCreamCone, Leaf } from "lucide-react";
+
 export interface BeverageTag {
   id: string;
   labelKey: string;
-  emoji: string;
+}
+
+export const BEVERAGE_ICON_MAP: Record<string, { Icon: LucideIcon; from: string; to: string }> = {
+  coffee: { Icon: Coffee, from: "from-amber-400", to: "to-orange-600" },
+  matcha: { Icon: Leaf, from: "from-emerald-400", to: "to-green-700" },
+  ice_cream: { Icon: IceCreamCone, from: "from-pink-400", to: "to-rose-500" },
+  cola: { Icon: CupSoda, from: "from-red-400", to: "to-rose-700" },
+  juice: { Icon: Citrus, from: "from-lime-400", to: "to-green-600" },
+};
+
+export function beverageIconMeta(id: string) {
+  return BEVERAGE_ICON_MAP[id] ?? BEVERAGE_ICON_MAP.coffee;
 }
 
 export const BEVERAGE_TAGS: BeverageTag[] = [
-  { id: "coffee", labelKey: "beverage.coffee", emoji: "☕" },
-  { id: "matcha", labelKey: "beverage.matcha", emoji: "🍵" },
-  { id: "ice_cream", labelKey: "beverage.iceCream", emoji: "🍦" },
-  { id: "cola", labelKey: "beverage.cola", emoji: "🥤" },
-  { id: "juice", labelKey: "beverage.juice", emoji: "🧃" },
+  { id: "coffee", labelKey: "beverage.coffee" },
+  { id: "matcha", labelKey: "beverage.matcha" },
+  { id: "ice_cream", labelKey: "beverage.iceCream" },
+  { id: "cola", labelKey: "beverage.cola" },
+  { id: "juice", labelKey: "beverage.juice" },
 ];
 
 export function beverageTitle(count: number, tag: string): string {

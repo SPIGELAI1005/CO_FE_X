@@ -1,4 +1,10 @@
+import type { LucideIcon } from "lucide-react";
+import { Camera, Facebook, Image, Music, Paperclip } from "lucide-react";
+import type { RewardIconMeta } from "@/lib/reward-icons";
+
 export type SocialPlatform = "tiktok" | "instagram_post" | "instagram_story" | "facebook_post" | "screenshot";
+
+export type SocialPlatformIconMeta = Pick<RewardIconMeta, "Icon" | "from" | "to">;
 
 export interface SocialPlatformMeta {
   id: SocialPlatform;
@@ -6,7 +12,7 @@ export interface SocialPlatformMeta {
   type: "link" | "screenshot";
   composeLabel: string;
   placeholder?: string;
-  emoji: string;
+  iconMeta: SocialPlatformIconMeta;
   aspectHint?: "story" | "feed" | "video";
 }
 
@@ -16,7 +22,7 @@ export const SOCIAL_PLATFORMS: SocialPlatformMeta[] = [
     label: "Instagram Story",
     type: "screenshot",
     composeLabel: "Open Instagram Stories",
-    emoji: "📸",
+    iconMeta: { Icon: Camera, from: "from-fuchsia-400", to: "to-pink-600" },
     aspectHint: "story",
   },
   {
@@ -25,7 +31,7 @@ export const SOCIAL_PLATFORMS: SocialPlatformMeta[] = [
     type: "link",
     composeLabel: "Create on Instagram",
     placeholder: "https://instagram.com/p/...",
-    emoji: "🖼️",
+    iconMeta: { Icon: Image, from: "from-violet-400", to: "to-purple-600" },
     aspectHint: "feed",
   },
   {
@@ -34,7 +40,7 @@ export const SOCIAL_PLATFORMS: SocialPlatformMeta[] = [
     type: "link",
     composeLabel: "Create on TikTok",
     placeholder: "https://www.tiktok.com/@you/video/...",
-    emoji: "🎵",
+    iconMeta: { Icon: Music, from: "from-slate-700", to: "to-slate-900" },
     aspectHint: "video",
   },
   {
@@ -43,7 +49,7 @@ export const SOCIAL_PLATFORMS: SocialPlatformMeta[] = [
     type: "link",
     composeLabel: "Create on Facebook",
     placeholder: "https://facebook.com/...",
-    emoji: "📘",
+    iconMeta: { Icon: Facebook, from: "from-blue-500", to: "to-blue-700" },
     aspectHint: "feed",
   },
   {
@@ -51,12 +57,16 @@ export const SOCIAL_PLATFORMS: SocialPlatformMeta[] = [
     label: "Other / manual",
     type: "screenshot",
     composeLabel: "Take a photo",
-    emoji: "📎",
+    iconMeta: { Icon: Paperclip, from: "from-stone-400", to: "to-stone-600" },
   },
 ];
 
 export function getSocialPlatform(id: string): SocialPlatformMeta | undefined {
   return SOCIAL_PLATFORMS.find((p) => p.id === id);
+}
+
+export function getSocialPlatformIconMeta(id: string): SocialPlatformIconMeta {
+  return getSocialPlatform(id)?.iconMeta ?? { Icon: Camera, from: "from-slate-400", to: "to-slate-600" };
 }
 
 /** Opens native app or web compose surface; cannot confirm publish programmatically. */

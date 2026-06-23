@@ -9,7 +9,7 @@ export const Route = createFileRoute("/privacy")({
       { title: "Privacy Policy · CO:FE(X)" },
       {
         name: "description",
-        content: "How CO:FE(X) collects, uses, and protects personal data for explorers and café partners.",
+        content: "How CO:FE(X) collects, uses and protects personal data for explorers and café partners.",
       },
     ],
   }),
@@ -20,7 +20,7 @@ function PrivacyPage() {
   return (
     <LegalPageShell
       title="Privacy Policy"
-      subtitle="How we handle personal data when you explore cafés, share posts, and earn rewards."
+      subtitle="How we handle personal data when you explore cafés, share posts and earn rewards."
       lastUpdated={LAST_UPDATED}
     >
       <LegalCallout>
@@ -60,15 +60,15 @@ function PrivacyPage() {
       <LegalSection title="3. Data we collect">
         <p>
           <strong>Account and profile data:</strong> name, email address, password hash, avatar, handle, city,
-          onboarding preferences, referral code, role (explorer, partner, admin), and account settings.
+          onboarding preferences, referral code, role (explorer, partner, admin) and account settings.
         </p>
         <p>
           <strong>Activity data:</strong> check-ins, campaign participation, passport stamps, wallet points, reward
-          redemptions, reviews, leaderboard entries, notifications, and in-app actions needed to operate the service.
+          redemptions, reviews, leaderboard entries, notifications and in-app actions needed to operate the service.
         </p>
         <p>
           <strong>Social and campaign data:</strong> public post URLs, optional captions, uploaded screenshots,
-          platform type (for example Instagram or TikTok), campaign hashtags, submission status, and partner review
+          platform type (for example Instagram or TikTok), campaign hashtags, submission status and partner review
           notes related to reward verification.
         </p>
         <p>
@@ -78,11 +78,11 @@ function PrivacyPage() {
         </p>
         <p>
           <strong>Partner business data:</strong> shop name, address, description, images, billing details, subscription
-          status, campaign configuration, analytics, and API key metadata for integrated partners.
+          status, campaign configuration, analytics and API key metadata for integrated partners.
         </p>
         <p>
           <strong>Technical data:</strong> IP address, browser type, device identifiers, log files, crash reports,
-          cookie or local storage values, and security signals used to prevent abuse.
+          cookie or local storage values and security signals used to prevent abuse.
         </p>
         <p>
           <strong>Communications:</strong> messages you send to support and early-access signup information.
@@ -92,14 +92,14 @@ function PrivacyPage() {
       <LegalSection title="4. Why we use your data">
         <LegalList
           items={[
-            "Provide accounts, authentication, and core app features (contract / pre-contract).",
-            "Verify café visits, campaign eligibility, and reward redemption (contract / legitimate interest).",
+            "Provide accounts, authentication and core app features (contract / pre-contract).",
+            "Verify café visits, campaign eligibility and reward redemption (contract / legitimate interest).",
             "Review social submissions for fraud prevention and partner campaign rules (legitimate interest).",
-            "Show public café pages, maps, and SEO-friendly listings (legitimate interest / consent where required).",
+            "Show public café pages, maps and SEO-friendly listings (legitimate interest / consent where required).",
             "Operate partner billing and subscriptions when enabled (contract / legal obligation).",
-            "Send service messages, security alerts, and optional marketing with consent where required.",
-            "Improve reliability, analytics, and product development using aggregated or pseudonymized data where possible.",
-            "Comply with law, respond to requests, and enforce our Terms & Conditions.",
+            "Send service messages, security alerts and optional marketing with consent where required.",
+            "Improve reliability, analytics and product development using aggregated or pseudonymized data where possible.",
+            "Comply with law, respond to requests and enforce our Terms & Conditions.",
           ]}
         />
       </LegalSection>
@@ -109,9 +109,9 @@ function PrivacyPage() {
         <LegalList
           items={[
             "Performance of a contract (Art. 6(1)(b) GDPR) when you create an account or join a campaign.",
-            "Legitimate interests (Art. 6(1)(f) GDPR) for security, fraud prevention, analytics, and network growth, balanced against your rights.",
-            "Consent (Art. 6(1)(a) GDPR) for optional marketing emails, non-essential cookies, and certain public profile choices.",
-            "Legal obligation (Art. 6(1)(c) GDPR) for tax, billing records, and regulatory requests.",
+            "Legitimate interests (Art. 6(1)(f) GDPR) for security, fraud prevention, analytics and network growth, balanced against your rights.",
+            "Consent (Art. 6(1)(a) GDPR) for optional marketing emails, non-essential cookies and certain public profile choices.",
+            "Legal obligation (Art. 6(1)(c) GDPR) for tax, billing records and regulatory requests.",
           ]}
         />
       </LegalSection>
@@ -189,9 +189,9 @@ function PrivacyPage() {
         />
       </LegalSection>
 
-      <LegalSection title="11. Cookies, local storage, and PWA">
+      <LegalSection title="11. Cookies, local storage and PWA">
         <p>
-          We use essential cookies and local storage for login sessions, security, and app preferences. See our{" "}
+          We use essential cookies and local storage for login sessions, security and app preferences. See our{" "}
           <a href="/cookies" className="underline hover:opacity-80">
             Cookie Policy
           </a>{" "}
@@ -213,7 +213,7 @@ function PrivacyPage() {
       <LegalSection title="13. Security">
         <p>
           We use industry-standard measures including encrypted transport (HTTPS), access controls, row-level security
-          in our database, and role-based permissions. No online service is completely secure, so please use a strong
+          in our database and role-based permissions. No online service is completely secure, so please use a strong
           unique password and protect your device.
         </p>
       </LegalSection>

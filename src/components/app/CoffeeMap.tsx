@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Marker } from "react-leaflet";
 import L from "leaflet";
 import { MapCore, FlyTo } from "@/components/app/map/MapCore";
+import { rewardMarkerIconHtml } from "@/lib/map/reward-marker-icon";
 
 export type MapShop = {
   id: string;
@@ -24,7 +25,9 @@ const coffeePin = (free: boolean) =>
           box-shadow:0 6px 16px rgba(0,0,0,.25), 0 0 0 3px white;
           display:grid;place-items:center;
         ">
-          <div style="transform:rotate(45deg);color:#fff;font-size:18px;line-height:1;">☕</div>
+          <div style="transform:rotate(45deg);display:grid;place-items:center;line-height:0;">
+            ${rewardMarkerIconHtml("coffee")}
+          </div>
         </div>
       </div>`,
     iconSize: [40, 40],

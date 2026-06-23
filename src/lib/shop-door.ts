@@ -6,7 +6,7 @@ export function walletVerifyUrl(redemptionCode: string): string {
   return `/partner/verify?code=${encodeURIComponent(redemptionCode)}`;
 }
 
-/** Deep link for printed door QR — opens shop page in door-check-in mode. */
+/** Deep link for printed door QR, opens shop page in door-check-in mode. */
 export function shopDoorUrl(shopSlug: string): string {
   if (typeof window !== "undefined") {
     return `${window.location.origin}/coffee/${encodeURIComponent(shopSlug)}?door=1`;

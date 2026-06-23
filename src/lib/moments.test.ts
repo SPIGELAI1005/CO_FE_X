@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { momentAuthorLabel, momentDrinkEmoji, userSharesMoments } from "./moments";
+import { momentAuthorLabel, momentDrinkType, userSharesMoments } from "./moments";
 import type { MomentFeedItem } from "./moments";
 
 describe("moments", () => {
@@ -32,9 +32,10 @@ describe("moments", () => {
     published_at: new Date().toISOString(),
   };
 
-  it("maps drink emojis", () => {
-    expect(momentDrinkEmoji("matcha")).toBe("🍵");
-    expect(momentDrinkEmoji("ice_cream")).toBe("🍦");
+  it("normalizes drink types", () => {
+    expect(momentDrinkType("matcha")).toBe("matcha");
+    expect(momentDrinkType("ice_cream")).toBe("ice_cream");
+    expect(momentDrinkType(null)).toBe("coffee");
   });
 
   it("prefers café name for campaign highlights", () => {

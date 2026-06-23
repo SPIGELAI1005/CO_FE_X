@@ -43,11 +43,17 @@ type Campaign = {
   reward_description: string | null;
   requirements: string | null;
   hashtag: string | null;
+  hashtags?: string[] | null;
   points_reward: number;
   max_participants: number | null;
   available_quantity?: number | null;
+  reward_type?: string | null;
+  reward_quantity?: number | null;
+  daily_redemption_limit?: number | null;
+  terms_and_conditions?: string | null;
   campaign_type: string;
   fulfillment_mode?: CampaignFulfillmentMode;
+  social_requirements?: unknown;
   participation_token?: string | null;
   auto_approve_social?: boolean;
   status: string;
@@ -186,14 +192,21 @@ function PartnerCampaignsPage() {
       reward_description: editTarget.reward_description,
       requirements: editTarget.requirements,
       hashtag: editTarget.hashtag,
+      hashtags: editTarget.hashtags,
       points_reward: editTarget.points_reward,
       max_participants: editTarget.max_participants,
+      reward_type: editTarget.reward_type,
+      reward_quantity: editTarget.reward_quantity,
+      daily_redemption_limit: editTarget.daily_redemption_limit,
+      terms_and_conditions: editTarget.terms_and_conditions,
       fulfillment_mode: editTarget.fulfillment_mode ?? "check_in",
+      social_requirements: editTarget.social_requirements,
       auto_approve_social: editTarget.auto_approve_social,
       starts_at: editTarget.starts_at,
       ends_at: editTarget.ends_at,
       participant_count: editTarget.participant_count,
       coffee_shop_id: editTarget.coffee_shop_id,
+      status: editTarget.status,
     };
   }, [editTarget]);
 

@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { Star, MapPin, Megaphone, Users, Gift } from "lucide-react";
+import { Star } from "lucide-react";
 import { OptimizedImage } from "@/components/app/OptimizedImage";
+import { CofexIconTile } from "@/components/app/CofexIconTile";
+import { SHOP_CARD_ICONS } from "@/lib/explorer-section-icons";
 
 export type ShopCardData = {
   id: string;
@@ -51,10 +53,10 @@ export function CoffeeShopCard({
         )}
         {shop.free_coffee_available && (
           <span
-            className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-md"
+            className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-md"
             style={{ background: "var(--gradient-coffee)" }}
           >
-            <Gift className="h-3 w-3" /> Free coffee
+            <CofexIconTile rewardType="coffee" size="xs" /> Free coffee
           </span>
         )}
         <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full border border-white/60 bg-white/95 px-2.5 py-1 text-[11px] font-semibold shadow-sm backdrop-blur">
@@ -73,8 +75,8 @@ export function CoffeeShopCard({
               <p className="mt-0.5 truncate text-xs text-[color:var(--cofex-black)]/55">{shop.city}</p>
             )}
           </div>
-          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[color:var(--cofex-pastel-blue)] px-2 py-1 text-[11px] font-semibold text-[color:var(--cofex-coffee-deep)]">
-            <MapPin className="h-3 w-3 text-[color:var(--cofex-cyan)]" /> {shop.distance_km.toFixed(1)} km
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[color:var(--cofex-cream)] px-2 py-1 text-[11px] font-semibold text-[color:var(--cofex-coffee-deep)]">
+            <CofexIconTile meta={SHOP_CARD_ICONS.distance} size="xs" /> {shop.distance_km.toFixed(1)} km
           </span>
         </div>
         {shop.tags.length > 0 && (
@@ -90,11 +92,11 @@ export function CoffeeShopCard({
           </div>
         )}
         <div className="flex items-center gap-4 border-t border-[color:var(--border)] pt-2.5 text-xs text-[color:var(--cofex-black)]/55">
-          <span className="inline-flex items-center gap-1">
-            <Megaphone className="h-3.5 w-3.5 text-[color:var(--cofex-cyan)]" /> {shop.active_campaigns} active
+          <span className="inline-flex items-center gap-1.5">
+            <CofexIconTile meta={SHOP_CARD_ICONS.campaigns} size="xs" /> {shop.active_campaigns} active
           </span>
-          <span className="inline-flex items-center gap-1">
-            <Users className="h-3.5 w-3.5 text-[color:var(--cofex-cyan)]" /> {shop.popularity} explorers
+          <span className="inline-flex items-center gap-1.5">
+            <CofexIconTile meta={SHOP_CARD_ICONS.explorers} size="xs" /> {shop.popularity} explorers
           </span>
         </div>
       </div>

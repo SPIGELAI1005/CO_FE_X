@@ -1,5 +1,3 @@
-import { AuthForm } from "@/components/auth/AuthForm";
-
 interface AuthFormProps {
   next?: string;
 }
@@ -38,21 +36,6 @@ export function AuthForm({ next }: AuthFormProps) {
             <path fill="#EA4335" d="M12 5.4c1.62 0 3.07.56 4.21 1.65l3.15-3.15C17.45 2.1 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.04l3.67 2.84C6.72 7.33 9.14 5.4 12 5.4Z" />
           </svg>
           Continue with Google
-        </button>
-
-        <button
-          type="button"
-          data-cofex-oauth="apple"
-          className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-lg border bg-white px-4 py-3 text-sm font-medium hover:bg-accent"
-          style={{ borderColor: "var(--border)" }}
-        >
-          <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>
-            <path
-              fill="currentColor"
-              d="M17.05 20.28c-.96.95-2.1 1.72-3.4 1.72-1.28 0-1.68-.77-3.15-.77-1.47 0-1.93.75-3.15.77-1.29 0-2.25-.74-3.2-1.69C2.79 17.25 1.5 12.97 3.14 9.9c.82-1.57 2.28-2.56 3.87-2.56 1.21 0 1.97.77 3.15.77 1.17 0 1.88-.77 3.16-.77 1.38 0 2.56.75 3.41 1.95-3 1.64-2.51 5.9.52 7.09ZM12.03 9.67c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25Z"
-            />
-          </svg>
-          Continue with Apple
         </button>
 
         <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">

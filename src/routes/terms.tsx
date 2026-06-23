@@ -20,20 +20,20 @@ function TermsPage() {
   return (
     <LegalPageShell
       title="Terms & Conditions"
-      subtitle="Rules for explorers, café partners, and everyone who uses the Coffee Explorer Network."
+      subtitle="Rules for explorers, café partners and everyone who uses the Coffee Explorer Network."
       lastUpdated={LAST_UPDATED}
     >
       <LegalCallout>
         CO:FE(X) is planned to launch on <strong>September 28, 2026</strong>. These terms describe how the
         platform is intended to work. They should be reviewed by qualified legal counsel before public launch,
-        especially for EU consumer, marketing, and platform rules.
+        especially for EU consumer, marketing and platform rules.
       </LegalCallout>
 
       <LegalSection title="1. Who we are">
         <p>
           CO:FE(X) (&quot;CO:FE(X)&quot;, &quot;we&quot;, &quot;us&quot;) operates the Coffee Explorer Network: a
-          platform where coffee lovers (&quot;Explorers&quot;) discover cafés, check in, share social posts, and earn
-          rewards, and where independent cafés (&quot;Partners&quot;) run campaigns and reach new guests.
+          platform where coffee lovers (&quot;Explorers&quot;) discover cafés, check in, share social posts and earn
+          rewards and where independent cafés (&quot;Partners&quot;) run campaigns and reach new guests.
         </p>
         <p>
           <strong>Operator:</strong> CO:FE(X)
@@ -53,7 +53,7 @@ function TermsPage() {
           <a href="/privacy" className="underline hover:opacity-80">
             Privacy Policy
           </a>
-          , and related policies including our{" "}
+          and related policies including our{" "}
           <a href="/community" className="underline hover:opacity-80">
             Community Guidelines
           </a>
@@ -61,7 +61,7 @@ function TermsPage() {
           <a href="/rewards" className="underline hover:opacity-80">
             Rewards &amp; Campaign Rules
           </a>
-          , and (for Partners){" "}
+          and (for Partners){" "}
           <a href="/partners" className="underline hover:opacity-80">
             Partner Terms
           </a>
@@ -88,10 +88,10 @@ function TermsPage() {
         <p>CO:FE(X) is a discovery and rewards platform, not a coffee retailer. We do not sell beverages directly.</p>
         <LegalList
           items={[
-            "Café discovery maps, public shop pages, and city listings.",
+            "Café discovery maps, public shop pages and city listings.",
             "EEFFOC campaigns where Partners offer rewards in exchange for authentic social sharing.",
-            "Explorer tools such as check-ins, passport stamps, wallet points, leaderboards, and Coffee Radar.",
-            "Partner tools such as campaign management, submission review, analytics, and optional subscription plans.",
+            "Explorer tools such as check-ins, passport stamps, wallet points, leaderboards and Coffee Radar.",
+            "Partner tools such as campaign management, submission review, analytics and optional subscription plans.",
             "Social proof submission flows for links or screenshots from supported platforms (for example Instagram, TikTok, Facebook).",
           ]}
         />
@@ -109,9 +109,9 @@ function TermsPage() {
         </p>
         <LegalList
           items={[
-            "Each campaign has its own rules, capacity, duration, hashtag, and redemption method shown in the app.",
+            "Each campaign has its own rules, capacity, duration, hashtag and redemption method shown in the app.",
             "Social submissions may require manual review by the Partner or CO:FE(X) before a reward is approved.",
-            "Rewards are personal, non-transferable, and may expire unless stated otherwise.",
+            "Rewards are personal, non-transferable and may expire unless stated otherwise.",
             "Fraudulent check-ins, fake posts, duplicate submissions, or misuse of redemption codes can lead to cancellation of rewards and account suspension.",
             "Partners may refuse service if you do not meet their in-store policies, even when a digital reward was approved.",
           ]}
@@ -122,11 +122,11 @@ function TermsPage() {
         <p>
           When you submit a social post link, caption, screenshot, review, avatar, or other content (&quot;User
           Content&quot;), you remain responsible for it. You must only submit content you created or have rights to
-          share, and you must comply with the rules of the relevant social network.
+          share and you must comply with the rules of the relevant social network.
         </p>
         <p>
           You grant CO:FE(X) and the relevant Partner a non-exclusive, royalty-free license to store, display, review,
-          and use your User Content solely to operate the service, verify campaign participation, prevent abuse, and
+          and use your User Content solely to operate the service, verify campaign participation, prevent abuse and
           promote the campaign or café where you have clearly opted in or where the post was already public.
         </p>
         <p>
@@ -135,7 +135,7 @@ function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="7. Location, check-ins, and device permissions">
+      <LegalSection title="7. Location, check-ins and device permissions">
         <p>
           Some features use device location to confirm check-ins near a participating café. You can control location
           permissions in your device settings, but check-in features may not work without them.
@@ -149,10 +149,10 @@ function TermsPage() {
       <LegalSection title="8. Partner accounts and subscriptions">
         <p>
           Partners are responsible for the accuracy of shop profiles, opening hours, campaign terms, reward fulfillment,
-          and compliance with local food, advertising, and consumer laws.
+          and compliance with local food, advertising and consumer laws.
         </p>
         <p>
-          Paid subscription plans, billing, invoices, and cancellations are governed by our{" "}
+          Paid subscription plans, billing, invoices and cancellations are governed by our{" "}
           <a href="/partners" className="underline hover:opacity-80">
             Partner Terms
           </a>{" "}
@@ -177,12 +177,12 @@ function TermsPage() {
 
       <LegalSection title="10. Intellectual property">
         <p>
-          CO:FE(X), Coffee Explorer Network, EEFFOC, Coffee Radar, logos, product design, and software are owned by
+          CO:FE(X), Coffee Explorer Network, EEFFOC, Coffee Radar, logos, product design and software are owned by
           CO:FE(X) or its licensors. You may not copy or reuse them without permission except as allowed by law or
           these terms.
         </p>
         <p>
-          Partner trademarks, shop names, and photos remain the property of the respective Partners.
+          Partner trademarks, shop names and photos remain the property of the respective Partners.
         </p>
       </LegalSection>
 
@@ -192,7 +192,7 @@ function TermsPage() {
           required by law. You may delete your account at any time through profile settings or by contacting us.
         </p>
         <p>
-          Provisions that by nature should survive termination (including payment obligations, liability limits, and
+          Provisions that by nature should survive termination (including payment obligations, liability limits and
           dispute rules) will continue to apply.
         </p>
       </LegalSection>

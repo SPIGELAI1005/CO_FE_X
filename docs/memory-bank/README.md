@@ -2,7 +2,7 @@
 
 Persistent context for AI agents and team members working on the brew-quest-app codebase.
 
-**Last updated:** June 23, 2026  
+**Last updated:** June 24, 2026  
 **Repository:** [github.com/SPIGELAI1005/CO_FE_X](https://github.com/SPIGELAI1005/CO_FE_X)
 
 ---
@@ -66,4 +66,4 @@ The memory bank is a set of small, focused documents that capture **what the pro
 - **Partner nav:** Dashboard · Shop · Campaigns · Submissions · Verify · Rewards · Analytics · Billing · Settings.
 - **Core explorer loop:** Discover → check-in (GPS) → sheet → challenges → passport → rank.
 - **Core partner loop:** Shop → EEFFOC campaign → social/check-in → verify at counter → analytics.
-- **Latest migrations:** Through `20260621120000_campaign_reward_domain.sql`.
+- **Latest migrations:** Through `20260623160000` + June 24 `_campaign_is_live` fixes (`20260624010000`–`20260624040000`).

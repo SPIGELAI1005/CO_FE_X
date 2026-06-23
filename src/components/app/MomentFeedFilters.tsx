@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { MOMENT_FEED_FILTERS, type MomentFeedFilter } from "@/lib/moments";
+import { CofexIconTile } from "@/components/app/CofexIconTile";
 
 interface MomentFeedFiltersProps {
   value: MomentFeedFilter;
@@ -24,7 +25,11 @@ export function MomentFeedFilters({ value, onChange }: MomentFeedFiltersProps) {
                 : "border-[color:var(--border)] bg-white text-[color:var(--cofex-coffee-deep)] hover:border-[color:var(--cofex-cyan)]"
             }`}
           >
-            <span aria-hidden>{f.emoji}</span>
+            {f.rewardType ? (
+              <CofexIconTile rewardType={f.rewardType} size="xs" />
+            ) : f.meta ? (
+              <CofexIconTile meta={f.meta} size="xs" />
+            ) : null}
             {t(f.labelKey)}
           </button>
         );

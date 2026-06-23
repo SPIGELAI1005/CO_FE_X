@@ -1,4 +1,4 @@
-/** Lightweight decorative accents — CSS-only, respects prefers-reduced-motion */
+/** Lightweight decorative accents, CSS-only, respects prefers-reduced-motion */
 
 export function CoffeeSteam({ className = "" }: { className?: string }) {
   return (

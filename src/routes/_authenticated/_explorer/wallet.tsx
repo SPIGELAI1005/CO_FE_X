@@ -8,25 +8,25 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import {
   Coffee,
-  Sparkles,
-  Gift,
-  Users,
   Copy,
   Check,
   ArrowDownLeft,
   ArrowUpRight,
   Wallet,
-  Megaphone,
-  Share2,
-  MessageSquareText,
   Download,
   Calendar,
-  Hourglass,
-  History,
   AlertTriangle,
+  Bean,
 } from "lucide-react";
 import { EmptyState } from "@/components/patterns/EmptyState";
+import { CofexIconTile } from "@/components/app/CofexIconTile";
 import { RewardCatalogIcon } from "@/components/app/RewardCatalogIcon";
+import {
+  WALLET_EARN_ICON_META,
+  WALLET_SECTION_ICONS,
+  walletSourceIconMeta,
+  type IconTileMeta,
+} from "@/lib/reward-catalog-meta";
 import { WalletRewardQr } from "@/components/app/WalletRewardQr";
 import { GiftHistorySection } from "@/components/app/GiftHistorySection";
 import { QueryBoundary } from "@/components/patterns/QueryBoundary";
@@ -48,69 +48,29 @@ export const Route = createFileRoute("/_authenticated/_explorer/wallet")({
 
 const EXPIRY_VALUES = ["off", "90", "180", "365", "730"] as const;
 
-function useWalletSources() {
+function useWalletSourceLabels() {
   const { t } = useTranslation();
   return useMemo(
     () =>
       ({
-        check_in: {
-          label: t("walletPage.sources.check_in"),
-          Icon: Coffee,
-          color: "text-[color:var(--cofex-coffee-deep)] bg-[color:var(--cofex-cream)]",
-        },
-        review: {
-          label: t("walletPage.sources.review"),
-          Icon: MessageSquareText,
-          color: "text-[color:var(--cofex-cyan)] bg-[color:var(--cofex-pastel-blue)]",
-        },
-        campaign_redemption: {
-          label: t("walletPage.sources.campaign_redemption"),
-          Icon: Megaphone,
-          color: "text-fuchsia-700 bg-fuchsia-50",
-        },
-        social_post: {
-          label: t("walletPage.sources.social_post"),
-          Icon: Share2,
-          color: "text-rose-700 bg-rose-50",
-        },
-        referral_bonus: {
-          label: t("walletPage.sources.referral_bonus"),
-          Icon: Users,
-          color: "text-emerald-700 bg-emerald-50",
-        },
-        referral_reward: {
-          label: t("walletPage.sources.referral_reward"),
-          Icon: Users,
-          color: "text-emerald-700 bg-emerald-50",
-        },
-        catalog_redemption: {
-          label: t("walletPage.sources.catalog_redemption"),
-          Icon: Gift,
-          color: "text-[color:var(--cofex-black)]/70 bg-[color:var(--cofex-cream)]",
-        },
-        challenge_reward: {
-          label: t("walletPage.sources.challenge_reward"),
-          Icon: Sparkles,
-          color: "text-violet-700 bg-violet-50",
-        },
-        time_bonus: {
-          label: t("walletPage.sources.time_bonus"),
-          Icon: Sparkles,
-          color: "text-amber-700 bg-amber-50",
-        },
-        crawl_complete: {
-          label: t("walletPage.sources.crawl_complete"),
-          Icon: Coffee,
-          color: "text-emerald-700 bg-emerald-50",
-        },
-      }) as Record<string, { label: string; Icon: React.ComponentType<{ className?: string }>; color: string }>,
+        check_in: t("walletPage.sources.check_in"),
+        review: t("walletPage.sources.review"),
+        campaign_redemption: t("walletPage.sources.campaign_redemption"),
+        social_post: t("walletPage.sources.social_post"),
+        referral_bonus: t("walletPage.sources.referral_bonus"),
+        referral_reward: t("walletPage.sources.referral_reward"),
+        catalog_redemption: t("walletPage.sources.catalog_redemption"),
+        challenge_reward: t("walletPage.sources.challenge_reward"),
+        time_bonus: t("walletPage.sources.time_bonus"),
+        crawl_complete: t("walletPage.sources.crawl_complete"),
+      }) as Record<string, string>,
     [t],
   );
 }
 
 function WalletPage() {
   const { t } = useTranslation();
-  const sourceMeta = useWalletSources();
+  const sourceLabels = useWalletSourceLabels();
   const expiryOptions = useMemo(
     () => EXPIRY_VALUES.map((value) => ({ value, label: t(`walletPage.expiry.${value}`) })),
     [t],
@@ -184,7 +144,7 @@ function WalletPage() {
     entries.forEach((l) =>
       rows.push([
         new Date(l.created_at).toISOString(),
-        sourceMeta[l.source]?.label ?? l.source,
+        sourceLabels[l.source] ?? l.source,
         String(l.delta),
         String(l.balance_after),
         l.expires_at ? new Date(l.expires_at).toISOString() : "",
@@ -227,7 +187,7 @@ function WalletPage() {
           {(w) => (
             <>
               <div className="cofex-app-card relative overflow-hidden p-6 text-white" style={{ background: "var(--gradient-coffee)" }}>
-                <div className="absolute -top-10 -right-10 text-[200px] leading-none opacity-10 select-none">☕</div>
+                <Coffee className="absolute -top-10 -right-10 h-48 w-48 opacity-10 select-none" strokeWidth={1.25} />
                 <div className="relative">
                   <div className="flex items-center gap-1.5 text-[10px] tracking-[0.3em] uppercase opacity-80">
                     <Wallet className="h-3 w-3" /> {t("walletPage.title")}
@@ -239,7 +199,7 @@ function WalletPage() {
                   <div className="mt-1 text-xs opacity-80">{t("walletPage.currencyHint")}</div>
                   {w.beansBalance > 0 && (
                     <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">
-                      🫘 {t("walletPage.beansBalance", { count: w.beansBalance })}
+                      <Bean className="h-3.5 w-3.5" /> {t("walletPage.beansBalance", { count: w.beansBalance })}
                     </div>
                   )}
                   {expiringSoon > 0 && (
@@ -248,12 +208,12 @@ function WalletPage() {
                     </div>
                   )}
                   <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[11px]">
-                    <Earn Icon={Coffee} label={t("walletPage.earnCheckIn")} pts={10} />
-                    <Earn Icon={MessageSquareText} label={t("walletPage.earnReview")} pts={5} />
-                    <Earn Icon={Share2} label={t("walletPage.earnSocialPost")} pts={25} />
-                    <Earn Icon={Megaphone} label={t("walletPage.earnCampaign")} pts={t("walletPage.earnVaries")} />
-                    <Earn Icon={Users} label={t("walletPage.earnReferFriend")} pts={100} />
-                    <Earn Icon={Users} label={t("walletPage.earnGetReferred")} pts={50} />
+                    <Earn iconMeta={WALLET_EARN_ICON_META[0]} label={t("walletPage.earnCheckIn")} pts={10} />
+                    <Earn iconMeta={WALLET_EARN_ICON_META[1]} label={t("walletPage.earnReview")} pts={5} />
+                    <Earn iconMeta={WALLET_EARN_ICON_META[2]} label={t("walletPage.earnSocialPost")} pts={25} />
+                    <Earn iconMeta={WALLET_EARN_ICON_META[3]} label={t("walletPage.earnCampaign")} pts={t("walletPage.earnVaries")} />
+                    <Earn iconMeta={WALLET_EARN_ICON_META[4]} label={t("walletPage.earnReferFriend")} pts={100} />
+                    <Earn iconMeta={WALLET_EARN_ICON_META[5]} label={t("walletPage.earnGetReferred")} pts={50} />
                   </div>
                 </div>
               </div>
@@ -262,7 +222,7 @@ function WalletPage() {
                 eyebrow={t("walletPage.settings")}
                 title={t("walletPage.pointExpiration")}
                 subtitle={t("walletPage.expirationHint")}
-                icon={<Hourglass className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
+                icon={<CofexIconTile meta={WALLET_SECTION_ICONS.expiration} size="sm" />}
                 action={
                   <Select value={w.expireDays} onValueChange={updateExpiry} disabled={expiryMutation.isPending}>
                     <SelectTrigger className="w-full rounded-full border-[color:var(--border)] sm:w-44">
@@ -317,7 +277,7 @@ function WalletPage() {
               <AppPageSection
                 eyebrow={t("walletPage.spendPoints")}
                 title={t("walletPage.redeemRewards")}
-                icon={<Gift className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
+                icon={<CofexIconTile meta={WALLET_SECTION_ICONS.redeem} size="sm" />}
                 action={
                   <span className="text-xs text-[color:var(--cofex-black)]/55">{t("walletPage.balance", { count: w.balance.toLocaleString() })}</span>
                 }
@@ -361,10 +321,10 @@ function WalletPage() {
                 </div>
               </AppPageSection>
 
-              <AppPageSection title={t("walletPage.redemptionHistory")} icon={<History className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}>
+              <AppPageSection title={t("walletPage.redemptionHistory")} icon={<CofexIconTile meta={WALLET_SECTION_ICONS.history} size="sm" />}>
                 {w.redemptions.length === 0 ? (
                   <EmptyState
-                    icon={Gift}
+                    iconMeta={WALLET_SECTION_ICONS.redeem}
                     title={t("walletPage.noRedemptions")}
                     description={t("walletPage.noRedemptionsHint")}
                   />
@@ -419,7 +379,7 @@ function WalletPage() {
 
               <section className="cofex-app-card-dashed cofex-app-card mt-8 border-2 border-dashed p-5">
                 <div className="flex items-center gap-2 font-bold text-[color:var(--cofex-coffee-deep)]">
-                  <Users className="h-5 w-5 text-[color:var(--cofex-cyan)]" /> {t("walletPage.referFriends")}
+                  <CofexIconTile meta={WALLET_SECTION_ICONS.refer} size="sm" /> {t("walletPage.referFriends")}
                 </div>
                 <p className="mt-1 text-xs text-[color:var(--cofex-black)]/65">{t("walletPage.referHintFull")}</p>
                 {w.referralCode && (
@@ -460,7 +420,7 @@ function WalletPage() {
 
         <AppPageSection
           title={t("walletPage.activityLedger")}
-          icon={<Sparkles className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}
+          icon={<CofexIconTile meta={WALLET_SECTION_ICONS.activity} size="sm" />}
           action={
             <Button onClick={() => exportCsv(ledger)} size="sm" variant="outline" className="h-8 rounded-full text-xs">
               <Download className="mr-1 h-3.5 w-3.5" /> {t("walletPage.exportCsv")}
@@ -498,22 +458,16 @@ function WalletPage() {
             {(entries) => (
               <div className="cofex-app-card divide-y overflow-hidden">
                 {entries.map((l) => {
-                  const meta = sourceMeta[l.source] ?? {
-                    label: l.source,
-                    Icon: Sparkles,
-                    color: "text-[color:var(--cofex-black)]/70 bg-[color:var(--cofex-cream)]",
-                  };
+                  const label = sourceLabels[l.source] ?? l.source;
+                  const iconMeta = walletSourceIconMeta(l.source);
                   const pos = l.delta > 0;
                   const exp = l.expires_at ? new Date(l.expires_at) : null;
                   const expiresSoon = exp && exp.getTime() - Date.now() < 30 * 86400000 && exp.getTime() > Date.now();
-                  const Icon = meta.Icon;
                   return (
                     <div key={l.id} className="flex items-center gap-3 p-3">
-                      <div className={`flex h-9 w-9 items-center justify-center rounded-full ${meta.color}`}>
-                        <Icon className="h-4 w-4" />
-                      </div>
+                      <CofexIconTile meta={iconMeta} size="xs" />
                       <div className="min-w-0 flex-1">
-                        <div className="truncate text-sm font-medium text-[color:var(--cofex-coffee-deep)]">{meta.label}</div>
+                        <div className="truncate text-sm font-medium text-[color:var(--cofex-coffee-deep)]">{label}</div>
                         <div className="text-[11px] text-[color:var(--cofex-black)]/55">
                           {new Date(l.created_at).toLocaleString()}
                           {exp && (
@@ -538,7 +492,7 @@ function WalletPage() {
           </QueryBoundary>
         </AppPageSection>
 
-        <AppPageSection title={t("rewardGift.historyTitle")} icon={<Gift className="h-5 w-5 text-rose-500" />}>
+        <AppPageSection title={t("rewardGift.historyTitle")} icon={<CofexIconTile meta={WALLET_SECTION_ICONS.gifts} size="sm" />}>
           <GiftHistorySection />
         </AppPageSection>
       </AppPageBody>
@@ -547,17 +501,17 @@ function WalletPage() {
 }
 
 function Earn({
-  Icon,
+  iconMeta,
   label,
   pts,
 }: {
-  Icon: React.ComponentType<{ className?: string }>;
+  iconMeta: IconTileMeta;
   label: string;
   pts: number | string;
 }) {
   return (
     <div className="rounded-lg border border-white/10 bg-white/10 p-2 backdrop-blur">
-      <Icon className="mx-auto h-3.5 w-3.5 opacity-90" />
+      <CofexIconTile meta={iconMeta} size="xs" className="mx-auto" />
       <div className="mt-1 font-semibold">{typeof pts === "number" ? `+${pts}` : pts}</div>
       <div className="truncate text-[10px] opacity-70">{label}</div>
     </div>

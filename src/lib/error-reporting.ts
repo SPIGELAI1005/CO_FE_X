@@ -36,12 +36,12 @@ export function reportAppError(error: unknown, context: Record<string, unknown> 
 
   const dsn = import.meta.env.VITE_SENTRY_DSN;
   if (dsn && typeof window !== "undefined") {
-    // Hook for Sentry/Datadog — load SDK when DSN is configured.
+    // Hook for Sentry/Datadog, load SDK when DSN is configured.
     window.dispatchEvent(new CustomEvent("cofex:error", { detail: report }));
   }
 }
 
-/** Test helper — inspect recent structured reports in unit tests. */
+/** Test helper, inspect recent structured reports in unit tests. */
 export function peekRecentAppErrors(): AppErrorReport[] {
   return [...recentReports];
 }

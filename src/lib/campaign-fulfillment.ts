@@ -14,7 +14,7 @@ export const FULFILLMENT_MODE_LABELS: Record<CampaignFulfillmentMode, string> = 
 
 export const FULFILLMENT_MODE_DESCRIPTIONS: Record<CampaignFulfillmentMode, string> = {
   check_in: "Explorers check in at your café, then unlock a reward code at the counter.",
-  social_proof: "Explorers post on social media, submit proof, and receive a reward QR after you approve.",
+  social_proof: "Explorers post on social media, submit proof and receive a reward QR after you approve.",
   hybrid: "Explorers check in first, then post on social. Reward unlocks after post approval.",
 };
 

@@ -32,7 +32,7 @@ export function HealthLogRing() {
   return (
     <div className="cofex-app-card p-4">
       <h3 className="text-sm font-bold text-[color:var(--cofex-coffee-deep)]">Today&apos;s pulse</h3>
-      <p className="mt-0.5 text-xs text-[color:var(--cofex-black)]/55">Manual log — native HealthKit coming later</p>
+      <p className="mt-0.5 text-xs text-[color:var(--cofex-black)]/55">Manual log, native HealthKit coming later</p>
       <div className="mt-4 flex justify-center gap-6">
         <div className="text-center">
           <svg width="72" height="72" viewBox="0 0 72 72">

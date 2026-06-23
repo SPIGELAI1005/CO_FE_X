@@ -45,7 +45,7 @@ function PartnerSettingsPage() {
     const row = data as { api_key?: string };
     if (row.api_key) {
       setRevealedKey(row.api_key);
-      toast.success("API key created. Copy it now — it won't be shown again.");
+      toast.success("API key created. Copy it now, it won't be shown again.");
     }
     keysQuery.refetch();
   }

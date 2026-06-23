@@ -14,10 +14,12 @@ import { OptimizedImage } from "@/components/app/OptimizedImage";
 import { Button } from "@/components/ui/button";
 import {
   momentAuthorLabel,
-  momentDrinkEmoji,
+  momentDrinkType,
   momentSourceLabelKey,
   type MomentFeedItem,
 } from "@/lib/moments";
+import { CofexIconTile } from "@/components/app/CofexIconTile";
+import { MOMENTS_EMPTY_ICON } from "@/lib/explorer-section-icons";
 
 interface MomentFeedCardProps {
   item: MomentFeedItem;
@@ -31,7 +33,7 @@ export function MomentFeedCard({ item, onLike, onSave, likeBusy, saveBusy }: Mom
   const { t } = useTranslation();
   const author = momentAuthorLabel(item);
   const image = item.image_url ?? item.shop_cover_url;
-  const drinkEmoji = momentDrinkEmoji(item.drink_type);
+  const drinkType = momentDrinkType(item.drink_type);
 
   async function share() {
     const text = [
@@ -66,7 +68,9 @@ export function MomentFeedCard({ item, onLike, onSave, likeBusy, saveBusy }: Mom
             className="h-full w-full object-cover"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-6xl">{drinkEmoji}</div>
+          <div className="flex h-full items-center justify-center">
+            <CofexIconTile rewardType={drinkType} size="xl" />
+          </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20" />
 
@@ -102,9 +106,7 @@ export function MomentFeedCard({ item, onLike, onSave, likeBusy, saveBusy }: Mom
                 {t(momentSourceLabelKey(item.source_type))}
               </p>
             </div>
-            <span className="text-xl" aria-hidden>
-              {drinkEmoji}
-            </span>
+            <CofexIconTile rewardType={drinkType} size="xs" />
           </div>
 
           {item.shop_name && (
@@ -176,7 +178,7 @@ export function MomentsEmptyState() {
   const { t } = useTranslation();
   return (
     <div className="cofex-app-card flex flex-col items-center px-6 py-12 text-center">
-      <Sparkles className="h-10 w-10 text-[color:var(--cofex-cyan)]" />
+      <CofexIconTile meta={MOMENTS_EMPTY_ICON} size="xl" />
       <p className="mt-3 text-lg font-extrabold text-[color:var(--cofex-coffee-deep)]">{t("moments.emptyTitle")}</p>
       <p className="mt-1 max-w-sm text-sm text-[color:var(--cofex-black)]/60">{t("moments.emptyDescription")}</p>
     </div>

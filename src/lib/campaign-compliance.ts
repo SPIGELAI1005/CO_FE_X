@@ -1,5 +1,5 @@
 /**
- * Campaign compliance: terms, disclosure, and privacy copy for social reward missions.
+ * Campaign compliance: terms, disclosure and privacy copy for social reward missions.
  */
 
 export const DISCLOSURE_HASHTAGS = ["#ad", "#Anzeige", "#Werbung"] as const;
@@ -30,6 +30,26 @@ export function buildPlatformDefaultTerms(locale = "en"): string {
     "For social campaigns: label the collaboration (e.g. #ad, #Anzeige, #Werbung).",
     "Misuse may result in forfeited rewards.",
   ].join(" ");
+}
+
+/** Editable starter text for the partner campaign wizard (saved as café terms). */
+export function buildPartnerCampaignTermsTemplate(locale = "en"): string {
+  if (locale.startsWith("de")) {
+    return [
+      "Teilnahme an dieser EEFFOC-Kampagne ist freiwillig. Ein Reward pro Explorer, sofern in der Kampagnenbeschreibung nichts anderes steht.",
+      "Reward-QR vor der Bestellung an der Theke zeigen. Rewards sind nicht mit anderen Aktionen kombinierbar, außer wir geben das ausdrücklich frei.",
+      "Bei Social-Kampagnen: nur authentische Inhalte über einen echten Besuch veröffentlichen, Pflicht-Hashtags und Café-Tags verwenden und die Kooperation klar kennzeichnen (z. B. #ad, #Anzeige oder #Werbung), wie es das Gesetz verlangt.",
+      "Beiträge müssen für unsere Prüfzeit öffentlich bleiben. Wir können Einreichungen ablehnen, wenn Hashtags, Tags, Kennzeichnung oder Hausregeln fehlen.",
+      "Missbrauch oder Betrug kann zur Ablehnung oder zum Entzug des Rewards führen.",
+    ].join("\n\n");
+  }
+  return [
+    "Participation in this EEFFOC campaign is voluntary. One reward per explorer unless the campaign description states otherwise.",
+    "Show your reward QR at the counter before ordering. Rewards cannot be combined with other offers unless we explicitly allow it.",
+    "If a social post is required: publish only authentic content about a genuine visit, use the required hashtags and café tags, and clearly label the collaboration (e.g. #ad, #Anzeige or #Werbung) as required by law.",
+    "Posts must stay public for our review window. We may reject submissions that miss hashtags, tags, disclosures, or house rules.",
+    "Misuse or fraud may result in a rejected submission or forfeited reward.",
+  ].join("\n\n");
 }
 
 export function buildCombinedTerms(ctx: CampaignTermsContext): {

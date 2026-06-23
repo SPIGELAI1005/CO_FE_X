@@ -82,11 +82,11 @@ function AdminShopsPage() {
                     <AdminStatusBadge status={shop.status} />
                   </div>
                   <p className="mt-1 text-sm text-[color:var(--cofex-black)]/60">
-                    {shop.city ?? "—"} · {shop.slug}
+                    {shop.city ?? "-"} · {shop.slug}
                   </p>
                   {shop.address && <p className="mt-0.5 text-xs text-[color:var(--cofex-black)]/50">{shop.address}</p>}
                   <p className="mt-2 text-xs text-[color:var(--cofex-black)]/45">
-                    Partner {shop.partner_id?.slice(0, 8) ?? "—"} · Added{" "}
+                    Partner {shop.partner_id?.slice(0, 8) ?? "-"} · Added{" "}
                     {new Date(shop.created_at).toLocaleDateString()}
                     {shop.rating != null && ` · ★ ${Number(shop.rating).toFixed(1)} (${shop.rating_count})`}
                   </p>

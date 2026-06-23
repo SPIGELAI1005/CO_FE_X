@@ -9,7 +9,7 @@ export const Route = createFileRoute("/rewards")({
       { title: "Rewards & Campaign Rules · CO:FE(X)" },
       {
         name: "description",
-        content: "How EEFFOC campaigns, points, perks, and redemptions work on CO:FE(X).",
+        content: "How EEFFOC campaigns, points, perks and redemptions work on CO:FE(X).",
       },
     ],
   }),
@@ -20,7 +20,7 @@ function RewardsPage() {
   return (
     <LegalPageShell
       title="Rewards & Campaign Rules"
-      subtitle="How EEFFOC campaigns, points, perks, and in-store redemption work for Explorers."
+      subtitle="How EEFFOC campaigns, points, perks and in-store redemption work for Explorers."
       lastUpdated={LAST_UPDATED}
     >
       <LegalCallout>
@@ -35,7 +35,7 @@ function RewardsPage() {
       <LegalSection title="1. How campaigns work">
         <p>
           Partners create EEFFOC campaigns with specific goals: for example a social post with a hashtag, a check-in, or
-          a review. Each campaign shows its rules, capacity, duration, reward type, and redemption method in the app.
+          a review. Each campaign shows its rules, capacity, duration, reward type and redemption method in the app.
         </p>
       </LegalSection>
 
@@ -45,7 +45,7 @@ function RewardsPage() {
             "Complete all steps shown in the campaign card before the deadline.",
             "Allow time for Partner or CO:FE(X) review when manual verification applies.",
             "Keep required posts public for the review period unless stated otherwise.",
-            "Points, stamps, and wallet balances update after approval, not always instantly.",
+            "Points, stamps and wallet balances update after approval, not always instantly.",
           ]}
         />
       </LegalSection>
@@ -73,7 +73,7 @@ function RewardsPage() {
           ]}
         />
         <p>
-          Confirmed abuse may lead to reversed points, cancelled redemptions, and account suspension. We may share
+          Confirmed abuse may lead to reversed points, cancelled redemptions and account suspension. We may share
           evidence with affected Partners.
         </p>
       </LegalSection>
@@ -93,7 +93,7 @@ function RewardsPage() {
           <a href="mailto:Contact@COFE-X.com" className="underline hover:opacity-80">
             Contact@COFE-X.com
           </a>{" "}
-          with your account email, campaign name, and submission date.
+          with your account email, campaign name and submission date.
         </p>
       </LegalSection>
     </LegalPageShell>

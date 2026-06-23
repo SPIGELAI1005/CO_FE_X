@@ -33,6 +33,7 @@ export const LEGAL_LINK_GROUPS: LegalLinkGroup[] = [
       { to: "/rewards", label: "Rewards & Campaign Rules" },
       { to: "/partners", label: "Partner Terms" },
       { to: "/data-processing", label: "Data Processing" },
+      { to: "/social-media", label: "Publishing on Social Media" },
     ],
   },
 ];

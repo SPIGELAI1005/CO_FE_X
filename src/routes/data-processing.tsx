@@ -9,7 +9,7 @@ export const Route = createFileRoute("/data-processing")({
       { title: "Data Processing · CO:FE(X)" },
       {
         name: "description",
-        content: "GDPR transparency: sub-processors, legal bases summary, and data protection contacts.",
+        content: "GDPR transparency: sub-processors, legal bases summary and data protection contacts.",
       },
     ],
   }),
@@ -20,7 +20,7 @@ function DataProcessingPage() {
   return (
     <LegalPageShell
       title="Data Processing & Sub-processors"
-      subtitle="GDPR transparency for explorers, partners, and visitors: who processes data and why."
+      subtitle="GDPR transparency for explorers, partners and visitors: who processes data and why."
       lastUpdated={LAST_UPDATED}
     >
       <LegalCallout>
@@ -55,10 +55,10 @@ function DataProcessingPage() {
         <LegalList
           items={[
             "Account registration and authentication for Explorers and Partners.",
-            "Campaign participation, social proof verification, and reward redemption.",
+            "Campaign participation, social proof verification and reward redemption.",
             "Location-based check-ins when permission is granted.",
             "Partner billing and subscription management when Stripe is enabled.",
-            "Security logging, fraud prevention, and incident response.",
+            "Security logging, fraud prevention and incident response.",
             "Optional marketing communications with consent where required.",
           ]}
         />
@@ -67,7 +67,7 @@ function DataProcessingPage() {
       <LegalSection title="4. Sub-processors">
         <p>We use trusted providers to operate the service. Primary sub-processors include:</p>
         <p>
-          <strong>Supabase</strong>: hosting, database, authentication, file storage, and row-level security. Primary
+          <strong>Supabase</strong>: hosting, database, authentication, file storage and row-level security. Primary
           data region: EU where configured. DPA: Supabase standard terms / enterprise DPA to be executed before launch.
         </p>
         <p>

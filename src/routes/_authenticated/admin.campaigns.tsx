@@ -38,7 +38,7 @@ function AdminCampaignsPage() {
   return (
     <AdminPage
       title="Campaign management"
-      subtitle="View active campaigns, pause violating ones, and review participation metrics."
+      subtitle="View active campaigns, pause violating ones and review participation metrics."
       action={
         <Select value={filter} onValueChange={(v) => setFilter(v as (typeof FILTERS)[number])}>
           <SelectTrigger className="w-36">
@@ -70,12 +70,12 @@ function AdminCampaignsPage() {
                       <AdminStatusBadge status={c.status} />
                     </div>
                     <p className="mt-1 text-sm text-[color:var(--cofex-black)]/60">
-                      {c.shop_name} · {c.shop_city ?? "—"} · {c.reward_type} · +{c.points_reward} pts
+                      {c.shop_name} · {c.shop_city ?? "-"} · {c.reward_type} · +{c.points_reward} pts
                     </p>
                     {(c.starts_at || c.ends_at) && (
                       <p className="mt-0.5 text-xs text-[color:var(--cofex-black)]/45">
-                        {c.starts_at ? new Date(c.starts_at).toLocaleDateString() : "—"} →{" "}
-                        {c.ends_at ? new Date(c.ends_at).toLocaleDateString() : "—"}
+                        {c.starts_at ? new Date(c.starts_at).toLocaleDateString() : "-"} →{" "}
+                        {c.ends_at ? new Date(c.ends_at).toLocaleDateString() : "-"}
                       </p>
                     )}
                   </div>

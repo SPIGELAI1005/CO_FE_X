@@ -18,8 +18,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { usePassport } from "@/lib/queries/passport";
-import { Coffee, Loader2, Trophy, ChevronRight, Award, Users, Bell } from "lucide-react";
+import { Loader2, Trophy, ChevronRight, Award, LayoutDashboard, Store } from "lucide-react";
 import { ExplorerProfileCard } from "@/components/app/ExplorerProfileCard";
+import { SectionIcon } from "@/components/app/CofexIconTile";
+import { PROFILE_SECTION_ICONS } from "@/lib/explorer-section-icons";
 import { useRecentXpEvents } from "@/lib/queries/xp-events";
 import { DrinkTrackerCard } from "@/components/app/DrinkTrackerCard";
 import { ProfilePrivacyCard } from "@/components/app/ProfilePrivacyCard";
@@ -153,6 +155,47 @@ function ProfilePage() {
         />
         <input ref={avatarInputRef} type="file" accept="image/*" className="sr-only" onChange={onAvatarSelected} />
 
+        {(isAdmin || isPartner) && (
+          <div className="space-y-2">
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="cofex-app-card flex items-center gap-3 p-4 transition hover:-translate-y-0.5"
+                style={{ background: "var(--cofex-pastel-lilac)" }}
+              >
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/70">
+                  <LayoutDashboard className="h-5 w-5 text-[color:var(--cofex-coffee-deep)]" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-bold tracking-wider text-[color:var(--cofex-coffee-deep)] uppercase">
+                    Admin
+                  </div>
+                  <div className="font-semibold text-[color:var(--cofex-coffee-deep)]">Open admin console</div>
+                </div>
+                <ChevronRight className="h-5 w-5 shrink-0 text-[color:var(--cofex-black)]/35" />
+              </Link>
+            )}
+            {isPartner && (
+              <Link
+                to="/partner"
+                className="cofex-app-card flex items-center gap-3 p-4 transition hover:-translate-y-0.5"
+                style={{ background: "var(--cofex-cream-warm)" }}
+              >
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/70">
+                  <Store className="h-5 w-5 text-[color:var(--cofex-coffee-deep)]" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-bold tracking-wider text-[color:var(--cofex-coffee-deep)] uppercase">
+                    Partner
+                  </div>
+                  <div className="font-semibold text-[color:var(--cofex-coffee-deep)]">Open partner dashboard</div>
+                </div>
+                <ChevronRight className="h-5 w-5 shrink-0 text-[color:var(--cofex-black)]/35" />
+              </Link>
+            )}
+          </div>
+        )}
+
         {myRank?.rank ? (
           <Link
             to="/leaderboard"
@@ -224,7 +267,7 @@ function ProfilePage() {
         </AppPageSection>
 
         <Link to="/crew" className="cofex-app-card flex items-center gap-3 p-4 transition hover:-translate-y-0.5">
-          <Users className="h-5 w-5 text-[color:var(--cofex-cyan)]" />
+          <SectionIcon meta={PROFILE_SECTION_ICONS.crew} />
           <div className="flex-1 font-semibold text-[color:var(--cofex-coffee-deep)]">{t("profilePage.crewLink")}</div>
           <ChevronRight className="h-5 w-5 text-[color:var(--cofex-black)]/35" />
         </Link>
@@ -233,7 +276,7 @@ function ProfilePage() {
 
         <div className="cofex-app-card p-4">
           <div className="flex items-center gap-2 font-semibold text-[color:var(--cofex-coffee-deep)]">
-            <Bell className="h-4 w-4" /> {t("profilePage.pushTitle")}
+            <SectionIcon meta={PROFILE_SECTION_ICONS.push} size="xs" /> {t("profilePage.pushTitle")}
           </div>
           <p className="mt-1 text-xs text-[color:var(--cofex-black)]/55">{t("profilePage.pushHint")}</p>
           <Button
@@ -324,33 +367,8 @@ function ProfilePage() {
           </form>
         </AppPageSection>
 
-        {(isPartner || isAdmin) && (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {isPartner && (
-              <Link
-                to="/partner"
-                className="cofex-app-card p-5 transition hover:-translate-y-0.5"
-                style={{ background: "var(--cofex-cream-warm)" }}
-              >
-                <div className="text-xs font-bold tracking-wider text-[color:var(--cofex-coffee-deep)] uppercase">Partner</div>
-                <div className="mt-1 font-semibold text-[color:var(--cofex-coffee-deep)]">Open partner dashboard</div>
-              </Link>
-            )}
-            {isAdmin && (
-              <Link
-                to="/admin"
-                className="cofex-app-card p-5 transition hover:-translate-y-0.5"
-                style={{ background: "var(--cofex-pastel-lilac)" }}
-              >
-                <div className="text-xs font-bold tracking-wider text-[color:var(--cofex-coffee-deep)] uppercase">Admin</div>
-                <div className="mt-1 font-semibold text-[color:var(--cofex-coffee-deep)]">Open admin console</div>
-              </Link>
-            )}
-          </div>
-        )}
-
         {!isPartner && (
-          <AppPageSection title="Run a café?" icon={<Coffee className="h-5 w-5 text-[color:var(--cofex-cyan)]" />}>
+          <AppPageSection title="Run a café?" icon={<SectionIcon meta={PROFILE_SECTION_ICONS.partner} />}>
             <div className="cofex-app-card p-5">
               {application ? (
                 <p className="text-sm text-[color:var(--cofex-black)]/65">

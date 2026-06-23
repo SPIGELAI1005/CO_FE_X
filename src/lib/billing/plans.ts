@@ -55,7 +55,7 @@ export const PLAN_CATALOG: {
     id: "pro",
     name: "Pro",
     priceLabel: "€79/mo",
-    description: "Multi-location brands, unlimited campaigns, and promoted discover.",
+    description: "Multi-location brands, unlimited campaigns and promoted discover.",
     highlights: [
       "Unlimited listings",
       "Unlimited campaigns",

@@ -37,7 +37,7 @@ function AdminTrustPage() {
   return (
     <AdminPage
       title="Trust & safety"
-      subtitle="Suspicious users, rejected proofs, abuse reports, and duplicate redemption attempts."
+      subtitle="Suspicious users, rejected proofs, abuse reports and duplicate redemption attempts."
       action={
         (data?.open_content_reports ?? 0) > 0 ? (
           <Link
@@ -133,8 +133,8 @@ function AdminTrustPage() {
                 <span className="font-mono font-semibold">{row.code}</span>
                 <span className="ml-2 font-medium text-amber-800">{row.result}</span>
                 <p className="mt-0.5 text-xs text-[color:var(--cofex-black)]/55">
-                  {row.explorer_name ?? row.explorer_id?.slice(0, 8) ?? "—"} · {row.shop_name ?? "—"} ·{" "}
-                  {row.campaign_title ?? "—"}
+                  {row.explorer_name ?? row.explorer_id?.slice(0, 8) ?? "-"} · {row.shop_name ?? "-"} ·{" "}
+                  {row.campaign_title ?? "-"}
                 </p>
               </div>
               <time className="text-xs text-[color:var(--cofex-black)]/45 shrink-0">
@@ -157,7 +157,7 @@ function AdminTrustPage() {
                 <span className="font-mono font-semibold">{row.code}</span>
                 <span className="ml-2 text-rose-700 font-medium">{row.result}</span>
                 <p className="text-xs text-[color:var(--cofex-black)]/55 mt-0.5">
-                  {row.shop_name ?? "—"} · {row.campaign_title ?? "—"}
+                  {row.shop_name ?? "-"} · {row.campaign_title ?? "-"}
                 </p>
               </div>
               <time className="text-xs text-[color:var(--cofex-black)]/45 shrink-0">
@@ -180,7 +180,7 @@ function AdminTrustPage() {
                 <span className="font-medium text-rose-800">{row.result}</span>
                 {row.token && <span className="ml-2 font-mono text-xs">{row.token.slice(0, 12)}…</span>}
                 <p className="text-xs text-[color:var(--cofex-black)]/55 mt-0.5">
-                  {row.user_name ?? row.user_id?.slice(0, 8) ?? "—"} · {row.shop_name ?? "—"}
+                  {row.user_name ?? row.user_id?.slice(0, 8) ?? "-"} · {row.shop_name ?? "-"}
                 </p>
               </div>
               <time className="text-xs text-[color:var(--cofex-black)]/45 shrink-0">

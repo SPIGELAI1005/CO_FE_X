@@ -15,7 +15,8 @@ interface CampaignJoinConsentProps {
   requirements?: string | null;
   scannedViaQr?: boolean;
   disabled?: boolean;
-  disabledReason?: "full" | "ended";
+  disabledReason?: "full" | "ended" | "not_started";
+  startsAt?: string | null;
   busy?: boolean;
   onJoin: (consent: { termsAccepted: boolean; disclosureAcknowledged: boolean }) => void;
 }
@@ -27,6 +28,7 @@ export function CampaignJoinConsent({
   scannedViaQr,
   disabled,
   disabledReason,
+  startsAt,
   busy,
   onJoin,
 }: CampaignJoinConsentProps) {
@@ -123,7 +125,13 @@ export function CampaignJoinConsent({
             ? t("campaignMission.campaignFull")
             : disabledReason === "ended"
               ? t("campaignMission.campaignEnded")
-              : t("campaignMission.startMission")}
+              : disabledReason === "not_started"
+                ? startsAt
+                  ? t("campaignMission.campaignNotStartedOn", {
+                      date: new Date(startsAt).toLocaleDateString(i18n.language),
+                    })
+                  : t("campaignMission.campaignNotStarted")
+                : t("campaignMission.startMission")}
       </Button>
     </div>
   );

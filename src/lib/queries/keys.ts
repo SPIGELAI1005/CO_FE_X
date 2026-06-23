@@ -31,6 +31,7 @@ export const queryKeys = {
   partnerReferralCode: (userId: string) => ["partnerReferralCode", userId] as const,
   partnerCampaigns: (userId: string) => ["partnerCampaigns", userId] as const,
   partnerSocialSubmissions: (status: string) => ["partnerSocialSubmissions", status] as const,
+  partnerSocialSubmissionCounts: ["partnerSocialSubmissionCounts"] as const,
   coffeeRadar: (lat: number, lng: number) => ["coffeeRadar", lat, lng] as const,
   leaderboard: (metric: string) => ["leaderboard", metric] as const,
   myLeaderboardRank: (metric: string) => ["myLeaderboardRank", metric] as const,

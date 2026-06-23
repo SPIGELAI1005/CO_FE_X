@@ -1,4 +1,4 @@
-/** Client mirror of `xp_config` — keep in sync with migration defaults. */
+/** Client mirror of `xp_config`, keep in sync with migration defaults. */
 
 export type XpEventKey =
   | "check_in"

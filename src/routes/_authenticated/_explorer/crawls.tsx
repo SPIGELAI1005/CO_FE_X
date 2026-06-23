@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { Award, Check, Clock, Footprints, MapPin, Sparkles } from "lucide-react";
+import { Check } from "lucide-react";
 import { AppPage, AppPageBody, AppPageHeader } from "@/components/app/AppPageShell";
 import { QueryBoundary } from "@/components/patterns/QueryBoundary";
+import { CofexIconTile } from "@/components/app/CofexIconTile";
+import { TRAIL_STAT_ICONS } from "@/lib/explorer-section-icons";
 import { useUser } from "@/hooks/use-user";
 import { useCoffeeCrawls, useCrawlProgress } from "@/lib/queries/vision";
 import { formatTrailDistance, formatTrailDuration, trailProgressPct, trailThemeLabelKey } from "@/lib/trails";
@@ -66,20 +68,20 @@ function TrailsPage() {
                         )}
                       </div>
                       <div className="mt-3 flex flex-wrap gap-3 text-xs text-amber-100/85">
-                        <span className="inline-flex items-center gap-1">
-                          <MapPin className="h-3.5 w-3.5" />
+                        <span className="inline-flex items-center gap-1.5">
+                          <CofexIconTile meta={TRAIL_STAT_ICONS.stops} size="xs" />
                           {total} {t("trails.stops")}
                         </span>
-                        <span className="inline-flex items-center gap-1">
-                          <Footprints className="h-3.5 w-3.5" />
+                        <span className="inline-flex items-center gap-1.5">
+                          <CofexIconTile meta={TRAIL_STAT_ICONS.distance} size="xs" />
                           {formatTrailDistance(trail.estimated_distance_m ?? 2500, i18n.language)}
                         </span>
-                        <span className="inline-flex items-center gap-1">
-                          <Clock className="h-3.5 w-3.5" />
+                        <span className="inline-flex items-center gap-1.5">
+                          <CofexIconTile meta={TRAIL_STAT_ICONS.duration} size="xs" />
                           {formatTrailDuration(trail.estimated_walk_minutes ?? 45, i18n.language)}
                         </span>
-                        <span className="inline-flex items-center gap-1">
-                          <Sparkles className="h-3.5 w-3.5" />
+                        <span className="inline-flex items-center gap-1.5">
+                          <CofexIconTile meta={TRAIL_STAT_ICONS.xp} size="xs" />
                           {trail.reward_points} XP
                         </span>
                       </div>
@@ -88,7 +90,7 @@ function TrailsPage() {
                     <div className="space-y-3 p-4">
                       {trail.badge_slug && (
                         <div className="inline-flex items-center gap-1.5 rounded-full bg-[color:var(--cofex-cream)] px-3 py-1 text-xs font-semibold text-[color:var(--cofex-coffee-deep)]">
-                          <Award className="h-3.5 w-3.5" />
+                          <CofexIconTile meta={TRAIL_STAT_ICONS.badge} size="xs" />
                           {t("trails.badgeUnlock", { badge: trail.badge_slug.replace(/-/g, " ") })}
                         </div>
                       )}

@@ -15,7 +15,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Snap a pic, post it, and score a free coffee. CO:FE(X) is the Coffee Explorer Network. Discover cozy cafés and earn rewards. Coming September 28, 2026.",
+          "Snap a pic, post it and score a free coffee. CO:FE(X) is the Coffee Explorer Network. Discover cozy cafés and earn rewards. Coming September 28, 2026.",
       },
       { property: "og:title", content: "CO:FE(X) · (X)plore Cafés · (€)arn Coffees" },
       {
@@ -122,7 +122,7 @@ function Hero() {
       {/* Mockup */}
       <div className="relative mt-16 flex justify-center">
         <div className="relative w-full max-w-[420px]">
-          {/* floating left pill — parallax outer, float inner */}
+          {/* floating left pill, parallax outer, float inner */}
           <div
             className="absolute -left-2 sm:-left-16 top-24 z-10 cofex-px"
             style={{ ["--depth-x" as any]: "18px", ["--depth-y" as any]: "12px", ["--depth-s" as any]: "20px" }}
@@ -144,7 +144,7 @@ function Hero() {
               ☕ +1 Free
             </div>
           </div>
-          {/* phone — gentle parallax + float */}
+          {/* phone, gentle parallax + float */}
           <div
             className="cofex-px"
             style={{ ["--depth-x" as any]: "-8px", ["--depth-y" as any]: "-6px", ["--depth-s" as any]: "12px" }}
